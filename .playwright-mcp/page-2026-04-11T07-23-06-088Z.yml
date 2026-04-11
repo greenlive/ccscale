@@ -1,0 +1,158 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "CC Scale" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: CC Scale
+      - navigation [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+        - link "About Us" [ref=e10] [cursor=pointer]:
+          - /url: /about
+        - link "Products" [ref=e11] [cursor=pointer]:
+          - /url: /products
+        - link "Guarantees" [ref=e12] [cursor=pointer]:
+          - /url: /guarantee
+        - link "OEM/ODM" [ref=e13] [cursor=pointer]:
+          - /url: /oem
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /support
+        - link "Blog" [ref=e15] [cursor=pointer]:
+          - /url: /blog
+        - link "Contact" [ref=e16] [cursor=pointer]:
+          - /url: /contact
+        - button "Switch language" [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: EN
+          - img [ref=e23]
+        - button "Request Quote 1" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+          - generic [ref=e30]: Request Quote
+          - generic [ref=e31]: "1"
+        - link "Contact" [ref=e32] [cursor=pointer]:
+          - /url: /contact
+  - main [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e36]:
+        - heading "Blog & Insights" [level=1] [ref=e37]
+        - paragraph [ref=e38]: Industry news, product updates, and technical knowledge
+      - generic [ref=e40]:
+        - generic [ref=e42]:
+          - link "All" [ref=e43] [cursor=pointer]:
+            - /url: /blog?
+          - link "Industry Guides" [ref=e44] [cursor=pointer]:
+            - /url: /blog?category=industry
+          - link "Product News" [ref=e45] [cursor=pointer]:
+            - /url: /blog?category=product
+          - link "Technical Articles" [ref=e46] [cursor=pointer]:
+            - /url: /blog?category=technical
+          - link "Export Knowledge" [ref=e47] [cursor=pointer]:
+            - /url: /blog?category=export
+        - generic [ref=e48]:
+          - link "How to Choose the Right Body Scale for Your Business March 15, 2024 1 min How to Choose the Right Body Scale for Your Business A comprehensive guide to selecting the perfect body scale for commercial and industrial use. body scale buying guide commercial" [ref=e49] [cursor=pointer]:
+            - /url: /blog/how-to-choose-body-scale
+            - generic [ref=e50]:
+              - img "How to Choose the Right Body Scale for Your Business" [ref=e52]
+              - generic [ref=e53]:
+                - generic [ref=e54]:
+                  - generic [ref=e55]:
+                    - img [ref=e56]
+                    - text: March 15, 2024
+                  - generic [ref=e58]:
+                    - img [ref=e59]
+                    - text: 1 min
+                - heading "How to Choose the Right Body Scale for Your Business" [level=3] [ref=e62]
+                - paragraph [ref=e63]: A comprehensive guide to selecting the perfect body scale for commercial and industrial use.
+                - generic [ref=e64]:
+                  - generic [ref=e65]:
+                    - img [ref=e66]
+                    - text: body scale
+                  - generic [ref=e69]:
+                    - img [ref=e70]
+                    - text: buying guide
+                  - generic [ref=e73]:
+                    - img [ref=e74]
+                    - text: commercial
+          - link "Introducing Our New Smart Body Scale BS-300 March 10, 2024 1 min Introducing Our New Smart Body Scale BS-300 Discover the features of our latest smart body scale with advanced technology. new product smart scale BS-300" [ref=e77] [cursor=pointer]:
+            - /url: /blog/new-product-launch-bs-300
+            - generic [ref=e78]:
+              - img "Introducing Our New Smart Body Scale BS-300" [ref=e80]
+              - generic [ref=e81]:
+                - generic [ref=e82]:
+                  - generic [ref=e83]:
+                    - img [ref=e84]
+                    - text: March 10, 2024
+                  - generic [ref=e86]:
+                    - img [ref=e87]
+                    - text: 1 min
+                - heading "Introducing Our New Smart Body Scale BS-300" [level=3] [ref=e90]
+                - paragraph [ref=e91]: Discover the features of our latest smart body scale with advanced technology.
+                - generic [ref=e92]:
+                  - generic [ref=e93]:
+                    - img [ref=e94]
+                    - text: new product
+                  - generic [ref=e97]:
+                    - img [ref=e98]
+                    - text: smart scale
+                  - generic [ref=e101]:
+                    - img [ref=e102]
+                    - text: BS-300
+  - contentinfo [ref=e105]:
+    - generic [ref=e106]:
+      - generic [ref=e107]:
+        - generic [ref=e108]:
+          - heading "CC Scale" [level=3] [ref=e109]
+          - paragraph [ref=e110]: Professional weighing solutions for global markets.
+          - link "Facebook" [ref=e112] [cursor=pointer]:
+            - /url: https://facebook.com/ccscale
+            - img [ref=e113]
+        - generic [ref=e115]:
+          - heading "Quick Links" [level=4] [ref=e116]
+          - list [ref=e117]:
+            - listitem [ref=e118]:
+              - link "Home" [ref=e119] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e120]:
+              - link "About Us" [ref=e121] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e122]:
+              - link "Products" [ref=e123] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e124]:
+              - link "Blog" [ref=e125] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e126]:
+              - link "Support" [ref=e127] [cursor=pointer]:
+                - /url: /support
+            - listitem [ref=e128]:
+              - link "Contact" [ref=e129] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e130]:
+          - heading "Contact Info" [level=4] [ref=e131]
+          - list [ref=e132]:
+            - listitem [ref=e133]:
+              - img [ref=e134]
+              - generic [ref=e137]: No. 88, Industrial Park, Yongkang, Zhejiang, China
+            - listitem [ref=e138]:
+              - img [ref=e139]
+              - link "sales@ccscale.com" [ref=e142] [cursor=pointer]:
+                - /url: mailto:sales@ccscale.com
+        - generic [ref=e143]:
+          - heading "Follow Us" [level=4] [ref=e144]
+          - paragraph [ref=e145]: Subscribe to our newsletter for updates on new products and promotions.
+          - generic [ref=e146]:
+            - generic [ref=e147]: Your email
+            - textbox "Your email" [ref=e148]
+            - button "Subscribe" [ref=e149] [cursor=pointer]
+      - generic [ref=e150]:
+        - paragraph [ref=e151]: © 2024 CC Scale. All rights reserved.
+        - generic [ref=e152]:
+          - link "Privacy Policy" [ref=e153] [cursor=pointer]:
+            - /url: "#"
+          - link "Terms of Service" [ref=e154] [cursor=pointer]:
+            - /url: "#"
+          - link "ICP License" [ref=e155] [cursor=pointer]:
+            - /url: "#"
+  - alert [ref=e156]

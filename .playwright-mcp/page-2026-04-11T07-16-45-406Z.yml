@@ -1,0 +1,318 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e650] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e651]:
+    - generic [ref=e653]:
+      - link "CC Scale" [ref=e654] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e655]: CC Scale
+      - navigation [ref=e656]:
+        - link "Home" [ref=e657] [cursor=pointer]:
+          - /url: /
+        - link "About Us" [ref=e658] [cursor=pointer]:
+          - /url: /about
+        - link "Products" [ref=e659] [cursor=pointer]:
+          - /url: /products
+        - link "Guarantees" [ref=e660] [cursor=pointer]:
+          - /url: /guarantee
+        - link "OEM/ODM" [ref=e661] [cursor=pointer]:
+          - /url: /oem
+        - link "Support" [ref=e662] [cursor=pointer]:
+          - /url: /support
+        - link "Blog" [ref=e663] [cursor=pointer]:
+          - /url: /blog
+        - link "Contact" [ref=e664] [cursor=pointer]:
+          - /url: /contact
+        - button "Switch language" [ref=e666] [cursor=pointer]:
+          - img [ref=e667]
+          - generic [ref=e670]: EN
+          - img [ref=e671]
+        - button "Request Quote" [ref=e673] [cursor=pointer]:
+          - img [ref=e674]
+          - generic [ref=e678]: Request Quote
+        - link "Contact" [ref=e679] [cursor=pointer]:
+          - /url: /contact
+  - main [ref=e680]:
+    - generic [ref=e681]:
+      - generic [ref=e682]:
+        - generic [ref=e685]:
+          - paragraph [ref=e686]: Trusted by teams worldwide — real factory, real people
+          - generic [ref=e687]:
+            - heading "Professional Weighing Solutions" [level=1] [ref=e688]
+            - paragraph [ref=e689]: Leading manufacturer of high-quality scales for global markets
+            - generic [ref=e690]:
+              - link "Explore Products" [ref=e691] [cursor=pointer]:
+                - /url: /products
+                - text: Explore Products
+                - img [ref=e692]
+              - link "Get Quote" [ref=e694] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e697]:
+          - generic [ref=e698]:
+            - generic [ref=e699]:
+              - img [ref=e700]
+              - generic [ref=e704]: 15+ Years
+            - paragraph [ref=e705]: Factory Experience
+          - generic [ref=e706]:
+            - generic [ref=e707]:
+              - img [ref=e708]
+              - generic [ref=e711]: 80+ Countries
+            - paragraph [ref=e712]: Exported To
+          - generic [ref=e713]:
+            - generic [ref=e714]:
+              - img [ref=e715]
+              - generic [ref=e718]: ISO/CE/FDA
+            - paragraph [ref=e719]: Certifications
+          - generic [ref=e720]:
+            - generic [ref=e721]:
+              - img [ref=e722]
+              - generic [ref=e725]: 24 Hours
+            - paragraph [ref=e726]: Max Response Time
+      - generic [ref=e728]:
+        - generic [ref=e729]:
+          - heading "Zero Risk for You" [level=2] [ref=e730]
+          - paragraph [ref=e731]: We take all the risks so you don't have to
+        - generic [ref=e732]:
+          - generic [ref=e734]:
+            - img [ref=e736]
+            - heading "Free Sample" [level=3] [ref=e741]
+            - paragraph [ref=e742]: Sample cost deducted from first order
+          - generic [ref=e744]:
+            - img [ref=e746]
+            - heading "Quality Guarantee" [level=3] [ref=e748]
+            - paragraph [ref=e749]: Full refund if quality doesn't match
+          - generic [ref=e751]:
+            - img [ref=e753]
+            - heading "Delivery Guarantee" [level=3] [ref=e756]
+            - paragraph [ref=e757]: 1% discount per day delay
+          - generic [ref=e759]:
+            - img [ref=e761]
+            - heading "2-Year Warranty" [level=3] [ref=e765]
+            - paragraph [ref=e766]: Full after-sales support included
+      - generic [ref=e771]:
+        - generic [ref=e772]:
+          - generic [ref=e774]: Alibaba
+          - img [ref=e775]
+          - heading "Alibaba Gold Supplier" [level=3] [ref=e777]
+          - paragraph [ref=e778]: Verified & Trusted
+        - generic [ref=e779]:
+          - heading "Trade via Alibaba Platform for Extra Security" [level=2] [ref=e780]
+          - generic [ref=e781]:
+            - generic [ref=e782]:
+              - img [ref=e783]
+              - generic [ref=e786]:
+                - heading "Trade Assurance Covered" [level=4] [ref=e787]
+                - paragraph [ref=e788]: Payment protection, shipping guarantee, quality assurance
+            - generic [ref=e789]:
+              - img [ref=e790]
+              - generic [ref=e793]:
+                - heading "Third-party Factory Audit" [level=4] [ref=e794]
+                - paragraph [ref=e795]: On-site audit by Alibaba designated agencies
+            - generic [ref=e796]:
+              - img [ref=e797]
+              - generic [ref=e800]:
+                - heading "Online Dispute Resolution" [level=4] [ref=e801]
+                - paragraph [ref=e802]: Alibaba official mediation for quick resolution
+          - link "Visit Our Alibaba Store" [ref=e803] [cursor=pointer]:
+            - /url: https://zzscale.en.alibaba.com/index.html?spm=a2700.shop_plgr.88.10.643d71213FpJji
+            - img [ref=e804]
+            - text: Visit Our Alibaba Store
+      - generic [ref=e809]:
+        - generic [ref=e810]:
+          - heading "Our Products" [level=2] [ref=e811]
+          - link "View All" [ref=e812] [cursor=pointer]:
+            - /url: /products
+            - text: View All
+            - img [ref=e813]
+        - generic [ref=e815]:
+          - link "Body Scales Body Scales 2 products" [ref=e816] [cursor=pointer]:
+            - /url: /products
+            - generic [ref=e817]:
+              - img "Body Scales" [ref=e819]
+              - generic [ref=e820]:
+                - heading "Body Scales" [level=3] [ref=e821]
+                - paragraph [ref=e822]: 2 products
+          - link "Hanging Scales Hanging Scales 1 products" [ref=e823] [cursor=pointer]:
+            - /url: /products
+            - generic [ref=e824]:
+              - img "Hanging Scales" [ref=e826]
+              - generic [ref=e827]:
+                - heading "Hanging Scales" [level=3] [ref=e828]
+                - paragraph [ref=e829]: 1 products
+          - link "Kitchen Scales Kitchen Scales 1 products" [ref=e830] [cursor=pointer]:
+            - /url: /products
+            - generic [ref=e831]:
+              - img "Kitchen Scales" [ref=e833]
+              - generic [ref=e834]:
+                - heading "Kitchen Scales" [level=3] [ref=e835]
+                - paragraph [ref=e836]: 1 products
+          - link "Baby Scales Baby Scales 1 products" [ref=e837] [cursor=pointer]:
+            - /url: /products
+            - generic [ref=e838]:
+              - img "Baby Scales" [ref=e840]
+              - generic [ref=e841]:
+                - heading "Baby Scales" [level=3] [ref=e842]
+                - paragraph [ref=e843]: 1 products
+      - generic [ref=e845]:
+        - heading "Why Choose Us" [level=2] [ref=e846]
+        - generic [ref=e847]:
+          - generic [ref=e849]:
+            - img [ref=e851]
+            - generic [ref=e853]: 20,000 m²
+            - paragraph [ref=e854]: Modern Production Facility
+          - generic [ref=e856]:
+            - img [ref=e858]
+            - generic [ref=e863]: 50+ Sets
+            - paragraph [ref=e864]: Professional Equipment
+          - generic [ref=e866]:
+            - img [ref=e868]
+            - generic [ref=e871]: 3 Stages
+            - paragraph [ref=e872]: Quality Inspection
+          - generic [ref=e874]:
+            - img [ref=e876]
+            - generic [ref=e881]: 50,000 pcs
+            - paragraph [ref=e882]: Monthly Capacity
+      - generic [ref=e884]:
+        - generic [ref=e885]:
+          - heading "Why Choose CC Scale?" [level=2] [ref=e886]
+          - paragraph [ref=e887]: See the difference between us and ordinary suppliers
+        - generic [ref=e890]:
+          - generic [ref=e891]:
+            - generic [ref=e892]: Why Choose CC Scale?
+            - generic [ref=e894]:
+              - img [ref=e895]
+              - generic [ref=e899]: Ordinary Supplier
+            - generic [ref=e901]:
+              - img [ref=e902]
+              - generic [ref=e905]: CC Scale
+          - generic [ref=e906]:
+            - generic [ref=e907]: Payment Method
+            - generic [ref=e908]: 100% upfront payment
+            - generic [ref=e909]: 30% deposit + 70% against B/L
+          - generic [ref=e910]:
+            - generic [ref=e911]: Quality Assurance
+            - generic [ref=e912]: Verbal promises only
+            - generic [ref=e913]: ISO + Third-party inspection + Sealed samples
+          - generic [ref=e914]:
+            - generic [ref=e915]: Delivery Promise
+            - generic [ref=e916]: "\"We'll try our best\""
+            - generic [ref=e917]: Capacity calendar + Space booking + Delay compensation
+      - generic [ref=e919]:
+        - heading "What Our Clients Say" [level=2] [ref=e922]
+        - generic "Testimonials carousel" [ref=e924]:
+          - generic [ref=e926]:
+            - img [ref=e929]
+            - generic [ref=e932]:
+              - img [ref=e933]
+              - img [ref=e935]
+              - img [ref=e937]
+              - img [ref=e939]
+              - img [ref=e941]
+            - paragraph [ref=e944]: “Best scale manufacturer we have worked with. The quality is consistent and the customer support is excellent. They handle our bulk orders efficiently.”
+            - generic [ref=e945]:
+              - generic [ref=e947]: A
+              - generic [ref=e948]:
+                - paragraph [ref=e949]: Ahmed Khan
+                - paragraph [ref=e950]: Middle East Trading · UAE
+          - button "Previous testimonials" [ref=e951] [cursor=pointer]:
+            - img [ref=e952]
+          - button "Next testimonials" [ref=e954] [cursor=pointer]:
+            - img [ref=e955]
+        - generic [ref=e957]:
+          - button "Go to page 1" [ref=e958] [cursor=pointer]
+          - button "Go to page 2" [ref=e959] [cursor=pointer]
+        - generic [ref=e960]: Showing 4-4 of 4 testimonials
+      - generic [ref=e962]:
+        - generic [ref=e963]:
+          - heading "Follow Us on Social Media" [level=2] [ref=e964]
+          - paragraph [ref=e965]: Stay connected for the latest updates, product news, and exclusive content.
+        - generic [ref=e966]:
+          - link "YouTube Watch our latest videos" [ref=e967] [cursor=pointer]:
+            - /url: https://www.youtube.com/@ccscale
+            - img [ref=e969]
+            - heading "YouTube" [level=3] [ref=e972]
+            - paragraph [ref=e973]: Watch our latest videos
+            - img [ref=e975]
+          - link "LinkedIn Connect on LinkedIn" [ref=e979] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/ccscaleweighing
+            - img [ref=e981]
+            - heading "LinkedIn" [level=3] [ref=e985]
+            - paragraph [ref=e986]: Connect on LinkedIn
+            - img [ref=e988]
+          - link "Instagram Follow us on Instagram" [ref=e992] [cursor=pointer]:
+            - /url: https://www.instagram.com/ccscale_official
+            - img [ref=e994]
+            - heading "Instagram" [level=3] [ref=e997]
+            - paragraph [ref=e998]: Follow us on Instagram
+            - img [ref=e1000]
+        - paragraph [ref=e1005]: Click any platform above to visit our profiles
+      - generic [ref=e1007]:
+        - heading "Trusted by Global Partners" [level=2] [ref=e1008]
+        - generic [ref=e1009]:
+          - generic [ref=e1011]: Amazon
+          - generic [ref=e1013]: Walmart
+          - generic [ref=e1015]: Carrefour
+          - generic [ref=e1017]: Tesco
+          - generic [ref=e1019]: Aldi
+          - generic [ref=e1021]: Lidl
+      - generic [ref=e1023]:
+        - heading "Ready to Start Your Project?" [level=2] [ref=e1024]
+        - paragraph [ref=e1025]: Contact us today for a free consultation and custom quote for your weighing equipment needs.
+        - link "Get a Free Quote" [ref=e1026] [cursor=pointer]:
+          - /url: /contact
+  - contentinfo [ref=e1027]:
+    - generic [ref=e1028]:
+      - generic [ref=e1029]:
+        - generic [ref=e1030]:
+          - heading "CC Scale" [level=3] [ref=e1031]
+          - paragraph [ref=e1032]: Professional weighing solutions for global markets.
+          - link "Facebook" [ref=e1034] [cursor=pointer]:
+            - /url: https://facebook.com/ccscale
+            - img [ref=e1035]
+        - generic [ref=e1037]:
+          - heading "Quick Links" [level=4] [ref=e1038]
+          - list [ref=e1039]:
+            - listitem [ref=e1040]:
+              - link "Home" [ref=e1041] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e1042]:
+              - link "About Us" [ref=e1043] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e1044]:
+              - link "Products" [ref=e1045] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e1046]:
+              - link "Blog" [ref=e1047] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e1048]:
+              - link "Support" [ref=e1049] [cursor=pointer]:
+                - /url: /support
+            - listitem [ref=e1050]:
+              - link "Contact" [ref=e1051] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e1052]:
+          - heading "Contact Info" [level=4] [ref=e1053]
+          - list [ref=e1054]:
+            - listitem [ref=e1055]:
+              - img [ref=e1056]
+              - generic [ref=e1059]: No. 88, Industrial Park, Yongkang, Zhejiang, China
+            - listitem [ref=e1060]:
+              - img [ref=e1061]
+              - link "sales@ccscale.com" [ref=e1064] [cursor=pointer]:
+                - /url: mailto:sales@ccscale.com
+        - generic [ref=e1065]:
+          - heading "Follow Us" [level=4] [ref=e1066]
+          - paragraph [ref=e1067]: Subscribe to our newsletter for updates on new products and promotions.
+          - generic [ref=e1068]:
+            - generic [ref=e1069]: Your email
+            - textbox "Your email" [ref=e1070]
+            - button "Subscribe" [ref=e1071] [cursor=pointer]
+      - generic [ref=e1072]:
+        - paragraph [ref=e1073]: © 2024 CC Scale. All rights reserved.
+        - generic [ref=e1074]:
+          - link "Privacy Policy" [ref=e1075] [cursor=pointer]:
+            - /url: "#"
+          - link "Terms of Service" [ref=e1076] [cursor=pointer]:
+            - /url: "#"
+          - link "ICP License" [ref=e1077] [cursor=pointer]:
+            - /url: "#"

@@ -1,0 +1,172 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "CC Scale" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: CC Scale
+      - navigation [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+        - link "About Us" [ref=e10] [cursor=pointer]:
+          - /url: /about
+        - link "Products" [ref=e11] [cursor=pointer]:
+          - /url: /products
+        - link "Guarantees" [ref=e12] [cursor=pointer]:
+          - /url: /guarantee
+        - link "OEM/ODM" [ref=e13] [cursor=pointer]:
+          - /url: /oem
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /support
+        - link "Blog" [ref=e15] [cursor=pointer]:
+          - /url: /blog
+        - link "Contact" [ref=e16] [cursor=pointer]:
+          - /url: /contact
+        - button "Switch language" [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: EN
+          - img [ref=e23]
+        - button "Request Quote 1" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+          - generic [ref=e30]: Request Quote
+          - generic [ref=e31]: "1"
+        - link "Contact" [ref=e32] [cursor=pointer]:
+          - /url: /contact
+  - main [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e36]:
+        - heading "OEM/ODM" [level=1] [ref=e37]
+        - paragraph [ref=e38]: Custom weighing solutions tailored to your brand and specifications
+      - generic [ref=e40]:
+        - heading "Why Choose Our OEM Service" [level=2] [ref=e41]
+        - generic [ref=e42]:
+          - generic [ref=e44]:
+            - img [ref=e46]
+            - heading "Custom Packaging" [level=3] [ref=e50]
+            - paragraph [ref=e51]: Branded packaging with your logo
+          - generic [ref=e53]:
+            - img [ref=e55]
+            - heading "Design Flexibility" [level=3] [ref=e60]
+            - paragraph [ref=e61]: Modify designs to match your brand
+          - generic [ref=e63]:
+            - img [ref=e65]
+            - heading "Spec Customization" [level=3] [ref=e68]
+            - paragraph [ref=e69]: Adjust specifications to your needs
+          - generic [ref=e71]:
+            - img [ref=e73]
+            - heading "Quality Assurance" [level=3] [ref=e75]
+            - paragraph [ref=e76]: Same quality standards for all products
+      - generic [ref=e78]:
+        - heading "OEM Customization Process" [level=2] [ref=e79]
+        - paragraph [ref=e80]: Our streamlined OEM process ensures a smooth journey from concept to delivery
+        - generic [ref=e83]:
+          - generic [ref=e86]:
+            - img [ref=e88]
+            - heading "1. Consultation" [level=3] [ref=e90]
+            - paragraph [ref=e91]: Discuss your requirements and specifications
+          - generic [ref=e94]:
+            - img [ref=e96]
+            - heading "2. Design" [level=3] [ref=e101]
+            - paragraph [ref=e102]: Create custom designs and prototypes
+          - generic [ref=e105]:
+            - img [ref=e107]
+            - heading "3. Sample" [level=3] [ref=e110]
+            - paragraph [ref=e111]: Produce and approve samples
+          - generic [ref=e114]:
+            - img [ref=e116]
+            - heading "4. Mold" [level=3] [ref=e118]
+            - paragraph [ref=e119]: Create molds for mass production
+          - generic [ref=e122]:
+            - img [ref=e124]
+            - heading "5. QC" [level=3] [ref=e127]
+            - paragraph [ref=e128]: Rigorous quality control inspection
+          - generic [ref=e131]:
+            - img [ref=e133]
+            - heading "6. Delivery" [level=3] [ref=e138]
+            - paragraph [ref=e139]: Ship to your destination
+      - generic [ref=e142]:
+        - generic [ref=e143]:
+          - heading "Our Customization Capabilities" [level=2] [ref=e144]
+          - list [ref=e145]:
+            - listitem [ref=e146]:
+              - img [ref=e147]
+              - generic [ref=e150]: Logo printing and engraving
+            - listitem [ref=e151]:
+              - img [ref=e152]
+              - generic [ref=e155]: Custom color options
+            - listitem [ref=e156]:
+              - img [ref=e157]
+              - generic [ref=e160]: Private labeling and packaging
+            - listitem [ref=e161]:
+              - img [ref=e162]
+              - generic [ref=e165]: Custom specifications and features
+            - listitem [ref=e166]:
+              - img [ref=e167]
+              - generic [ref=e170]: Software and app customization
+            - listitem [ref=e171]:
+              - img [ref=e172]
+              - generic [ref=e175]: Certification support (CE, FDA, etc.)
+        - img "OEM" [ref=e178]
+      - generic [ref=e180]:
+        - heading "Ready to Start Your OEM Project?" [level=2] [ref=e181]
+        - paragraph [ref=e182]: Contact our OEM specialists today to discuss your custom requirements and get a quote.
+        - link "Contact Our Team" [ref=e183] [cursor=pointer]:
+          - /url: /contact
+  - contentinfo [ref=e184]:
+    - generic [ref=e185]:
+      - generic [ref=e186]:
+        - generic [ref=e187]:
+          - heading "CC Scale" [level=3] [ref=e188]
+          - paragraph [ref=e189]: Professional weighing solutions for global markets.
+          - link "Facebook" [ref=e191] [cursor=pointer]:
+            - /url: https://facebook.com/ccscale
+            - img [ref=e192]
+        - generic [ref=e194]:
+          - heading "Quick Links" [level=4] [ref=e195]
+          - list [ref=e196]:
+            - listitem [ref=e197]:
+              - link "Home" [ref=e198] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e199]:
+              - link "About Us" [ref=e200] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e201]:
+              - link "Products" [ref=e202] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e203]:
+              - link "Blog" [ref=e204] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e205]:
+              - link "Support" [ref=e206] [cursor=pointer]:
+                - /url: /support
+            - listitem [ref=e207]:
+              - link "Contact" [ref=e208] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e209]:
+          - heading "Contact Info" [level=4] [ref=e210]
+          - list [ref=e211]:
+            - listitem [ref=e212]:
+              - img [ref=e213]
+              - generic [ref=e216]: No. 88, Industrial Park, Yongkang, Zhejiang, China
+            - listitem [ref=e217]:
+              - img [ref=e218]
+              - link "sales@ccscale.com" [ref=e221] [cursor=pointer]:
+                - /url: mailto:sales@ccscale.com
+        - generic [ref=e222]:
+          - heading "Follow Us" [level=4] [ref=e223]
+          - paragraph [ref=e224]: Subscribe to our newsletter for updates on new products and promotions.
+          - generic [ref=e225]:
+            - generic [ref=e226]: Your email
+            - textbox "Your email" [ref=e227]
+            - button "Subscribe" [ref=e228] [cursor=pointer]
+      - generic [ref=e229]:
+        - paragraph [ref=e230]: © 2024 CC Scale. All rights reserved.
+        - generic [ref=e231]:
+          - link "Privacy Policy" [ref=e232] [cursor=pointer]:
+            - /url: "#"
+          - link "Terms of Service" [ref=e233] [cursor=pointer]:
+            - /url: "#"
+          - link "ICP License" [ref=e234] [cursor=pointer]:
+            - /url: "#"
+  - alert [ref=e235]

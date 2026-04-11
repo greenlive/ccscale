@@ -1,0 +1,90 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "CC Scale" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: CC Scale
+      - navigation [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+        - link "About Us" [ref=e10] [cursor=pointer]:
+          - /url: /about
+        - link "Products" [ref=e11] [cursor=pointer]:
+          - /url: /products
+        - link "Guarantees" [ref=e12] [cursor=pointer]:
+          - /url: /guarantee
+        - link "OEM/ODM" [ref=e13] [cursor=pointer]:
+          - /url: /oem
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /support
+        - link "Blog" [ref=e15] [cursor=pointer]:
+          - /url: /blog
+        - link "Contact" [ref=e16] [cursor=pointer]:
+          - /url: /contact
+        - button "Switch language" [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: EN
+          - img [ref=e23]
+        - button "Request Quote 2" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+          - generic [ref=e30]: Request Quote
+          - generic [ref=e31]: "2"
+        - link "Contact" [ref=e32] [cursor=pointer]:
+          - /url: /contact
+  - main [ref=e33]:
+    - generic [ref=e36]:
+      - heading "error.somethingWentWrong" [level=2] [ref=e37]
+      - paragraph [ref=e38]: error.tryAgain
+      - button "error.tryAgain" [ref=e40] [cursor=pointer]
+  - contentinfo [ref=e41]:
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - heading "CC Scale" [level=3] [ref=e45]
+          - paragraph [ref=e46]: Professional weighing solutions for global markets.
+        - generic [ref=e47]:
+          - heading "Quick Links" [level=4] [ref=e48]
+          - list [ref=e49]:
+            - listitem [ref=e50]:
+              - link "Home" [ref=e51] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e52]:
+              - link "About Us" [ref=e53] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e54]:
+              - link "Products" [ref=e55] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e56]:
+              - link "Blog" [ref=e57] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e58]:
+              - link "Support" [ref=e59] [cursor=pointer]:
+                - /url: /support
+            - listitem [ref=e60]:
+              - link "Contact" [ref=e61] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e62]:
+          - heading "Contact Info" [level=4] [ref=e63]
+          - list [ref=e64]:
+            - listitem [ref=e65]:
+              - img [ref=e66]
+              - generic [ref=e69]: No. 88, Industrial Park, Yongkang, Zhejiang, China
+        - generic [ref=e70]:
+          - heading "Follow Us" [level=4] [ref=e71]
+          - paragraph [ref=e72]: Subscribe to our newsletter for updates on new products and promotions.
+          - generic [ref=e73]:
+            - generic [ref=e74]: Your email
+            - textbox "Your email" [ref=e75]
+            - button "Subscribe" [ref=e76] [cursor=pointer]
+      - generic [ref=e77]:
+        - paragraph [ref=e78]: © 2024 CC Scale. All rights reserved.
+        - generic [ref=e79]:
+          - link "Privacy Policy" [ref=e80] [cursor=pointer]:
+            - /url: "#"
+          - link "Terms of Service" [ref=e81] [cursor=pointer]:
+            - /url: "#"
+          - link "ICP License" [ref=e82] [cursor=pointer]:
+            - /url: "#"
+  - alert [ref=e83]

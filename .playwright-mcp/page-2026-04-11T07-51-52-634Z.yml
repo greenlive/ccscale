@@ -1,0 +1,264 @@
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "CC Scale" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: CC Scale
+      - navigation [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+        - link "About Us" [ref=e10] [cursor=pointer]:
+          - /url: /about
+        - link "Products" [ref=e11] [cursor=pointer]:
+          - /url: /products
+        - link "Guarantees" [ref=e12] [cursor=pointer]:
+          - /url: /guarantee
+        - link "OEM/ODM" [ref=e13] [cursor=pointer]:
+          - /url: /oem
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /support
+        - link "Blog" [ref=e15] [cursor=pointer]:
+          - /url: /blog
+        - link "Contact" [ref=e16] [cursor=pointer]:
+          - /url: /contact
+        - button "Switch language" [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: EN
+          - img [ref=e23]
+        - button "Request Quote 2" [ref=e267] [cursor=pointer]:
+          - img [ref=e26]
+          - generic [ref=e30]: Request Quote
+          - generic [ref=e31]: "2"
+        - link "Contact" [ref=e32] [cursor=pointer]:
+          - /url: /contact
+  - main [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e36]:
+        - heading "Products" [level=1] [ref=e37]
+        - paragraph [ref=e38]: Explore our comprehensive range of professional weighing solutions
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - button "All Products" [ref=e43] [cursor=pointer]
+          - button "Body Scales" [ref=e44] [cursor=pointer]
+          - button "Hanging Scales" [ref=e45] [cursor=pointer]
+          - button "Kitchen Scales" [ref=e46] [cursor=pointer]
+          - button "Baby Scales" [ref=e47] [cursor=pointer]
+          - button "Dial Scales" [ref=e48] [cursor=pointer]
+        - generic [ref=e49]:
+          - img [ref=e50]
+          - textbox "Search products" [ref=e53]:
+            - /placeholder: Search products...
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - link "Digital Body Scale BS-200 Featured" [ref=e58] [cursor=pointer]:
+            - /url: /products/digital-body-scale-bs-200
+            - generic [ref=e59]:
+              - img "Digital Body Scale BS-200" [ref=e60]
+              - generic [ref=e61]: Featured
+          - generic [ref=e62]:
+            - generic [ref=e63]:
+              - generic [ref=e64]: "SKU: BS-200"
+              - link "Digital Body Scale BS-200" [ref=e65] [cursor=pointer]:
+                - /url: /products/digital-body-scale-bs-200
+                - heading "Digital Body Scale BS-200" [level=3] [ref=e66]
+              - generic [ref=e67]:
+                - generic [ref=e68]:
+                  - generic [ref=e69]: $15
+                  - generic [ref=e70]: "- $25"
+                - generic [ref=e71]: "MOQ: 100"
+            - generic [ref=e72]:
+              - link "View Details" [ref=e73] [cursor=pointer]:
+                - /url: /products/digital-body-scale-bs-200
+                - text: View Details
+                - img [ref=e74]
+              - button "Add to Inquiry" [ref=e76] [cursor=pointer]:
+                - img [ref=e77]
+                - text: Add to Inquiry
+                - img [ref=e81]
+        - generic [ref=e83]:
+          - link "Industrial Hanging Scale HS-500 Featured" [ref=e84] [cursor=pointer]:
+            - /url: /products/industrial-hanging-scale-hs-500
+            - generic [ref=e85]:
+              - img "Industrial Hanging Scale HS-500" [ref=e86]
+              - generic [ref=e87]: Featured
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - generic [ref=e90]: "SKU: HS-500"
+              - link "Industrial Hanging Scale HS-500" [ref=e91] [cursor=pointer]:
+                - /url: /products/industrial-hanging-scale-hs-500
+                - heading "Industrial Hanging Scale HS-500" [level=3] [ref=e92]
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - generic [ref=e95]: $45
+                  - generic [ref=e96]: "- $85"
+                - generic [ref=e97]: "MOQ: 50"
+            - generic [ref=e98]:
+              - link "View Details" [ref=e99] [cursor=pointer]:
+                - /url: /products/industrial-hanging-scale-hs-500
+                - text: View Details
+                - img [ref=e100]
+              - button "Add to Inquiry" [ref=e102] [cursor=pointer]:
+                - img [ref=e103]
+                - text: Add to Inquiry
+                - img [ref=e107]
+        - generic [ref=e109]:
+          - link "Precision Kitchen Scale KS-300" [ref=e110] [cursor=pointer]:
+            - /url: /products/precision-kitchen-scale-ks-300
+            - img "Precision Kitchen Scale KS-300" [ref=e112]
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - generic [ref=e115]: "SKU: KS-300"
+              - link "Precision Kitchen Scale KS-300" [ref=e116] [cursor=pointer]:
+                - /url: /products/precision-kitchen-scale-ks-300
+                - heading "Precision Kitchen Scale KS-300" [level=3] [ref=e117]
+              - generic [ref=e118]:
+                - generic [ref=e119]:
+                  - generic [ref=e120]: $12
+                  - generic [ref=e121]: "- $20"
+                - generic [ref=e122]: "MOQ: 200"
+            - generic [ref=e123]:
+              - link "View Details" [ref=e124] [cursor=pointer]:
+                - /url: /products/precision-kitchen-scale-ks-300
+                - text: View Details
+                - img [ref=e125]
+              - button "Added!" [active] [ref=e268] [cursor=pointer]:
+                - img [ref=e269]
+                - text: Added!
+        - generic [ref=e134]:
+          - link "Smart Body Composition Scale Featured" [ref=e135] [cursor=pointer]:
+            - /url: /products/smart-body-composition-scale
+            - generic [ref=e136]:
+              - img "Smart Body Composition Scale" [ref=e137]
+              - generic [ref=e138]: Featured
+          - generic [ref=e139]:
+            - generic [ref=e140]:
+              - generic [ref=e141]: "SKU: BS-100"
+              - link "Smart Body Composition Scale" [ref=e142] [cursor=pointer]:
+                - /url: /products/smart-body-composition-scale
+                - heading "Smart Body Composition Scale" [level=3] [ref=e143]
+              - generic [ref=e144]:
+                - generic [ref=e145]:
+                  - generic [ref=e146]: $25
+                  - generic [ref=e147]: "- $45"
+                - generic [ref=e148]: "MOQ: 80"
+            - generic [ref=e149]:
+              - link "View Details" [ref=e150] [cursor=pointer]:
+                - /url: /products/smart-body-composition-scale
+                - text: View Details
+                - img [ref=e151]
+              - button "Add to Inquiry" [ref=e153] [cursor=pointer]:
+                - img [ref=e154]
+                - text: Add to Inquiry
+                - img [ref=e158]
+        - generic [ref=e160]:
+          - link "Mini Crane Scale 300kg" [ref=e161] [cursor=pointer]:
+            - /url: /products/mini-crane-scale-300kg
+            - img "Mini Crane Scale 300kg" [ref=e163]
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]: "SKU: HS-300"
+              - link "Mini Crane Scale 300kg" [ref=e167] [cursor=pointer]:
+                - /url: /products/mini-crane-scale-300kg
+                - heading "Mini Crane Scale 300kg" [level=3] [ref=e168]
+              - generic [ref=e169]:
+                - generic [ref=e170]:
+                  - generic [ref=e171]: $35
+                  - generic [ref=e172]: "- $55"
+                - generic [ref=e173]: "MOQ: 60"
+            - generic [ref=e174]:
+              - link "View Details" [ref=e175] [cursor=pointer]:
+                - /url: /products/mini-crane-scale-300kg
+                - text: View Details
+                - img [ref=e176]
+              - button "Add to Inquiry" [ref=e178] [cursor=pointer]:
+                - img [ref=e179]
+                - text: Add to Inquiry
+                - img [ref=e183]
+        - generic [ref=e185]:
+          - link "Stainless Steel Kitchen Scale" [ref=e186] [cursor=pointer]:
+            - /url: /products/stainless-steel-kitchen-scale
+            - img "Stainless Steel Kitchen Scale" [ref=e188]
+          - generic [ref=e189]:
+            - generic [ref=e190]:
+              - generic [ref=e191]: "SKU: KS-100"
+              - link "Stainless Steel Kitchen Scale" [ref=e192] [cursor=pointer]:
+                - /url: /products/stainless-steel-kitchen-scale
+                - heading "Stainless Steel Kitchen Scale" [level=3] [ref=e193]
+              - generic [ref=e194]:
+                - generic [ref=e195]:
+                  - generic [ref=e196]: $18
+                  - generic [ref=e197]: "- $28"
+                - generic [ref=e198]: "MOQ: 150"
+            - generic [ref=e199]:
+              - link "View Details" [ref=e200] [cursor=pointer]:
+                - /url: /products/stainless-steel-kitchen-scale
+                - text: View Details
+                - img [ref=e201]
+              - button "Add to Inquiry" [ref=e203] [cursor=pointer]:
+                - img [ref=e204]
+                - text: Add to Inquiry
+                - img [ref=e208]
+      - generic [ref=e211]:
+        - heading "Need a Custom Solution?" [level=2] [ref=e212]
+        - paragraph [ref=e213]: We can tailor our products to your specific requirements. Contact us today for OEM/ODM services.
+        - link "Learn About OEM" [ref=e214] [cursor=pointer]:
+          - /url: /oem
+  - contentinfo [ref=e215]:
+    - generic [ref=e216]:
+      - generic [ref=e217]:
+        - generic [ref=e218]:
+          - heading "CC Scale" [level=3] [ref=e219]
+          - paragraph [ref=e220]: Professional weighing solutions for global markets.
+          - link "Facebook" [ref=e259] [cursor=pointer]:
+            - /url: https://facebook.com/ccscale
+            - img [ref=e260]
+        - generic [ref=e221]:
+          - heading "Quick Links" [level=4] [ref=e222]
+          - list [ref=e223]:
+            - listitem [ref=e224]:
+              - link "Home" [ref=e225] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e226]:
+              - link "About Us" [ref=e227] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e228]:
+              - link "Products" [ref=e229] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e230]:
+              - link "Blog" [ref=e231] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e232]:
+              - link "Support" [ref=e233] [cursor=pointer]:
+                - /url: /support
+            - listitem [ref=e234]:
+              - link "Contact" [ref=e235] [cursor=pointer]:
+                - /url: /contact
+        - generic [ref=e236]:
+          - heading "Contact Info" [level=4] [ref=e237]
+          - list [ref=e238]:
+            - listitem [ref=e239]:
+              - img [ref=e240]
+              - generic [ref=e243]: No. 88, Industrial Park, Yongkang, Zhejiang, China
+            - listitem [ref=e262]:
+              - img [ref=e263]
+              - link "sales@ccscale.com" [ref=e266] [cursor=pointer]:
+                - /url: mailto:sales@ccscale.com
+        - generic [ref=e244]:
+          - heading "Follow Us" [level=4] [ref=e245]
+          - paragraph [ref=e246]: Subscribe to our newsletter for updates on new products and promotions.
+          - generic [ref=e247]:
+            - generic [ref=e248]: Your email
+            - textbox "Your email" [ref=e249]
+            - button "Subscribe" [ref=e250] [cursor=pointer]
+      - generic [ref=e251]:
+        - paragraph [ref=e252]: © 2024 CC Scale. All rights reserved.
+        - generic [ref=e253]:
+          - link "Privacy Policy" [ref=e254] [cursor=pointer]:
+            - /url: "#"
+          - link "Terms of Service" [ref=e255] [cursor=pointer]:
+            - /url: "#"
+          - link "ICP License" [ref=e256] [cursor=pointer]:
+            - /url: "#"
+  - alert [ref=e257]

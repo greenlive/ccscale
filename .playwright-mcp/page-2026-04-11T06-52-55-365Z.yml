@@ -1,0 +1,265 @@
+- generic [active] [ref=e1]:
+  - link "跳到主要内容" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "CC Scale" [ref=e6] [cursor=pointer]:
+        - /url: /zh
+        - generic [ref=e7]: CC Scale
+      - navigation [ref=e8]:
+        - link "首页" [ref=e9] [cursor=pointer]:
+          - /url: /zh
+        - link "公司简介" [ref=e10] [cursor=pointer]:
+          - /url: /zh/about
+        - link "产品中心" [ref=e11] [cursor=pointer]:
+          - /url: /zh/products
+        - link "保障中心" [ref=e12] [cursor=pointer]:
+          - /url: /zh/guarantee
+        - link "OEM定制" [ref=e13] [cursor=pointer]:
+          - /url: /zh/oem
+        - link "技术支持" [ref=e14] [cursor=pointer]:
+          - /url: /zh/support
+        - link "博客资讯" [ref=e15] [cursor=pointer]:
+          - /url: /zh/blog
+        - link "联系我们" [ref=e16] [cursor=pointer]:
+          - /url: /zh/contact
+        - button "Switch language" [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e22]: 中文
+          - img [ref=e23]
+        - button "Request Quote" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+          - generic [ref=e30]: Request Quote
+        - link "联系我们" [ref=e31] [cursor=pointer]:
+          - /url: /zh/contact
+  - main [ref=e32]:
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e37]:
+          - paragraph [ref=e38]: 全球买家信赖 — 真实工厂，真人服务
+          - generic [ref=e39]:
+            - heading "专业衡器解决方案" [level=1] [ref=e40]
+            - paragraph [ref=e41]: 面向全球市场的高品质衡器制造商
+            - generic [ref=e42]:
+              - link "浏览产品" [ref=e43] [cursor=pointer]:
+                - /url: /zh/products
+                - text: 浏览产品
+                - img [ref=e44]
+              - link "获取报价" [ref=e46] [cursor=pointer]:
+                - /url: /zh/contact
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - generic [ref=e51]:
+              - img [ref=e52]
+              - generic [ref=e56]: 15+年
+            - paragraph [ref=e57]: 工厂经验
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - img [ref=e60]
+              - generic [ref=e63]: 80+国
+            - paragraph [ref=e64]: 出口至
+          - generic [ref=e65]:
+            - generic [ref=e66]:
+              - img [ref=e67]
+              - generic [ref=e70]: ISO/CE/FDA
+            - paragraph [ref=e71]: 权威认证
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - img [ref=e74]
+              - generic [ref=e77]: 24小时
+            - paragraph [ref=e78]: 最长响应
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - heading "您零风险" [level=2] [ref=e82]
+          - paragraph [ref=e83]: 我们承担所有风险，让您无忧
+        - generic [ref=e84]:
+          - generic [ref=e86]:
+            - img [ref=e88]
+            - heading "免费样品" [level=3] [ref=e93]
+            - paragraph [ref=e94]: 样品费从首单中扣除
+          - generic [ref=e96]:
+            - img [ref=e98]
+            - heading "质量保障" [level=3] [ref=e100]
+            - paragraph [ref=e101]: 质量不符全额退款
+          - generic [ref=e103]:
+            - img [ref=e105]
+            - heading "交期保障" [level=3] [ref=e108]
+            - paragraph [ref=e109]: 每延误一天折扣1%
+          - generic [ref=e111]:
+            - img [ref=e113]
+            - heading "2年质保" [level=3] [ref=e117]
+            - paragraph [ref=e118]: 包含完整售后支持
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - generic [ref=e126]: Alibaba
+          - img [ref=e127]
+          - heading "Alibaba金品诚企" [level=3] [ref=e129]
+          - paragraph [ref=e130]: Verified & Trusted
+        - generic [ref=e131]:
+          - heading "通过Alibaba平台交易，更安全有保障" [level=2] [ref=e132]
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - img [ref=e135]
+              - generic [ref=e138]:
+                - heading "Trade Assurance保障" [level=4] [ref=e139]
+                - paragraph [ref=e140]: 付款安全、发货保障、质量保障
+            - generic [ref=e141]:
+              - img [ref=e142]
+              - generic [ref=e145]:
+                - heading "第三方验厂认证" [level=4] [ref=e146]
+                - paragraph [ref=e147]: 已通过Alibaba指定机构现场审核
+            - generic [ref=e148]:
+              - img [ref=e149]
+              - generic [ref=e152]:
+                - heading "争议在线处理" [level=4] [ref=e153]
+                - paragraph [ref=e154]: Alibaba平台官方介入，快速解决问题
+          - link "访问我们的Alibaba店铺" [ref=e155] [cursor=pointer]:
+            - /url: https://zzscale.en.alibaba.com/index.html?spm=a2700.shop_plgr.88.10.643d71213FpJji
+            - img [ref=e156]
+            - text: 访问我们的Alibaba店铺
+      - generic [ref=e161]:
+        - generic [ref=e162]:
+          - heading "我们的产品" [level=2] [ref=e163]
+          - link "查看全部" [ref=e164] [cursor=pointer]:
+            - /url: /zh/products
+            - text: 查看全部
+            - img [ref=e165]
+        - generic [ref=e167]:
+          - link "体重秤 体重秤 2 产品" [ref=e168] [cursor=pointer]:
+            - /url: /zh/products
+            - generic [ref=e169]:
+              - img "体重秤" [ref=e171]
+              - generic [ref=e172]:
+                - heading "体重秤" [level=3] [ref=e173]
+                - paragraph [ref=e174]: 2 产品
+          - link "吊秤 吊秤 1 产品" [ref=e175] [cursor=pointer]:
+            - /url: /zh/products
+            - generic [ref=e176]:
+              - img "吊秤" [ref=e178]
+              - generic [ref=e179]:
+                - heading "吊秤" [level=3] [ref=e180]
+                - paragraph [ref=e181]: 1 产品
+          - link "厨房秤 厨房秤 1 产品" [ref=e182] [cursor=pointer]:
+            - /url: /zh/products
+            - generic [ref=e183]:
+              - img "厨房秤" [ref=e185]
+              - generic [ref=e186]:
+                - heading "厨房秤" [level=3] [ref=e187]
+                - paragraph [ref=e188]: 1 产品
+          - link "婴儿秤 婴儿秤 1 产品" [ref=e189] [cursor=pointer]:
+            - /url: /zh/products
+            - generic [ref=e190]:
+              - img "婴儿秤" [ref=e192]
+              - generic [ref=e193]:
+                - heading "婴儿秤" [level=3] [ref=e194]
+                - paragraph [ref=e195]: 1 产品
+      - generic [ref=e197]:
+        - heading "为什么选择我们" [level=2] [ref=e198]
+        - generic [ref=e199]:
+          - generic [ref=e201]:
+            - img [ref=e203]
+            - generic [ref=e205]: 20,000㎡
+            - paragraph [ref=e206]: 现代化厂房
+          - generic [ref=e208]:
+            - img [ref=e210]
+            - generic [ref=e215]: 50+台
+            - paragraph [ref=e216]: 专业设备
+          - generic [ref=e218]:
+            - img [ref=e220]
+            - generic [ref=e223]: 3道工序
+            - paragraph [ref=e224]: 质量检测
+          - generic [ref=e226]:
+            - img [ref=e228]
+            - generic [ref=e233]: 50,000台
+            - paragraph [ref=e234]: 月产能
+      - generic [ref=e236]:
+        - generic [ref=e237]:
+          - heading "为什么选择CC Scale？" [level=2] [ref=e238]
+          - paragraph [ref=e239]: 看看我们和普通供应商的区别
+        - generic [ref=e242]:
+          - generic [ref=e243]:
+            - generic [ref=e244]: 为什么选择CC Scale？
+            - generic [ref=e246]:
+              - img [ref=e247]
+              - generic [ref=e251]: 普通供应商
+            - generic [ref=e253]:
+              - img [ref=e254]
+              - generic [ref=e257]: CC Scale
+          - generic [ref=e258]:
+            - generic [ref=e259]: 付款方式
+            - generic [ref=e260]: 100%预付
+            - generic [ref=e261]: 30%预付 + 70%见提单
+          - generic [ref=e262]:
+            - generic [ref=e263]: 质量保障
+            - generic [ref=e264]: 仅口头承诺
+            - generic [ref=e265]: ISO认证 + 第三方验货 + 留样封样
+          - generic [ref=e266]:
+            - generic [ref=e267]: 交期承诺
+            - generic [ref=e268]: "\"我们尽量\""
+            - generic [ref=e269]: 产能日历 + 舱位预订 + 逾期赔付
+      - heading "客户心声" [level=2] [ref=e274]
+      - generic [ref=e357]:
+        - heading "全球合作伙伴" [level=2] [ref=e358]
+        - generic [ref=e359]:
+          - generic [ref=e361]: Amazon
+          - generic [ref=e363]: Walmart
+          - generic [ref=e365]: Carrefour
+          - generic [ref=e367]: Tesco
+          - generic [ref=e369]: Aldi
+          - generic [ref=e371]: Lidl
+      - generic [ref=e373]:
+        - heading "准备开始您的项目了吗？" [level=2] [ref=e374]
+        - paragraph [ref=e375]: 立即联系我们，获取免费咨询和定制报价，满足您的衡器设备需求。
+        - link "获取免费报价" [ref=e376] [cursor=pointer]:
+          - /url: /zh/contact
+  - contentinfo [ref=e377]:
+    - generic [ref=e378]:
+      - generic [ref=e379]:
+        - generic [ref=e380]:
+          - heading "CC Scale" [level=3] [ref=e381]
+          - paragraph [ref=e382]: 专业衡器解决方案，服务全球市场
+        - generic [ref=e383]:
+          - heading "快速链接" [level=4] [ref=e384]
+          - list [ref=e385]:
+            - listitem [ref=e386]:
+              - link "首页" [ref=e387] [cursor=pointer]:
+                - /url: /zh
+            - listitem [ref=e388]:
+              - link "公司简介" [ref=e389] [cursor=pointer]:
+                - /url: /zh/about
+            - listitem [ref=e390]:
+              - link "产品中心" [ref=e391] [cursor=pointer]:
+                - /url: /zh/products
+            - listitem [ref=e392]:
+              - link "博客资讯" [ref=e393] [cursor=pointer]:
+                - /url: /zh/blog
+            - listitem [ref=e394]:
+              - link "技术支持" [ref=e395] [cursor=pointer]:
+                - /url: /zh/support
+            - listitem [ref=e396]:
+              - link "联系我们" [ref=e397] [cursor=pointer]:
+                - /url: /zh/contact
+        - generic [ref=e398]:
+          - heading "联系方式" [level=4] [ref=e399]
+          - list [ref=e400]:
+            - listitem [ref=e401]:
+              - img [ref=e402]
+              - generic [ref=e405]: 中国浙江省永康市工业区88号
+        - generic [ref=e406]:
+          - heading "关注我们" [level=4] [ref=e407]
+          - paragraph [ref=e408]: 订阅我们的新闻通讯，获取最新产品更新和促销信息
+          - generic [ref=e409]:
+            - generic [ref=e410]: Your email
+            - textbox "Your email" [ref=e411]:
+              - /placeholder: 您的邮箱
+            - button "订阅" [ref=e412] [cursor=pointer]
+      - generic [ref=e413]:
+        - paragraph [ref=e414]: © 2024 CC Scale. 保留所有权利。
+        - generic [ref=e415]:
+          - link "隐私政策" [ref=e416] [cursor=pointer]:
+            - /url: "#"
+          - link "服务条款" [ref=e417] [cursor=pointer]:
+            - /url: "#"
+          - link "ICP备案号" [ref=e418] [cursor=pointer]:
+            - /url: "#"
+  - alert [ref=e419]

@@ -1,0 +1,106 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e192]
+  - generic [ref=e193]:
+    - generic [ref=e195]:
+      - generic [ref=e196]:
+        - img [ref=e197]
+        - generic [ref=e201]: CC Scale
+        - generic [ref=e202]: Admin
+      - navigation [ref=e203]:
+        - link "仪表板" [ref=e204] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e205]
+          - text: 仪表板
+        - link "产品管理" [ref=e210] [cursor=pointer]:
+          - /url: /products
+          - img [ref=e211]
+          - text: 产品管理
+        - link "分类管理" [ref=e215] [cursor=pointer]:
+          - /url: /categories
+          - img [ref=e216]
+          - text: 分类管理
+        - link "询盘管理 5" [ref=e218] [cursor=pointer]:
+          - /url: /inquiries
+          - img [ref=e219]
+          - text: 询盘管理
+          - generic [ref=e221]: "5"
+        - link "客户心声" [ref=e222] [cursor=pointer]:
+          - /url: /testimonials
+          - img [ref=e223]
+          - text: 客户心声
+        - link "合作伙伴" [ref=e225] [cursor=pointer]:
+          - /url: /clients
+          - img [ref=e226]
+          - text: 合作伙伴
+        - link "下载管理" [ref=e230] [cursor=pointer]:
+          - /url: /downloads
+          - img [ref=e231]
+          - text: 下载管理
+        - link "数据分析" [ref=e234] [cursor=pointer]:
+          - /url: /analytics
+          - img [ref=e235]
+          - text: 数据分析
+        - link "用户管理" [ref=e237] [cursor=pointer]:
+          - /url: /users
+          - img [ref=e238]
+          - text: 用户管理
+        - link "系统设置" [ref=e243] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e244]
+          - text: 系统设置
+      - generic [ref=e248]:
+        - generic [ref=e250]: AD
+        - generic [ref=e251]:
+          - paragraph [ref=e252]: Admin User
+          - paragraph [ref=e253]: admin@ccscale.com
+        - button [ref=e254] [cursor=pointer]:
+          - img [ref=e255]
+    - generic [ref=e258]:
+      - generic [ref=e260]:
+        - generic [ref=e261]:
+          - text: Admin User
+          - generic [ref=e262]: (ADMIN)
+        - button "退出" [ref=e263] [cursor=pointer]:
+          - img [ref=e264]
+          - text: 退出
+      - main [ref=e267]:
+        - generic [ref=e268]:
+          - generic [ref=e269]:
+            - generic [ref=e270]:
+              - heading "系统设置" [level=1] [ref=e271]
+              - paragraph [ref=e272]: 管理网站配置
+            - button "保存设置" [ref=e273] [cursor=pointer]:
+              - img [ref=e274]
+              - text: 保存设置
+          - navigation [ref=e279]:
+            - button "Basic Settings" [ref=e280] [cursor=pointer]:
+              - img [ref=e281]
+              - text: Basic Settings
+            - button "Company Media" [ref=e284] [cursor=pointer]:
+              - img [ref=e285]
+              - text: Company Media
+            - button "Contact Info" [ref=e289] [cursor=pointer]:
+              - img [ref=e290]
+              - text: Contact Info
+            - button "Social Media" [ref=e292] [cursor=pointer]:
+              - img [ref=e293]
+              - text: Social Media
+          - generic [ref=e295]:
+            - heading "Basic Settings / 基本设置" [level=3] [ref=e297]
+            - generic [ref=e298]:
+              - generic [ref=e299]:
+                - heading "English" [level=3] [ref=e300]
+                - generic [ref=e301]:
+                  - generic [ref=e302]: Site Name
+                  - textbox "CC Scale" [ref=e303]
+                - generic [ref=e304]:
+                  - generic [ref=e305]: Site Description
+                  - textbox "Professional weighing scales manufacturer..." [ref=e306]
+              - generic [ref=e307]:
+                - heading "中文" [level=3] [ref=e308]
+                - generic [ref=e309]:
+                  - generic [ref=e310]: 网站名称
+                  - textbox "CC衡器" [ref=e311]: 浙中衡器
+                - generic [ref=e312]:
+                  - generic [ref=e313]: 网站描述
+                  - textbox "专业衡器制造商..." [ref=e314]

@@ -1,0 +1,322 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Use PostgreSQL in production, SQLite for local development
+  // To switch: change provider and DATABASE_URL in .env
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== 用户与权限 ====================
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(EDITOR)
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedInquiries Inquiry[] @relation("AssignedInquiries")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+// ==================== 产品相关 ====================
+model ProductCategory {
+  id            Int       @id @default(autoincrement())
+  nameEn        String
+  nameZh        String
+  slug          String    @unique
+  imageUrl      String?
+  descriptionEn String?
+  descriptionZh String?
+  order         Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  products      Product[]
+}
+
+model Product {
+  id             Int              @id @default(autoincrement())
+  categoryId     Int
+  sku            String           @unique
+  nameEn         String
+  nameZh         String
+  slug           String           @unique
+  descriptionEn  String?
+  descriptionZh  String?
+  shortDescEn    String?
+  shortDescZh    String?
+  mainImage      String?
+  videoUrl       String?
+  priceMin       Decimal?
+  priceMax       Decimal?
+  moq            Int?
+  leadTime       String?
+  order          Int              @default(0)
+  isFeatured     Boolean          @default(false)
+  isActive       Boolean          @default(true)
+  seoTitleEn     String?
+  seoTitleZh     String?
+  seoDescEn      String?
+  seoDescZh      String?
+  seoKeywordsEn  String?
+  seoKeywordsZh  String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  category       ProductCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  images         ProductImage[]
+  specs          ProductSpec[]
+  inquiryItems   InquiryItem[]
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  imageUrl  String
+  altEn     String?
+  altZh     String?
+  order     Int      @default(0)
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductSpec {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  keyEn     String
+  keyZh     String
+  valueEn   String
+  valueZh   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ==================== OEM/ODM 定制流程 ====================
+model OemStep {
+  id        Int      @id @default(autoincrement())
+  titleEn   String
+  titleZh   String
+  descEn    String?
+  descZh    String?
+  icon      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ==================== 询盘系统 ====================
+model Inquiry {
+  id            Int           @id @default(autoincrement())
+  fullName      String
+  email         String
+  phone         String?
+  whatsapp      String?
+  company       String?
+  country       String?
+  city          String?
+  message       String
+  // 来源追踪
+  source        String?
+  trafficSource TrafficSource?
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  utmContent    String?
+  utmTerm       String?
+  referrer      String?
+  ipAddress     String?
+  userAgent     String?
+  status        InquiryStatus @default(NEW)
+  assignedToId  Int?
+  notes         String?
+  // 回复追踪
+  repliedAt     DateTime?
+  repliedBy     String?
+  replyMethod   ReplyMethod?
+  closedReason  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  items         InquiryItem[]
+  assignedTo    User?         @relation("AssignedInquiries", fields: [assignedToId], references: [id])
+  activities    ActivityLog[]
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  IN_PROGRESS
+  REPLIED
+  CLOSED
+  SPAM
+}
+
+enum ReplyMethod {
+  EMAIL
+  WHATSAPP
+  PHONE
+  ALIBABA
+  LINKEDIN
+  OTHER
+}
+
+enum TrafficSource {
+  DIRECT
+  ORGANIC_SEARCH
+  PAID_SEARCH
+  SOCIAL_ORGANIC
+  SOCIAL_PAID
+  REFERRAL
+  EMAIL
+  AI_SEARCH
+  DISPLAY
+  VIDEO
+  OTHER
+}
+
+// 询盘操作日志
+model ActivityLog {
+  id          Int      @id @default(autoincrement())
+  inquiryId   Int
+  action      String
+  detail      String?
+  performedBy String
+  createdAt   DateTime @default(now())
+
+  inquiry     Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+}
+
+model InquiryItem {
+  id           Int       @id @default(autoincrement())
+  inquiryId    Int
+  productId    Int?
+  productNameEn String?
+  productNameZh String?
+  quantity     Int?
+  unitPrice    Decimal?
+  notes        String?
+  createdAt    DateTime  @default(now())
+
+  inquiry      Inquiry   @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  product      Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+}
+
+// ==================== 内容管理 ====================
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  nameEn    String
+  nameZh    String
+  companyEn String?
+  companyZh String?
+  countryEn String?
+  countryZh String?
+  avatarUrl String?
+  contentEn String
+  contentZh String
+  rating    Int      @default(5)
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  nameEn    String
+  nameZh    String
+  logoUrl   String
+  website   String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Download {
+  id            Int      @id @default(autoincrement())
+  titleEn       String
+  titleZh       String
+  descriptionEn String?
+  descriptionZh String?
+  fileUrl       String
+  fileType      String
+  fileSize      Int?
+  category      String?
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  downloadCount Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model PageContent {
+  id        Int      @id @default(autoincrement())
+  pageKey   String   @unique
+  titleEn   String
+  titleZh   String
+  contentEn String?
+  contentZh String?
+  metaEn    String?
+  metaZh    String?
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== 用户行为统计 ====================
+model UserSession {
+  id          Int      @id @default(autoincrement())
+  sessionId   String   @unique
+  ipAddress   String?
+  country     String?
+  region      String?
+  city        String?
+  userAgent   String?
+  deviceType  String?
+  browser     String?
+  os          String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmContent  String?
+  utmTerm     String?
+  trafficSource TrafficSource @default(DIRECT)
+  referrer    String?
+  landingPage String?
+  firstVisit  DateTime @default(now())
+  lastVisit   DateTime @default(now())
+  pageViews   Int      @default(0)
+
+  events      SessionEvent[]
+}
+
+model SessionEvent {
+  id        Int      @id @default(autoincrement())
+  sessionId String
+  eventType String
+  pageUrl   String?
+  productId Int?
+  data      String?
+  createdAt DateTime @default(now())
+
+  session   UserSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+}
+
+// ==================== 网站设置 ====================
+model SiteSetting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String?
+}

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "WebFetch(domain:zzscale.com)",
+      "WebFetch(domain:minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com)",
+      "Bash(npm install:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000 :3001 :8000\")",
+      "mcp__plugin_playwright_playwright__browser_snapshot"
+    ]
+  }
+}
