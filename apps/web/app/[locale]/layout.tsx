@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToMain from '@/components/SkipToMain';
 import { OrganizationSchema, WebSiteSchema } from '@/components/SchemaOrg';
+import { QueryProvider } from '@/lib/providers/QueryProvider';
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -106,16 +107,18 @@ export default async function LocaleLayout({
         <meta name="theme-color" content="#0A1628" />
         <meta name="msapplication-TileColor" content="#0A1628" />
       </head>
-      <body className="min-h-screen bg-white antialiased" suppressHydrationWarning>
+      <body className="min-h-screen bg-parchment antialiased" suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <OrganizationSchema />
-          <WebSiteSchema />
-          <SkipToMain locale={locale} />
-          <Header locale={locale} />
-          <main id="main-content" className="min-h-screen" role="main">
-            {children}
-          </main>
-          <Footer locale={locale} />
+          <QueryProvider>
+            <OrganizationSchema />
+            <WebSiteSchema />
+            <SkipToMain locale={locale} />
+            <Header locale={locale} />
+            <main id="main-content" className="min-h-screen" role="main">
+              {children}
+            </main>
+            <Footer locale={locale} />
+          </QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -9,17 +9,32 @@ import { Input } from '@cc-scale/ui';
 import { Textarea } from '@cc-scale/ui';
 import { useInquiryCart } from '@/stores/inquiry-cart';
 import { getStoredTrackingData } from '@/lib/utils/tracking';
+import { useSubmitInquiry } from '@/lib/api/queries';
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
+interface FormErrors {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  message?: string;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Phone validation - accepts various formats
+const PHONE_REGEX = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
 
 export default function InquiryForm() {
   const t = useTranslations('inquiry');
-  const locale = useLocale();
+  const locale = useLocale() as 'en' | 'zh';
   const cart = useInquiryCart((state) => state.cart);
   const clearCart = useInquiryCart((state) => state.clearCart);
   const [formStatus, setFormStatus] = useState<FormStatus>('idle');
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -31,57 +46,85 @@ export default function InquiryForm() {
     message: '',
   });
 
+  const submitInquiry = useSubmitInquiry();
+
+  // Validation function with locale context
+  const validateForm = (data: typeof formData): FormErrors => {
+    const errors: FormErrors = {};
+
+    if (!data.fullName.trim()) {
+      errors.fullName = locale === 'en' ? 'Full name is required' : '请输入您的姓名';
+    } else if (data.fullName.trim().length < 2) {
+      errors.fullName = locale === 'en' ? 'Name is too short' : '姓名太短';
+    }
+
+    if (!data.email.trim()) {
+      errors.email = locale === 'en' ? 'Email is required' : '请输入邮箱';
+    } else if (!EMAIL_REGEX.test(data.email)) {
+      errors.email = locale === 'en' ? 'Invalid email format' : '邮箱格式不正确';
+    }
+
+    if (data.phone && !PHONE_REGEX.test(data.phone)) {
+      errors.phone = locale === 'en' ? 'Invalid phone format' : '电话格式不正确';
+    }
+
+    if (!data.message.trim()) {
+      errors.message = locale === 'en' ? 'Message is required' : '请输入留言';
+    } else if (data.message.trim().length < 10) {
+      errors.message = locale === 'en' ? 'Message is too short' : '留言太短';
+    }
+
+    return errors;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (formErrors[name as keyof FormErrors]) {
+      setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate form
+    const errors = validateForm(formData);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
     setFormStatus('submitting');
+    setFormErrors({});
 
     try {
-      // Try to submit to API first
-      let submitted = false;
+      // Prepare inquiry items from cart
+      const items = cart.items.map((item) => ({
+        productId: item.productId,
+        productNameEn: item.productName.en,
+        productNameZh: item.productName.zh,
+        quantity: item.quantity,
+        unitPrice: item.priceMin,
+      }));
 
-      try {
-        // Prepare inquiry items from cart
-        const items = cart.items.map((item) => ({
-          productId: item.productId,
-          productNameEn: item.productName.en,
-          productNameZh: item.productName.zh,
-          quantity: item.quantity,
-          unitPrice: item.priceMin,
-        }));
+      // Get tracking data
+      const trackingData = getStoredTrackingData();
 
-        // Get tracking data
-        const trackingData = getStoredTrackingData();
+      // Prepare the inquiry data
+      const inquiryData = {
+        ...formData,
+        name: formData.fullName,
+        message: formData.message || cart.message || '',
+        source: 'Website',
+        items: items.length > 0 ? items : undefined,
+        ...trackingData,
+      };
 
-        // Prepare the inquiry data
-        const inquiryData = {
-          ...formData,
-          message: formData.message || cart.message || '',
-          source: 'Website',
-          items: items.length > 0 ? items : undefined,
-          ...trackingData,
-        };
+      // Submit using React Query mutation
+      await submitInquiry.mutateAsync(inquiryData);
 
-        const response = await fetch(`${API_URL}/api/inquiries`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(inquiryData),
-        });
-
-        if (response.ok) {
-          submitted = true;
-        }
-      } catch (apiError) {
-        console.log('API not available, falling back to mock submission');
-      }
-
-      // Always show success for demo purposes (even if API is down)
       setFormStatus('success');
       setFormData({
         fullName: '',
@@ -103,17 +146,24 @@ export default function InquiryForm() {
     }
   };
 
+  const errorMessages = {
+    fullName: locale === 'en' ? 'Full name is required' : '请输入您的姓名',
+    email: locale === 'en' ? 'Valid email is required' : '请输入有效的邮箱',
+    phone: locale === 'en' ? 'Invalid phone format' : '电话格式不正确',
+    message: locale === 'en' ? 'Message is required (min 10 characters)' : '请输入留言（至少10个字符）',
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+    <div className="bg-ivory rounded-xl shadow-whisper border border-border-cream p-6 md:p-8">
       {formStatus === 'success' ? (
         <div className="text-center py-12">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="h-10 w-10 text-green-600" />
+          <div className="w-20 h-20 bg-terracotta/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="h-10 w-10 text-terracotta" />
           </div>
-          <h3 className="text-2xl font-bold text-[#0A1628] mb-2">
+          <h3 className="text-2xl font-serif font-medium text-foreground mb-2">
             {t('submitSuccess')}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-stone-gray">
             {locale === 'en'
               ? 'We will get back to you within 24 hours.'
               : '我们将在24小时内回复您。'}
@@ -121,13 +171,13 @@ export default function InquiryForm() {
         </div>
       ) : formStatus === 'error' ? (
         <div className="text-center py-12">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <XCircle className="h-10 w-10 text-red-600" />
+          <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <XCircle className="h-10 w-10 text-destructive" />
           </div>
-          <h3 className="text-2xl font-bold text-[#0A1628] mb-2">
+          <h3 className="text-2xl font-serif font-medium text-foreground mb-2">
             {t('submitError')}
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-stone-gray mb-6">
             {locale === 'en'
               ? 'Please try again or contact us directly.'
               : '请重试或直接联系我们。'}
@@ -140,7 +190,7 @@ export default function InquiryForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="fullName" className="block text-sm font-medium text-charcoal-warm mb-2">
                 {t('fullName')} *
               </label>
               <Input
@@ -148,12 +198,15 @@ export default function InquiryForm() {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleInputChange}
-                required
                 placeholder={locale === 'en' ? 'John Smith' : '张三'}
+                className={formErrors.fullName ? 'border-destructive focus-visible:ring-destructive' : ''}
               />
+              {formErrors.fullName && (
+                <p className="text-xs text-destructive mt-1">{formErrors.fullName}</p>
+              )}
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-charcoal-warm mb-2">
                 {t('email')} *
               </label>
               <Input
@@ -162,27 +215,35 @@ export default function InquiryForm() {
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                required
                 placeholder="you@example.com"
+                className={formErrors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
               />
+              {formErrors.email && (
+                <p className="text-xs text-destructive mt-1">{formErrors.email}</p>
+              )}
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="phone" className="block text-sm font-medium text-charcoal-warm mb-2">
                 {t('phone')}
               </label>
               <Input
                 id="phone"
                 name="phone"
+                type="tel"
                 value={formData.phone}
                 onChange={handleInputChange}
                 placeholder="+1 234 567 8900"
+                className={formErrors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}
               />
+              {formErrors.phone && (
+                <p className="text-xs text-destructive mt-1">{formErrors.phone}</p>
+              )}
             </div>
             <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="company" className="block text-sm font-medium text-charcoal-warm mb-2">
                 {t('company')}
               </label>
               <Input
@@ -197,7 +258,7 @@ export default function InquiryForm() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="country" className="block text-sm font-medium text-charcoal-warm mb-2">
                 {t('country')}
               </label>
               <Input
@@ -209,7 +270,7 @@ export default function InquiryForm() {
               />
             </div>
             <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="city" className="block text-sm font-medium text-charcoal-warm mb-2">
                 {t('city')}
               </label>
               <Input
@@ -223,7 +284,7 @@ export default function InquiryForm() {
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="message" className="block text-sm font-medium text-charcoal-warm mb-2">
               {t('message')} *
             </label>
             <Textarea
@@ -231,22 +292,26 @@ export default function InquiryForm() {
               name="message"
               value={formData.message}
               onChange={handleInputChange}
-              required
               rows={6}
               placeholder={t('tellUsNeeds')}
+              className={formErrors.message ? 'border-destructive focus-visible:ring-destructive' : ''}
             />
+            {formErrors.message && (
+              <p className="text-xs text-destructive mt-1">{formErrors.message}</p>
+            )}
           </div>
 
           <Button
             type="submit"
             size="lg"
-            className="w-full md:w-auto bg-accent hover:bg-accent/90"
+            variant="accent"
+            className="w-full md:w-auto"
             disabled={formStatus === 'submitting'}
           >
             {formStatus === 'submitting' ? (
               <span className="flex items-center">
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-ivory"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
