@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Video, FileUp } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Video, FileUp, Compress } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
+import {
+  compressImage,
+  getCompressionOptionsForUploadType,
+  formatFileSize,
+  type CompressionResult,
+} from '@cc-scale/ui';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -13,9 +19,11 @@ function cn(...inputs: ClassValue[]) {
 interface UploadedFile {
   id: string;
   file: File;
+  originalFile?: File;
   preview: string;
   type: 'image' | 'video';
   isMain?: boolean;
+  compression?: CompressionResult;
 }
 
 interface FileUploadProps {
@@ -33,7 +41,7 @@ interface FileUploadProps {
 
 const DEFAULT_HINTS: Record<string, { hint: string; maxSizeMB: number }> = {
   'product-image': {
-    hint: 'JPG/PNG, 800×800px, 白底, ≤5MB',
+    hint: 'JPG/PNG, 800×800px, 白底, ≤5MB (自动压缩)',
     maxSizeMB: 5,
   },
   'product-video': {
@@ -41,7 +49,7 @@ const DEFAULT_HINTS: Record<string, { hint: string; maxSizeMB: number }> = {
     maxSizeMB: 200,
   },
   'testimonial': {
-    hint: 'JPG/PNG, 200×200px (头像), 或 800×600px (其他), ≤3MB',
+    hint: 'JPG/PNG, 200×200px (头像), 或 800×600px (其他), ≤3MB (自动压缩)',
     maxSizeMB: 3,
   },
   'client-logo': {
@@ -49,11 +57,11 @@ const DEFAULT_HINTS: Record<string, { hint: string; maxSizeMB: number }> = {
     maxSizeMB: 2,
   },
   'factory-image': {
-    hint: 'JPG/PNG, 1920×1080px (16:9), 展示公司规模, ≤10MB',
+    hint: 'JPG/PNG, 1920×1080px (16:9), 展示公司规模, ≤10MB (自动压缩)',
     maxSizeMB: 10,
   },
   'general': {
-    hint: 'JPG/PNG/WebP, ≤10MB',
+    hint: 'JPG/PNG/WebP, ≤10MB (自动压缩优化)',
     maxSizeMB: 10,
   },
 };
@@ -72,7 +80,81 @@ export function FileUpload({
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
+  const [isCompressing, setIsCompressing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const compressAndProcessFile = useCallback(async (file: File): Promise<UploadedFile> => {
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+
+    // Compress images
+    let processedFile = file;
+    let compression: CompressionResult | undefined;
+
+    if (isImage) {
+      const options = getCompressionOptionsForUploadType(uploadType);
+      try {
+        compression = await compressImage(file, options);
+        processedFile = compression.compressedFile;
+      } catch (error) {
+        console.warn('Compression failed, using original file:', error);
+      }
+    }
+
+    const preview = URL.createObjectURL(processedFile);
+
+    return {
+      id: Math.random().toString(36).substr(2, 9),
+      file: processedFile,
+      originalFile: isImage ? file : undefined,
+      preview,
+      type: isImage ? 'image' : 'video',
+      isMain: false,
+      compression,
+    };
+  }, [uploadType]);
+
+  const validateAndProcessFiles = useCallback(async (newFiles: File[]): Promise<{ files: UploadedFile[]; errors: string[] }> => {
+    const processed: UploadedFile[] = [];
+    const errors: string[] = [];
+    const maxSizeBytes = (DEFAULT_HINTS[uploadType]?.maxSizeMB || 10) * 1024 * 1024;
+
+    setIsCompressing(true);
+
+    for (const file of newFiles) {
+      if (files.length + processed.length >= maxFiles) break;
+
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+
+      if (type === 'image' && !isImage) {
+        errors.push(`${file.name}: 不是图片文件`);
+        continue;
+      }
+      if (type === 'video' && !isVideo) {
+        errors.push(`${file.name}: 不是视频文件`);
+        continue;
+      }
+
+      // Check original file size first
+      if (file.size > maxSizeBytes) {
+        const maxMB = DEFAULT_HINTS[uploadType]?.maxSizeMB || 10;
+        errors.push(`${file.name}: 超过 ${maxMB}MB 限制`);
+        continue;
+      }
+
+      try {
+        const uploadedFile = await compressAndProcessFile(file);
+        uploadedFile.isMain = files.length === 0 && processed.length === 0;
+        processed.push(uploadedFile);
+      } catch (error) {
+        errors.push(`${file.name}: 处理文件失败`);
+      }
+    }
+
+    setIsCompressing(false);
+    return { files: processed, errors };
+  }, [files.length, maxFiles, type, uploadType, compressAndProcessFile]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -84,52 +166,12 @@ export function FileUpload({
     setIsDragging(false);
   }, []);
 
-  const validateAndProcessFiles = useCallback((newFiles: File[]): { files: UploadedFile[]; errors: string[] } => {
-    const processed: UploadedFile[] = [];
-    const errors: string[] = [];
-    const maxSizeBytes = (DEFAULT_HINTS[uploadType]?.maxSizeMB || 10) * 1024 * 1024;
-
-    for (const file of newFiles) {
-      if (files.length + processed.length >= maxFiles) break;
-
-      const isImage = file.type.startsWith('image/');
-      const isVideo = file.type.startsWith('video/');
-
-      if (type === 'image' && !isImage) {
-        errors.push(`${file.name}: Not an image file`);
-        continue;
-      }
-      if (type === 'video' && !isVideo) {
-        errors.push(`${file.name}: Not a video file`);
-        continue;
-      }
-
-      // Check file size
-      if (file.size > maxSizeBytes) {
-        const maxMB = DEFAULT_HINTS[uploadType]?.maxSizeMB || 10;
-        errors.push(`${file.name}: Exceeds ${maxMB}MB limit`);
-        continue;
-      }
-
-      const preview = URL.createObjectURL(file);
-      processed.push({
-        id: Math.random().toString(36).substr(2, 9),
-        file,
-        preview,
-        type: isImage ? 'image' : 'video',
-        isMain: files.length === 0 && processed.length === 0,
-      });
-    }
-
-    return { files: processed, errors };
-  }, [files.length, maxFiles, type, uploadType]);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
 
     const droppedFiles = Array.from(e.dataTransfer.files);
-    const { files: processed, errors } = validateAndProcessFiles(droppedFiles);
+    const { files: processed, errors } = await validateAndProcessFiles(droppedFiles);
     if (processed.length > 0) {
       onChange([...files, ...processed]);
     }
@@ -139,15 +181,19 @@ export function FileUpload({
     }
   }, [files, onChange, validateAndProcessFiles]);
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
-    const { files: processed, errors } = validateAndProcessFiles(selectedFiles);
+    const { files: processed, errors } = await validateAndProcessFiles(selectedFiles);
     if (processed.length > 0) {
       onChange([...files, ...processed]);
     }
     if (errors.length > 0) {
       setUploadErrors(errors);
       setTimeout(() => setUploadErrors([]), 5000);
+    }
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   }, [files, onChange, validateAndProcessFiles]);
 
@@ -176,7 +222,7 @@ export function FileUpload({
   return (
     <div className="space-y-4">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-charcoal-warm">
           {label}
         </label>
       )}
@@ -188,10 +234,11 @@ export function FileUpload({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            'border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer',
+            'border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer',
             isDragging
-              ? 'border-accent bg-accent/5'
-              : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+              ? 'border-terracotta bg-terracotta/5'
+              : 'border-border-warm hover:border-olive-gray hover:bg-warm-sand/30',
+            isCompressing && 'pointer-events-none opacity-60'
           )}
         >
           <input
@@ -202,31 +249,33 @@ export function FileUpload({
             onChange={handleFileInput}
             className="hidden"
           />
-          <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            {type === 'image' ? (
-              <ImageIcon className="h-6 w-6 text-gray-500" />
+          <div className="mx-auto w-14 h-14 bg-warm-sand rounded-full flex items-center justify-center mb-4">
+            {isCompressing ? (
+              <Compress className="h-7 w-7 text-terracotta animate-pulse" />
+            ) : type === 'image' ? (
+              <ImageIcon className="h-7 w-7 text-olive-gray" />
             ) : type === 'video' ? (
-              <Video className="h-6 w-6 text-gray-500" />
+              <Video className="h-7 w-7 text-olive-gray" />
             ) : (
-              <FileUp className="h-6 w-6 text-gray-500" />
+              <FileUp className="h-7 w-7 text-olive-gray" />
             )}
           </div>
-          <p className="text-gray-700 font-medium">
-            {isDragging ? 'Drop files here' : 'Drag & drop files here'}
+          <p className="text-charcoal-warm font-medium">
+            {isDragging ? '松开以上传' : isCompressing ? '正在优化图片...' : '拖拽文件到此处上传'}
           </p>
-          <p className="text-sm text-gray-500 mt-1">
-            or click to browse
+          <p className="text-sm text-stone-gray mt-1">
+            或点击选择文件
           </p>
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-olive-gray mt-2">
             {hint || DEFAULT_HINTS[uploadType]?.hint || DEFAULT_HINTS.general.hint}
           </p>
         </div>
       )}
 
       {uploadErrors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-sm font-medium text-red-800 mb-1">Upload Error:</p>
-          <ul className="text-xs text-red-600 space-y-1">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3">
+          <p className="text-sm font-medium text-destructive mb-1">上传错误:</p>
+          <ul className="text-xs text-destructive/80 space-y-1">
             {uploadErrors.map((error, i) => (
               <li key={i}>{error}</li>
             ))}
@@ -239,8 +288,8 @@ export function FileUpload({
           {files.map((file) => (
             <div key={file.id} className="relative group">
               <div className={cn(
-                'aspect-square rounded-lg overflow-hidden border-2',
-                file.isMain ? 'border-accent' : 'border-gray-200'
+                'aspect-square rounded-xl overflow-hidden border-2 transition-all',
+                file.isMain ? 'border-terracotta shadow-ring-terracotta' : 'border-border-warm'
               )}>
                 {file.type === 'image' ? (
                   <img
@@ -258,7 +307,7 @@ export function FileUpload({
               <button
                 type="button"
                 onClick={() => removeFile(file.id)}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90 shadow-md"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -267,17 +316,32 @@ export function FileUpload({
                   type="button"
                   onClick={() => setMainImage(file.id)}
                   className={cn(
-                    'absolute bottom-2 left-2 right-2 text-xs py-1 rounded transition-colors',
+                    'absolute bottom-2 left-2 right-2 text-xs py-1.5 rounded-lg transition-colors shadow-md',
                     file.isMain
-                      ? 'bg-accent text-white'
-                      : 'bg-white/90 text-gray-700 hover:bg-gray-100'
+                      ? 'bg-terracotta text-white'
+                      : 'bg-ivory/95 text-charcoal-warm hover:bg-warm-sand'
                   )}
                 >
-                  {file.isMain ? 'Main Image' : 'Set as Main'}
+                  {file.isMain ? '主图' : '设为主图'}
                 </button>
               )}
-              <p className="text-xs text-gray-500 mt-1 truncate">
+              {/* Compression info */}
+              {file.compression && file.compression.compressionRatio > 0.05 && (
+                <div className="absolute top-2 left-2 bg-dark-surface/90 text-ivory text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Compress className="h-3 w-3" />
+                  <span>-{Math.round(file.compression.compressionRatio * 100)}%</span>
+                </div>
+              )}
+              <p className="text-xs text-stone-gray mt-2 truncate" title={file.file.name}>
                 {file.file.name}
+              </p>
+              <p className="text-xs text-olive-gray">
+                {formatFileSize(file.file.size)}
+                {file.originalFile && file.file.size < file.originalFile.size && (
+                  <span className="text-terracotta ml-1">
+                    (原: {formatFileSize(file.originalFile.size)})
+                  </span>
+                )}
               </p>
             </div>
           ))}
