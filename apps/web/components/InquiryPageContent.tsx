@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useTranslations, useLocale } from 'next-intl'
 import { useInquiryCart, useCartIsEmpty, useCartItemCount } from '@/stores/inquiry-cart'
@@ -24,40 +24,42 @@ export default function InquiryPageContent() {
 
   return (
     <div>
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-12">
+      {/* Hero - Warm parchment theme */}
+      <section className="bg-gradient-to-br from-dark-surface to-dark-warm text-ivory py-12">
         <div className="container mx-auto px-4">
           <Link
             href="/products"
-            className="inline-flex items-center text-blue-200 hover:text-white mb-4"
+            className="inline-flex items-center text-warm-silver hover:text-ivory mb-4 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {isZh ? '返回产品列表' : 'Back to Products'}
           </Link>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-4">
             {isZh ? '您的询价单' : 'Your Inquiry'}
           </h1>
           {!isEmpty && (
-            <p className="text-blue-200">
+            <p className="text-warm-silver">
               {totalItems} {isZh ? '件产品' : 'items'} in your cart
             </p>
           )}
         </div>
       </section>
 
-      <section className="py-12">
+      {/* Main content - Warm parchment theme */}
+      <section className="py-12 bg-parchment">
         <div className="container mx-auto px-4">
           {isEmpty ? (
             <div className="text-center py-20">
-              <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-6" />
-              <h2 className="text-2xl font-bold text-[#0A1628] mb-4">
+              <ShoppingCart className="h-16 w-16 text-warm-silver mx-auto mb-6" />
+              <h2 className="text-2xl font-serif font-medium text-foreground mb-4">
                 {isZh ? '询价车是空的' : 'Your inquiry cart is empty'}
               </h2>
-              <p className="text-gray-500 mb-8">
+              <p className="text-stone-gray mb-8">
                 {isZh
                   ? '浏览我们的产品并添加到询价车'
                   : 'Browse our products and add them to your inquiry cart'}
               </p>
-              <Button asChild className="bg-accent hover:bg-accent/90">
+              <Button asChild variant="accent">
                 <Link href="/products">
                   {isZh ? '浏览产品' : 'Browse Products'}
                 </Link>
@@ -66,9 +68,9 @@ export default function InquiryPageContent() {
           ) : (
             <div className="grid lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="bg-ivory rounded-xl shadow-whisper border border-border-cream p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-[#0A1628]">
+                    <h2 className="text-xl font-serif font-medium text-foreground">
                       {isZh ? '产品列表' : 'Products'}
                     </h2>
                     <Button

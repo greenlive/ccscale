@@ -1,60 +1,79 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@cc-scale/ui';
 import { Button } from '@cc-scale/ui';
-import { getCategories, type ProductCategory } from '@/lib/api/products';
+import { useProductCategories } from '@/lib/api/queries';
+import { GridSkeleton } from '@/components/ErrorBoundary';
 
 export default function ProductCategories({ locale }: { locale: string }) {
   const t = useTranslations('home');
-  const [categories, setCategories] = useState<ProductCategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: categories = [], isLoading, error } = useProductCategories();
 
-  useEffect(() => {
-    async function loadCategories() {
-      const data = await getCategories();
-      setCategories(data.slice(0, 4)); // Limit to 4 categories for display
-      setIsLoading(false);
-    }
-    loadCategories();
-  }, []);
+  // Mock fallback data
+  const fallbackCategories = [
+    {
+      id: 1,
+      nameEn: 'Body Scales',
+      nameZh: '体重秤',
+      slug: 'body-scales',
+      imageUrl: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=400',
+      products: [],
+    },
+    {
+      id: 2,
+      nameEn: 'Hanging Scales',
+      nameZh: '吊秤',
+      slug: 'hanging-scales',
+      imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+      products: [],
+    },
+    {
+      id: 3,
+      nameEn: 'Kitchen Scales',
+      nameZh: '厨房秤',
+      slug: 'kitchen-scales',
+      imageUrl: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400',
+      products: [],
+    },
+    {
+      id: 4,
+      nameEn: 'Baby Scales',
+      nameZh: '婴儿秤',
+      slug: 'baby-scales',
+      imageUrl: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=400',
+      products: [],
+    },
+  ];
+
+  const displayCategories = categories.length > 0 ? categories.slice(0, 4) : fallbackCategories;
 
   if (isLoading) {
     return (
-      <section className="py-16">
+      <section className="py-16 bg-parchment">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-[#0A1628]">
+            <h2 className="text-3xl font-serif font-medium text-foreground">
               {t('ourProducts')}
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="overflow-hidden border-none">
-                <div className="aspect-[4/3] bg-gray-200 animate-pulse" />
-                <CardContent className="p-4">
-                  <div className="h-6 bg-gray-200 rounded animate-pulse" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <GridSkeleton count={4} />
         </div>
       </section>
     );
   }
 
-  if (categories.length === 0) {
+  if (error || displayCategories.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-16">
+    <section className="py-16 bg-parchment">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl font-bold text-[#0A1628]">
+          <h2 className="text-3xl font-serif font-medium text-foreground">
             {t('ourProducts')}
           </h2>
           <Button asChild variant="outline">
@@ -65,12 +84,14 @@ export default function ProductCategories({ locale }: { locale: string }) {
           </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category) => {
-            const name = locale === 'en' ? category.nameEn : category.nameZh;
+          {displayCategories.map((category) => {
+            const name = locale === 'en'
+              ? (category as any).nameEn || category.name
+              : (category as any).nameZh || category.name;
             return (
               <Link key={category.id} href="/products">
-                <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden border-none">
-                  <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+                <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
+                  <div className="aspect-[4/3] overflow-hidden bg-warm-sand">
                     {category.imageUrl ? (
                       <img
                         src={category.imageUrl}
@@ -78,16 +99,16 @@ export default function ProductCategories({ locale }: { locale: string }) {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400">No image</span>
+                      <div className="w-full h-full bg-warm-sand flex items-center justify-center">
+                        <span className="text-stone-gray">No image</span>
                       </div>
                     )}
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg text-[#0A1628]">{name}</h3>
-                    {category.products && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        {category.products.length} {locale === 'en' ? 'products' : '产品'}
+                    <h3 className="font-serif text-lg text-foreground">{name}</h3>
+                    {(category as any).products && (
+                      <p className="text-sm text-stone-gray mt-1">
+                        {(category as any).products.length} {locale === 'en' ? 'products' : '产品'}
                       </p>
                     )}
                   </CardContent>
