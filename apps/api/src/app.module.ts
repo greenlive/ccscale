@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import configuration from './config/configuration';
 import { ProductsModule } from './products/products.module';
 import { InquiriesModule } from './inquiries/inquiries.module';
@@ -13,9 +15,15 @@ import { AuthModule } from './auth/auth.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DownloadsModule } from './downloads/downloads.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
+    // Serve uploaded files statically
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
@@ -44,6 +52,7 @@ import { DownloadsModule } from './downloads/downloads.module';
     NotificationsModule,
     CategoriesModule,
     DownloadsModule,
+    UploadModule,
   ],
   providers: [
     // Global rate limiting guard
