@@ -19,7 +19,8 @@ const stats = [
     change: '+12',
     trend: 'up',
     icon: Package,
-    color: 'bg-blue-50',
+    bgColor: 'bg-terracotta/10',
+    iconColor: 'text-terracotta',
   },
   {
     title: '新询盘',
@@ -27,7 +28,8 @@ const stats = [
     change: '+5',
     trend: 'up',
     icon: MessageSquare,
-    color: 'bg-orange-50',
+    bgColor: 'bg-coral/10',
+    iconColor: 'text-coral',
   },
   {
     title: '访客总数',
@@ -35,7 +37,8 @@ const stats = [
     change: '+89',
     trend: 'up',
     icon: Users,
-    color: 'bg-green-50',
+    bgColor: 'bg-olive-gray/10',
+    iconColor: 'text-olive-gray',
   },
   {
     title: '转化率',
@@ -43,7 +46,8 @@ const stats = [
     change: '-0.5',
     trend: 'down',
     icon: TrendingUp,
-    color: 'bg-purple-50',
+    bgColor: 'bg-warm-silver/10',
+    iconColor: 'text-warm-silver',
   },
 ];
 
@@ -101,25 +105,25 @@ export default function DashboardPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-[#0A1628]">仪表板</h1>
-          <p className="text-gray-600">欢迎回来！这是今天的概览。</p>
+          <h1 className="text-3xl font-serif font-medium text-foreground">仪表板</h1>
+          <p className="text-stone-gray">欢迎回来！这是今天的概览。</p>
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats Grid - Warm parchment theme */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index}>
+              <Card key={index} className="hover:shadow-whisper transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                      <p className="text-3xl font-bold text-[#0A1628]">{stat.value}</p>
+                      <p className="text-sm text-stone-gray mb-1">{stat.title}</p>
+                      <p className="text-3xl font-serif font-medium text-foreground">{stat.value}</p>
                       <div className="flex items-center mt-2">
                         <span
                           className={`flex items-center text-sm ${
-                            stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                            stat.trend === 'up' ? 'text-green-600' : 'text-destructive'
                           }`}
                         >
                           {stat.trend === 'up' ? (
@@ -129,11 +133,11 @@ export default function DashboardPage() {
                           )}
                           {stat.change}
                         </span>
-                        <span className="text-sm text-gray-500 ml-2">较上周</span>
+                        <span className="text-sm text-stone-gray ml-2">较上周</span>
                       </div>
                     </div>
-                    <div className={`${stat.color} p-4 rounded-full`}>
-                      <Icon className="h-6 w-6 text-[#0A1628]" />
+                    <div className={`${stat.bgColor} p-4 rounded-xl`}>
+                      <Icon className={`h-6 w-6 ${stat.iconColor}`} />
                     </div>
                   </div>
                 </CardContent>
@@ -142,7 +146,7 @@ export default function DashboardPage() {
           })}
         </div>
 
-        {/* Recent Inquiries */}
+        {/* Recent Inquiries - Warm parchment theme */}
         <Card>
           <CardHeader>
             <CardTitle>最近询盘</CardTitle>
@@ -151,23 +155,23 @@ export default function DashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">姓名</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">公司</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">状态</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">日期</th>
+                  <tr className="border-b border-border-cream">
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">姓名</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">公司</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">状态</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">日期</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentInquiries.map((inquiry) => (
-                    <tr key={inquiry.id} className="border-b hover:bg-gray-50">
+                    <tr key={inquiry.id} className="border-b border-border-cream hover:bg-warm-sand/30 transition-colors">
                       <td className="py-4 px-4">
                         <div>
-                          <p className="font-medium text-[#0A1628]">{inquiry.name}</p>
-                          <p className="text-sm text-gray-500">{inquiry.email}</p>
+                          <p className="font-medium text-foreground">{inquiry.name}</p>
+                          <p className="text-sm text-stone-gray">{inquiry.email}</p>
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-gray-600">{inquiry.company}</td>
+                      <td className="py-4 px-4 text-olive-gray">{inquiry.company}</td>
                       <td className="py-4 px-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -177,7 +181,7 @@ export default function DashboardPage() {
                           {statusLabels[inquiry.status as keyof typeof statusLabels]}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-gray-500">{inquiry.date}</td>
+                      <td className="py-4 px-4 text-stone-gray">{inquiry.date}</td>
                     </tr>
                   ))}
                 </tbody>

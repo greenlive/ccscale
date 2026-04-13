@@ -64,10 +64,10 @@ export default function ProductsPage() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A1628]">产品管理</h1>
-            <p className="text-gray-600">管理您的产品目录</p>
+            <h1 className="text-3xl font-serif font-medium text-foreground">产品管理</h1>
+            <p className="text-stone-gray">管理您的产品目录</p>
           </div>
-          <Button asChild className="bg-accent hover:bg-accent/90">
+          <Button asChild variant="accent">
             <Link href="/products/new">
               <Plus className="mr-2 h-4 w-4" />
               添加产品
@@ -75,11 +75,11 @@ export default function ProductsPage() {
           </Button>
         </div>
 
-        {/* Search */}
+        {/* Search - Warm parchment theme */}
         <Card>
           <CardContent className="p-4">
             <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-gray" />
               <Input
                 type="text"
                 placeholder="搜索产品..."
@@ -91,43 +91,43 @@ export default function ProductsPage() {
           </CardContent>
         </Card>
 
-        {/* Products Table */}
+        {/* Products Table - Warm parchment theme */}
         <Card>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">SKU</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">产品</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">分类</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">价格区间</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">状态</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-600">操作</th>
+                  <tr className="border-b border-border-cream bg-warm-sand/50">
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">SKU</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">产品</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">分类</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">价格区间</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">状态</th>
+                    <th className="text-right py-3 px-4 font-medium text-stone-gray">操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-b hover:bg-gray-50">
-                      <td className="py-4 px-4 font-mono text-sm text-gray-600">{product.sku}</td>
+                    <tr key={product.id} className="border-b border-border-cream hover:bg-warm-sand/30 transition-colors">
+                      <td className="py-4 px-4 font-mono text-sm text-olive-gray">{product.sku}</td>
                       <td className="py-4 px-4">
                         <div className="flex items-center">
-                          <span className="font-medium text-[#0A1628]">{product.name}</span>
+                          <span className="font-medium text-foreground">{product.name}</span>
                           {product.isFeatured && (
-                            <span className="ml-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded">
+                            <span className="ml-2 bg-terracotta/10 text-terracotta text-xs px-2 py-0.5 rounded-lg">
                               推荐
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-gray-600">{product.category}</td>
-                      <td className="py-4 px-4 text-gray-600">${product.priceMin} - ${product.priceMax}</td>
+                      <td className="py-4 px-4 text-olive-gray">{product.category}</td>
+                      <td className="py-4 px-4 text-olive-gray">${product.priceMin} - ${product.priceMax}</td>
                       <td className="py-4 px-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
                             product.isActive
                               ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              : 'bg-warm-sand text-charcoal-warm'
                           }`}
                         >
                           {product.isActive ? '启用' : '禁用'}
@@ -145,7 +145,7 @@ export default function ProductsPage() {
                               <Edit className="h-4 w-4" />
                             </Link>
                           </Button>
-                          <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                          <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>

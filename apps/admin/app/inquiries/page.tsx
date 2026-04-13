@@ -241,7 +241,7 @@ export default function InquiriesPage() {
     return (
       <AdminLayout>
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-accent border-t-transparent"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-terracotta border-t-transparent"></div>
         </div>
       </AdminLayout>
     );
@@ -252,9 +252,9 @@ export default function InquiriesPage() {
       <AdminLayout>
         <Card>
           <CardContent className="p-8 text-center space-y-4">
-            <p className="text-lg font-semibold text-red-600">加载失败</p>
-            <p className="text-gray-600">{loadError}</p>
-            <Button onClick={fetchInquiries}>重试</Button>
+            <p className="text-lg font-serif font-medium text-destructive">加载失败</p>
+            <p className="text-stone-gray">{loadError}</p>
+            <Button onClick={fetchInquiries} variant="accent">重试</Button>
           </CardContent>
         </Card>
       </AdminLayout>
@@ -266,66 +266,66 @@ export default function InquiriesPage() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A1628]">询盘管理</h1>
-            <p className="text-gray-600">管理客户询盘和报价</p>
+            <h1 className="text-3xl font-serif font-medium text-foreground">询盘管理</h1>
+            <p className="text-stone-gray">管理客户询盘和报价</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">待处理:</span>
-            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold">
+            <span className="text-sm text-stone-gray">待处理:</span>
+            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
               {stats.new}
             </span>
           </div>
         </div>
 
-        {/* 统计卡片 */}
+        {/* 统计卡片 - Warm parchment theme */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="border-2 border-gray-200">
+          <Card className="hover:shadow-whisper transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-gray-100 rounded-lg">
-                  <MessageSquare className="h-6 w-6 text-gray-600" />
+                <div className="p-3 bg-warm-sand rounded-xl">
+                  <MessageSquare className="h-6 w-6 text-olive-gray" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-[#0A1628]">{stats.total}</p>
-                  <p className="text-sm text-gray-500">总询盘</p>
+                  <p className="text-2xl font-serif font-medium text-foreground">{stats.total}</p>
+                  <p className="text-sm text-stone-gray">总询盘</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-2 border-yellow-300 bg-yellow-50">
+          <Card className="border border-yellow-300 bg-yellow-50/50 hover:shadow-whisper transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-yellow-100 rounded-lg animate-pulse">
+                <div className="p-3 bg-yellow-100 rounded-xl animate-pulse">
                   <AlertCircle className="h-6 w-6 text-yellow-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-yellow-600">{stats.new}</p>
+                  <p className="text-2xl font-serif font-medium text-yellow-600">{stats.new}</p>
                   <p className="text-sm text-yellow-700">待处理</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-2 border-purple-300 bg-purple-50">
+          <Card className="border border-purple-300 bg-purple-50/50 hover:shadow-whisper transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-purple-100 rounded-lg">
+                <div className="p-3 bg-purple-100 rounded-xl">
                   <Clock className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-purple-600">{stats.inProgress}</p>
+                  <p className="text-2xl font-serif font-medium text-purple-600">{stats.inProgress}</p>
                   <p className="text-sm text-purple-700">处理中</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-2 border-green-300 bg-green-50">
+          <Card className="border border-green-300 bg-green-50/50 hover:shadow-whisper transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-green-100 rounded-lg">
+                <div className="p-3 bg-green-100 rounded-xl">
                   <Check className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-green-600">{stats.replied}</p>
+                  <p className="text-2xl font-serif font-medium text-green-600">{stats.replied}</p>
                   <p className="text-sm text-green-700">已回复</p>
                 </div>
               </div>
@@ -333,12 +333,12 @@ export default function InquiriesPage() {
           </Card>
         </div>
 
-        {/* Filters */}
+        {/* Filters - Warm parchment theme */}
         <Card>
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-gray" />
                 <Input
                   type="text"
                   placeholder="搜索询盘..."
@@ -348,11 +348,11 @@ export default function InquiriesPage() {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-400" />
+                <Filter className="h-4 w-4 text-stone-gray" />
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="h-10 px-3 border border-gray-200 rounded-md text-sm"
+                  className="h-10 px-3 border border-border-warm bg-background rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-terracotta"
                 >
                   <option value="ALL">全部状态</option>
                   {Object.entries(STATUS_CONFIG).map(([key, config]) => (
@@ -362,7 +362,7 @@ export default function InquiriesPage() {
                 <select
                   value={sourceFilter}
                   onChange={(e) => setSourceFilter(e.target.value)}
-                  className="h-10 px-3 border border-gray-200 rounded-md text-sm"
+                  className="h-10 px-3 border border-border-warm bg-background rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-terracotta"
                 >
                   <option value="ALL">全部渠道</option>
                   {ALL_SOURCES.filter(s => s !== 'ALL').map((source) => (
@@ -374,20 +374,20 @@ export default function InquiriesPage() {
           </CardContent>
         </Card>
 
-        {/* Inquiries Table */}
+        {/* Inquiries Table - Warm parchment theme */}
         <Card>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">来自</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">公司</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">渠道来源</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">回复方式</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">状态</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">耗时</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-600">操作</th>
+                  <tr className="border-b border-border-cream bg-warm-sand/50">
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">来自</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">公司</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">渠道来源</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">回复方式</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">状态</th>
+                    <th className="text-left py-3 px-4 font-medium text-stone-gray">耗时</th>
+                    <th className="text-right py-3 px-4 font-medium text-stone-gray">操作</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -403,34 +403,34 @@ export default function InquiriesPage() {
                     return (
                       <tr
                         key={inquiry.id}
-                        className={`border-b hover:bg-gray-50 ${inquiry.status === 'NEW' ? 'bg-yellow-50/50' : ''} ${overdue ? 'bg-red-50/30' : ''}`}
+                        className={`border-b border-border-cream hover:bg-warm-sand/30 transition-colors ${inquiry.status === 'NEW' ? 'bg-yellow-50/30' : ''} ${overdue ? 'bg-destructive/5' : ''}`}
                       >
                         <td className="py-4 px-4">
                           <div>
-                            <p className={`font-medium ${inquiry.status === 'NEW' ? 'text-yellow-800 font-bold' : 'text-[#0A1628]'}`}>
+                            <p className={`font-medium ${inquiry.status === 'NEW' ? 'text-yellow-800 font-medium' : 'text-foreground'}`}>
                               {inquiry.status === 'NEW' && (
                                 <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-2 animate-pulse"></span>
                               )}
                               {overdue && (
-                                <span className="inline-flex items-center gap-1 mr-2 text-red-600">
+                                <span className="inline-flex items-center gap-1 mr-2 text-destructive">
                                   <AlertTriangle className="h-3 w-3 animate-pulse" />
                                 </span>
                               )}
                               {inquiry.fullName}
                             </p>
-                            <p className="text-sm text-gray-500">{inquiry.email}</p>
+                            <p className="text-sm text-stone-gray">{inquiry.email}</p>
                           </div>
                         </td>
                         <td className="py-4 px-4">
-                          <p className="text-gray-600">{inquiry.company || '-'}</p>
-                          <p className="text-sm text-gray-400">{inquiry.country || ''}</p>
+                          <p className="text-olive-gray">{inquiry.company || '-'}</p>
+                          <p className="text-sm text-stone-gray">{inquiry.country || ''}</p>
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-2">
-                            <div className={`p-2 rounded ${sourceStyle.bg}`}>
+                            <div className={`p-2 rounded-lg ${sourceStyle.bg}`}>
                               <SourceIcon className={`h-4 w-4 ${sourceStyle.color}`} />
                             </div>
-                            <span className="text-sm text-gray-700">
+                            <span className="text-sm text-olive-gray">
                               {sourceStyle.label}
                             </span>
                           </div>
@@ -438,15 +438,15 @@ export default function InquiriesPage() {
                         <td className="py-4 px-4">
                           {replyMethodConfig && ReplyIcon ? (
                             <div className="flex items-center gap-2">
-                              <div className={`p-2 rounded ${replyMethodConfig.bg}`}>
+                              <div className={`p-2 rounded-lg ${replyMethodConfig.bg}`}>
                                 <ReplyIcon className={`h-4 w-4 ${replyMethodConfig.color}`} />
                               </div>
-                              <span className="text-sm text-gray-700">
+                              <span className="text-sm text-olive-gray">
                                 {replyMethodConfig.label}
                               </span>
                             </div>
                           ) : (
-                            <span className="text-sm text-gray-400">-</span>
+                            <span className="text-sm text-stone-gray">-</span>
                           )}
                         </td>
                         <td className="py-4 px-4">
@@ -482,11 +482,11 @@ export default function InquiriesPage() {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex flex-col gap-1">
-                            <p className={`text-sm ${overdue ? 'text-red-600 font-bold' : 'text-gray-500'}`}>
+                            <p className={`text-sm ${overdue ? 'text-destructive font-medium' : 'text-stone-gray'}`}>
                               {getRelativeTime(inquiry.createdAt)}
                             </p>
                             {overdue && (
-                              <p className="text-xs text-red-500">
+                              <p className="text-xs text-destructive">
                                 已超时 {getOverdueHours(inquiry.createdAt) - 24}h
                               </p>
                             )}

@@ -30,26 +30,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-surface to-dark-warm p-4">
+      <Card className="w-full max-w-md shadow-whisper">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center">
-              <Scale className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 bg-terracotta rounded-full flex items-center justify-center">
+              <Scale className="h-8 w-8 text-ivory" />
             </div>
           </div>
-          <CardTitle className="text-2xl">管理后台登录</CardTitle>
+          <CardTitle className="text-2xl font-serif font-medium">管理后台登录</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+              <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-olive-gray mb-2">
                 邮箱
               </label>
               <Input
@@ -58,10 +58,11 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                placeholder="admin@ccscale.com"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-olive-gray mb-2">
                 密码
               </label>
               <div className="relative">
@@ -72,11 +73,12 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="pr-10"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-gray hover:text-charcoal-warm"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -88,7 +90,8 @@ export default function LoginPage() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-accent hover:bg-accent/90"
+              variant="accent"
+              className="w-full"
               disabled={isLoading}
             >
               {isLoading ? '登录中...' : '登录'}
