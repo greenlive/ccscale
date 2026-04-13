@@ -23,7 +23,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
   return (
     <div className="space-y-3 md:space-y-4">
       {/* Main Image */}
-      <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+      <div className="relative aspect-square bg-warm-sand rounded-xl overflow-hidden shadow-whisper">
         <Image
           src={images[selectedImage]}
           alt={name}
@@ -37,14 +37,14 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
           <>
             <button
               onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-ivory/90 hover:bg-ivory rounded-full flex items-center justify-center shadow-md transition-all z-10 border border-border-warm"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-ivory/90 hover:bg-ivory rounded-full flex items-center justify-center shadow-md transition-all z-10 border border-border-warm"
               aria-label="Next image"
             >
               <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
@@ -64,10 +64,10 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
             <button
               key={idx}
               onClick={() => setSelectedImage(idx)}
-              className={`aspect-square rounded-md md:rounded-lg overflow-hidden border-2 transition-all relative ${
+              className={`aspect-square rounded-lg overflow-hidden border-2 transition-all relative ${
                 selectedImage === idx
-                  ? 'border-accent ring-2 ring-accent/20'
-                  : 'border-transparent hover:border-gray-300'
+                  ? 'border-terracotta shadow-ring-terracotta'
+                  : 'border-transparent hover:border-border-warm'
               }`}
             >
               <Image
