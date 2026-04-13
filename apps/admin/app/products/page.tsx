@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Edit, Trash2, Search, Eye } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
@@ -53,6 +53,8 @@ const products = [
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 产品管理'; }, []);
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

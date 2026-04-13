@@ -128,6 +128,8 @@ export default function InquiriesPage() {
     }
   }, [token]);
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 询盘管理'; }, []);
+
   const filteredInquiries = useMemo(
     () =>
       inquiries.filter((inquiry) => {

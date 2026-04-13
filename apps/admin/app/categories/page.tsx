@@ -44,6 +44,8 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 分类管理'; }, []);
+
   const fetchCategories = async () => {
     try {
       const response = await fetch(`${API_URL}/api/products/categories`);

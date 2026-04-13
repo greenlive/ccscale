@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import SkipToMain from '@/components/SkipToMain';
 import { OrganizationSchema, WebSiteSchema } from '@/components/SchemaOrg';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
+import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -110,6 +111,7 @@ export default async function LocaleLayout({
       <body className="min-h-screen bg-parchment antialiased" suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <QueryProvider>
+            <AnalyticsTracker />
             <OrganizationSchema />
             <WebSiteSchema />
             <SkipToMain locale={locale} />

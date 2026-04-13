@@ -88,6 +88,8 @@
     "submitSuccess": "Thank you! Your inquiry has been submitted successfully.",
     "submitError": "Failed to submit inquiry. Please try again.",
     "addToInquiry": "Add to Inquiry",
+    "submit": "Submit Inquiry",
+    "responseTime": "We respond within 24 hours",
     "submitInquiry": "Submit Inquiry",
     "yourInquiry": "Your Inquiry",
     "productsInCart": "Products in your cart",

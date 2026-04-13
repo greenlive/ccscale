@@ -109,13 +109,12 @@ export default function InquiryForm() {
         unitPrice: item.priceMin,
       }));
 
-      // Get tracking data
-      const trackingData = getStoredTrackingData();
+      // Get tracking data, strip landingPage (not in DTO)
+      const { landingPage: _landingPage, ...trackingData } = getStoredTrackingData();
 
       // Prepare the inquiry data
       const inquiryData = {
         ...formData,
-        name: formData.fullName,
         message: formData.message || cart.message || '',
         source: 'Website',
         items: items.length > 0 ? items : undefined,
@@ -123,7 +122,7 @@ export default function InquiryForm() {
       };
 
       // Submit using React Query mutation
-      await submitInquiry.mutateAsync(inquiryData);
+      await submitInquiry.mutateAsync(inquiryData as any);
 
       setFormStatus('success');
       setFormData({

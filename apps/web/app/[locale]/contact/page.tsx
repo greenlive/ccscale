@@ -5,6 +5,7 @@ import { MapPin, Mail, Phone, Clock, Globe, ArrowRight, MessageSquare } from 'lu
 import { Button } from '@cc-scale/ui';
 import { ContactPageSchema, BreadcrumbSchema, DefaultFAQSchema } from '@/components/SchemaOrg';
 import { Link } from '@/i18n/routing';
+import { ContactForm } from '@/components/ContactForm';
 
 type Props = {
   params: { locale: string };
@@ -177,6 +178,14 @@ function ContactPageContent() {
                 <p className="text-sm text-blue-200">
                   {tInquiry('responseTime')}
                 </p>
+              </div>
+
+              {/* Direct Contact Form */}
+              <div className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] rounded-lg p-6 mt-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  {locale === 'en' ? 'Send a Direct Message' : '直接发送留言'}
+                </h3>
+                <ContactForm locale={locale} />
               </div>
             </div>
           </div>

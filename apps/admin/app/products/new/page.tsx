@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
@@ -34,6 +34,27 @@ export default function NewProductPage() {
   const [images, setImages] = useState<UploadedFile[]>([]);
   const [videos, setVideos] = useState<UploadedFile[]>([]);
   const [specs, setSpecs] = useState<SpecItem[]>([]);
+  const [nameEn, setNameEn] = useState('');
+  const [slug, setSlug] = useState('');
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 添加产品'; }, []);
+
+  const toSlug = (name: string) =>
+    name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+
+  const handleNameEnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNameEn(value);
+    if (!slugManuallyEdited) {
+      setSlug(toSlug(value));
+    }
+  };
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSlug(e.target.value);
+    setSlugManuallyEdited(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +117,7 @@ export default function NewProductPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Product Name (English) *
                     </label>
-                    <Input required placeholder="Enter product name" />
+                    <Input required placeholder="Enter product name" value={nameEn} onChange={handleNameEnChange} />
                   </div>
 
                   <div>
@@ -110,7 +131,8 @@ export default function NewProductPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Slug *
                     </label>
-                    <Input required placeholder="product-url-slug" />
+                    <Input required placeholder="product-url-slug" value={slug} onChange={handleSlugChange} />
+                    <p className="text-xs text-gray-400 mt-1">自动从英文名生成，可手动修改</p>
                   </div>
 
                   <div>

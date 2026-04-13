@@ -88,6 +88,8 @@
     "submitSuccess": "感谢您！您的询盘已成功提交。",
     "submitError": "提交询盘失败，请重试。",
     "addToInquiry": "加入询价车",
+    "submit": "提交询盘",
+    "responseTime": "我们将在24小时内回复您",
     "submitInquiry": "提交询盘",
     "yourInquiry": "您的询价单",
     "productsInCart": "产品列表",

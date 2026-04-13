@@ -90,6 +90,8 @@ export default function SettingsPage() {
     fetchSettings();
   }, []);
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 系统设置'; }, []);
+
   const fetchSettings = async () => {
     try {
       const response = await fetch(`${API_URL}/api/site-settings`);

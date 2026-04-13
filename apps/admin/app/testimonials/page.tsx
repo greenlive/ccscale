@@ -61,6 +61,8 @@ export default function TestimonialsPage() {
     fetchTestimonials();
   }, []);
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 客户心声'; }, []);
+
   const fetchTestimonials = async () => {
     try {
       const response = await fetch(`${API_URL}/api/testimonials`);

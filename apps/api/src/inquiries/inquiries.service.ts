@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient, InquiryStatus, ReplyMethod } from '@prisma/client';
+import { Prisma, PrismaClient, InquiryStatus, ReplyMethod } from '@prisma/client';
 import { CreateInquiryDto, UpdateInquiryDto, CreateActivityLogDto } from './dto/inquiry.dto';
 import { EmailService } from '../notifications/email.service';
 
@@ -81,15 +81,21 @@ export class InquiriesService {
   async create(createInquiryDto: CreateInquiryDto, ipAddress?: string, userAgent?: string) {
     const { items, ...inquiryData } = createInquiryDto;
 
+    // Transform items to Prisma-compatible Decimal values
+    const transformedItems = items?.map((item) => ({
+      ...item,
+      unitPrice: item.unitPrice != null ? new Prisma.Decimal(item.unitPrice) : undefined,
+    }));
+
     const inquiry = await prisma.inquiry.create({
       data: {
         ...inquiryData,
         ipAddress,
         userAgent,
         status: InquiryStatus.NEW,
-        ...(items && {
+        ...(transformedItems && {
           items: {
-            create: items,
+            create: transformedItems,
           },
         }),
       },

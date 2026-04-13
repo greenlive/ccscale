@@ -78,6 +78,8 @@ export default function DownloadsPage() {
     fetchDownloads();
   }, []);
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 下载管理'; }, []);
+
   const fetchDownloads = async () => {
     try {
       const response = await fetch(`${API_URL}/api/downloads`);

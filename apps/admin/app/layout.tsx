@@ -6,7 +6,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'CC Scale 管理后台 - 仪表板',
+  title: 'CC Scale 管理后台',
   description: 'CC Scale B2B平台管理后台',
 };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Package,
   MessageSquare,
@@ -101,6 +101,7 @@ const statusLabels = {
 };
 
 export default function DashboardPage() {
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 仪表板'; }, []);
   return (
     <AdminLayout>
       <div className="space-y-6">

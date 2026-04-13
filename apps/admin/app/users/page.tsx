@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Shield, Users as UsersIcon } from 'lucide-react';
+import { Plus, Trash2, Users as UsersIcon } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
-import { useAuth } from '@/providers/AuthProvider';
 import type { AdminUser } from '@/lib/auth';
+import { api } from '@/lib/apiClient';
 
 const roleLabels: Record<string, { label: string; color: string }> = {
   ADMIN: { label: '管理员', color: 'bg-red-100 text-red-800' },
@@ -16,7 +16,6 @@ const roleLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function UsersPage() {
-  const { token } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,74 +26,46 @@ export default function UsersPage() {
     fetchUsers();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 用户管理'; }, []);
+
   const fetchUsers = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
-      }
-    } catch (err) {
-      setError('Failed to fetch users');
-    } finally {
-      setIsLoading(false);
+    setIsLoading(true);
+    const result = await api.get<AdminUser[]>('/auth/users');
+    if (result.success && result.data) {
+      setUsers(result.data);
+    } else {
+      setError(result.error?.message || 'Failed to fetch users');
     }
+    setIsLoading(false);
   };
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newUser),
-      });
-      if (response.ok) {
-        setShowAddModal(false);
-        setNewUser({ email: '', password: '', name: '', role: 'VIEWER' });
-        fetchUsers();
-      }
-    } catch (err) {
-      setError('Failed to add user');
+    const result = await api.post<{ id: number }>('/auth/register', newUser);
+    if (result.success) {
+      setShowAddModal(false);
+      setNewUser({ email: '', password: '', name: '', role: 'VIEWER' });
+      fetchUsers();
+    } else {
+      setError(result.error?.message || 'Failed to add user');
     }
   };
 
   const handleDeleteUser = async (id: number) => {
     if (!confirm('确定要删除这个用户吗？')) return;
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/users/${id}/delete`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      fetchUsers();
-    } catch (err) {
-      setError('Failed to delete user');
+    const result = await api.post(`/auth/users/${id}/delete`);
+    if (!result.success) {
+      setError(result.error?.message || 'Failed to delete user');
     }
+    fetchUsers();
   };
 
   const handleUpdateRole = async (id: number, role: string) => {
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/users/${id}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ role }),
-      });
-      fetchUsers();
-    } catch (err) {
-      setError('Failed to update role');
+    const result = await api.put(`/auth/users/${id}/role`, { role });
+    if (!result.success) {
+      setError(result.error?.message || 'Failed to update role');
     }
+    fetchUsers();
   };
 
   if (isLoading) {

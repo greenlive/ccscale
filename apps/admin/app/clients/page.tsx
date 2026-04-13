@@ -49,6 +49,8 @@ export default function ClientsPage() {
     fetchClients();
   }, []);
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 合作伙伴'; }, []);
+
   const fetchClients = async () => {
     try {
       const response = await fetch(`${API_URL}/api/clients`);

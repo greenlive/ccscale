@@ -56,6 +56,8 @@ export default function AnalyticsPage() {
     return { start, end };
   };
 
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 数据分析'; }, []);
+
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
