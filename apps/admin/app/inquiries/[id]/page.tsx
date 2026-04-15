@@ -156,6 +156,12 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
   const [error, setError] = useState<string | null>(null);
   const [statusUpdating, setStatusUpdating] = useState<string | null>(null);
   const [replyMethod, setReplyMethod] = useState<string>('EMAIL');
+  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [closeReason, setCloseReason] = useState('');
+  const [closeReasonOther, setCloseReasonOther] = useState('');
+  const [contactMethod, setContactMethod] = useState<string>('WHATSAPP');
+  const [contactSuccess, setContactSuccess] = useState<boolean | null>(null);
+  const [addingContact, setAddingContact] = useState(false);
 
   useEffect(() => {
     if (token && params.id) {
@@ -227,6 +233,70 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
     handleStatusChange('REPLIED', method);
   };
 
+  // 关闭询盘
+  const handleClose = async () => {
+    const reason = closeReason === 'OTHER' ? closeReasonOther : closeReason;
+    if (!reason) {
+      alert('请选择或输入关闭原因');
+      return;
+    }
+    try {
+      setStatusUpdating('CLOSED');
+      const response = await fetch(`${API_URL}/api/inquiries/${inquiry?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: 'CLOSED', closedReason: reason }),
+      });
+      if (!response.ok) throw new Error('关闭失败');
+      const updated = await response.json();
+      setInquiry(updated);
+      setShowCloseModal(false);
+      setCloseReason('');
+      setCloseReasonOther('');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '关闭失败');
+} finally {
+      setStatusUpdating(null);
+    }
+  };
+
+  // 添加联系尝试
+  const handleAddContact = async () => {
+    if (contactSuccess === null) {
+      alert('请选择联系结果');
+      return;
+    }
+    if (!inquiry || !token) return;
+    try {
+      setAddingContact(true);
+      const response = await fetch(`${API_URL}/api/inquiries/${inquiry.id}/contact-attempt`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ method: contactMethod, success: contactSuccess }),
+      });
+      if (!response.ok) throw new Error('添加联系记录失败');
+      // 刷新询盘数据
+      const updated = await fetch(`${API_URL}/api/inquiries/${inquiry.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      }).then(r => r.json());
+      setInquiry(updated);
+      setContactSuccess(null);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '添加联系记录失败');
+    } finally {
+      setAddingContact(false);
+    }
+  };
+
+  // 提取联系尝试记录
+  const contactAttempts = inquiry?.activities?.filter(a => a.action === 'CONTACT_ATTEMPT') || [];
+
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString('zh-CN', {
       year: 'numeric',
@@ -235,6 +305,13 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
       hour: '2-digit',
       minute: '2-digit',
     });
+
+  // 精确时间格式：2026-04-14 15:16:22
+  const formatExactDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  };
 
   const formatRelativeTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -396,7 +473,8 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
                             )}
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                            <span>{formatRelativeTime(log.createdAt)}</span>
+                            <span className="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded">{formatExactDateTime(log.createdAt)}</span>
+                            <span className="text-gray-400">({formatRelativeTime(log.createdAt)})</span>
                             <span>·</span>
                             <span>{log.performedBy}</span>
                           </div>
@@ -416,40 +494,158 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
             {/* 快捷回复 */}
             <Card className="bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20">
               <CardHeader>
-                <CardTitle>🚀 快捷回复</CardTitle>
+                <CardTitle>🚀 标记为已回复</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    onClick={() => handleQuickReply('EMAIL')}
-                    disabled={statusUpdating !== null}
-                  >
-                    <Mail className="h-4 w-4 mr-1" />
-                    邮件
-                  </Button>
-                  {inquiry.whatsapp && (
+                {inquiry.status === 'REPLIED' || inquiry.status === 'CLOSED' ? (
+                  // 已回复或已关闭状态
+                  <div className="text-center py-2">
+                    <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full">
+                      <Check className="h-5 w-5" />
+                      <span className="font-medium">已回复</span>
+                      {inquiry.replyMethod && (
+                        <span className="text-sm">({REPLY_METHOD_CONFIG[inquiry.replyMethod]?.label || inquiry.replyMethod})</span>
+                      )}
+                    </div>
+                    {inquiry.repliedAt && (
+                      <p className="text-sm text-gray-500 mt-2">
+                        回复时间: {formatExactDateTime(inquiry.repliedAt)}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  // 未回复状态 - 显示回复方式选择
+                  <>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button
+                        className={`flex-1 ${replyMethod === 'EMAIL' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        onClick={() => setReplyMethod('EMAIL')}
+                      >
+                        <Mail className="h-4 w-4 mr-1" />
+                        邮件
+                      </Button>
+                      <Button
+                        className={`flex-1 ${replyMethod === 'WHATSAPP' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        onClick={() => setReplyMethod('WHATSAPP')}
+                      >
+                        <MessageSquare className="h-4 w-4 mr-1" />
+                        WhatsApp
+                      </Button>
+                      <Button
+                        className={`flex-1 ${replyMethod === 'PHONE' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        onClick={() => setReplyMethod('PHONE')}
+                      >
+                        <Phone className="h-4 w-4 mr-1" />
+                        电话
+                      </Button>
+                      <Button
+                        className={`flex-1 ${replyMethod === 'LINKEDIN' ? 'bg-blue-700 hover:bg-blue-800' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        onClick={() => setReplyMethod('LINKEDIN')}
+                      >
+                        <Users className="h-4 w-4 mr-1" />
+                        LinkedIn
+                      </Button>
+                      <Button
+                        className={`flex-1 ${replyMethod === 'ALIBABA' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        onClick={() => setReplyMethod('ALIBABA')}
+                      >
+                        <ShoppingBag className="h-4 w-4 mr-1" />
+                        Alibaba
+                      </Button>
+                      <Button
+                        className={`flex-1 ${replyMethod === 'OTHER' ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        onClick={() => setReplyMethod('OTHER')}
+                      >
+                        <Globe className="h-4 w-4 mr-1" />
+                        其他
+                      </Button>
+                    </div>
                     <Button
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                      onClick={() => handleQuickReply('WHATSAPP')}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={() => handleStatusChange('REPLIED', replyMethod)}
                       disabled={statusUpdating !== null}
                     >
-                      <MessageSquare className="h-4 w-4 mr-1" />
-                      WhatsApp
+                      {statusUpdating === 'REPLIED' ? '标记中...' : '确认标记为已回复'}
                     </Button>
-                  )}
-                  {inquiry.phone && (
+                    <p className="text-xs text-gray-500 text-center">
+                      选择回复方式后确认标记，记录回复方式便于统计分析
+                    </p>
+                  </>
+)}
+              </CardContent>
+            </Card>
+
+            {/* 联系记录 */}
+            <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+              <CardHeader>
+                <CardTitle>📋 联系记录</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {contactAttempts.length > 0 ? (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {contactAttempts.map((attempt) => {
+                      const isSuccess = attempt.detail?.includes('✓');
+                      return (
+                        <div key={attempt.id} className="flex items-center gap-2 text-sm">
+                          <span className={isSuccess ? 'text-green-600' : 'text-red-500'}>
+                            {isSuccess ? '✓' : '✗'}
+                          </span>
+                          <span className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                            {formatExactDateTime(attempt.createdAt)}
+                          </span>
+                          <span className="flex-1">{attempt.detail}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-2">暂无联系记录</p>
+                )}
+                <div className="border-t pt-3 space-y-2">
+                  <p className="text-sm font-medium text-gray-700">添加新记录</p>
+                  <div className="flex gap-1">
+                    {['WHATSAPP', 'EMAIL', 'PHONE', 'LINKEDIN', 'ALIBABA', 'OTHER'].map((m) => {
+                      const config = REPLY_METHOD_CONFIG[m];
+                      return (
+                        <Button
+                          key={m}
+                          size="sm"
+                          variant="outline"
+                          className={`flex-1 text-xs ${contactMethod === m ? 'ring-2 ring-accent' : ''}`}
+                          onClick={() => setContactMethod(m)}
+                        >
+                          {config?.label || m}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-2">
                     <Button
-                      className="flex-1 bg-purple-600 hover:bg-purple-700"
-                      onClick={() => handleQuickReply('PHONE')}
-                      disabled={statusUpdating !== null}
+                      size="sm"
+                      variant={contactSuccess === true ? 'default' : 'outline'}
+                      className={`flex-1 ${contactSuccess === true ? 'bg-green-600' : ''}`}
+                      onClick={() => setContactSuccess(true)}
                     >
-                      <Phone className="h-4 w-4 mr-1" />
-                      电话
+                      ✓ 成功
                     </Button>
-                  )}
+                    <Button
+                      size="sm"
+                      variant={contactSuccess === false ? 'default' : 'outline'}
+                      className={`flex-1 ${contactSuccess === false ? 'bg-red-600' : ''}`}
+                      onClick={() => setContactSuccess(false)}
+                    >
+                      ✗ 失败
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1 bg-orange-600 hover:bg-orange-700"
+                      onClick={handleAddContact}
+                      disabled={addingContact}
+                    >
+                      {addingContact ? '添加中...' : '添加记录'}
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500 text-center">点击后自动标记为&quot;已回复&quot;并记录回复方式</p>
               </CardContent>
             </Card>
 
@@ -548,31 +744,102 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
               <CardHeader>
                 <CardTitle>🏷️ 状态管理</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(statusLabels).map(([key, label]) => (
-                    <Button
-                      key={key}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleStatusChange(key)}
-                      disabled={statusUpdating !== null || inquiry.status === key}
-                      className={inquiry.status === key ? 'ring-2 ring-accent' : ''}
-                    >
-                      {statusUpdating === key ? '更新中...' : label}
-                    </Button>
-                  ))}
+              <CardContent className="space-y-3">
+                <div className="text-sm text-gray-600">
+                  当前状态: <span className={`font-medium ${statusColors[inquiry.status]}`}>{statusLabels[inquiry.status]}</span>
                 </div>
 
-                {/* 关闭原因 */}
+                {inquiry.status !== 'CLOSED' && (
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-300 text-red-600 hover:bg-red-50"
+                    onClick={() => setShowCloseModal(true)}
+                  >
+                    关闭此询盘
+                  </Button>
+                )}
+
                 {inquiry.status === 'CLOSED' && (
-                  <div className="mt-3 pt-3 border-t">
+                  <div className="pt-3 border-t">
                     <p className="text-sm text-gray-500 mb-1">关闭原因</p>
                     <p className="text-sm text-gray-700">{inquiry.closedReason || '未填写'}</p>
                   </div>
                 )}
               </CardContent>
             </Card>
+
+            {/* 关闭弹窗 */}
+            {showCloseModal && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <Card className="w-full max-w-md mx-4">
+                  <CardHeader>
+                    <CardTitle>关闭询盘</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-gray-600">请选择关闭原因：</p>
+                    <div className="space-y-2">
+                      {[
+                        { value: '垃圾询盘', label: '垃圾询盘' },
+                        { value: '已电话联系，无需跟进', label: '已电话联系，无需跟进' },
+                        { value: '客户久未回复', label: '客户久未回复' },
+                        { value: '重复询盘', label: '重复询盘' },
+                        { value: '已成交', label: '已成交' },
+                      ].map((option) => (
+                        <label key={option.value} className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="closeReason"
+                            value={option.value}
+                            checked={closeReason === option.value}
+                            onChange={(e) => setCloseReason(e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <span className="text-sm">{option.label}</span>
+                        </label>
+                      ))}
+                      <label className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="closeReason"
+                          value="OTHER"
+                          checked={closeReason === 'OTHER'}
+                          onChange={(e) => setCloseReason(e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm">其他原因：</span>
+                        <input
+                          type="text"
+                          value={closeReasonOther}
+                          onChange={(e) => setCloseReasonOther(e.target.value)}
+                          placeholder="请输入"
+                          className="flex-1 px-2 py-1 border rounded text-sm"
+                        />
+                      </label>
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          setShowCloseModal(false);
+                          setCloseReason('');
+                          setCloseReasonOther('');
+                        }}
+                      >
+                        取消
+                      </Button>
+                      <Button
+                        className="flex-1 bg-red-600 hover:bg-red-700"
+                        onClick={handleClose}
+                        disabled={statusUpdating !== null || !closeReason || (closeReason === 'OTHER' && !closeReasonOther)}
+                      >
+                        {statusUpdating === 'CLOSED' ? '关闭中...' : '确认关闭'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </div>
       </div>

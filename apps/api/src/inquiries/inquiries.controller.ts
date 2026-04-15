@@ -136,4 +136,19 @@ export class InquiriesController {
   async delete(@Param('id') id: string) {
     await this.inquiriesService.delete(parseInt(id));
   }
+
+  @Post(':id/contact-attempt')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.EDITOR)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Record a contact attempt for an inquiry' })
+  @ApiResponse({ status: 201, description: 'Contact attempt recorded' })
+  addContactAttempt(@Param('id') id: string, @Body() body: { method: string; success: boolean }, @Request() req) {
+    return this.inquiriesService.addContactAttempt(
+      parseInt(id),
+      body.method,
+      body.success,
+      req.user.email,
+    );
+  }
 }

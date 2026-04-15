@@ -267,4 +267,42 @@ export class InquiriesService {
     }
     return prisma.inquiry.delete({ where: { id } });
   }
+
+  // 添加联系尝试记录
+  async addContactAttempt(inquiryId: number, method: string, success: boolean, performedBy: string) {
+    const methodLabels: Record<string, string> = {
+      EMAIL: '邮件',
+      WHATSAPP: 'WhatsApp',
+      PHONE: '电话',
+      ALIBABA: 'Alibaba',
+      LINKEDIN: 'LinkedIn',
+      OTHER: '其他',
+    };
+    const label = methodLabels[method] || method;
+    const resultText = success ? `✓ ${label}联系成功` : `✗ ${label}联系失败`;
+
+    // 创建联系尝试活动记录
+    const activity = await prisma.activityLog.create({
+      data: {
+        inquiryId,
+        action: 'CONTACT_ATTEMPT',
+        detail: resultText,
+        performedBy: performedBy || 'Admin',
+      },
+    });
+
+    // 如果标记为成功，更新询盘状态为已回复
+    if (success) {
+      await prisma.inquiry.update({
+        where: { id: inquiryId },
+        data: {
+          status: InquiryStatus.REPLIED,
+          repliedAt: new Date(),
+          replyMethod: method as any,
+        },
+      });
+    }
+
+    return activity;
+  }
 }
