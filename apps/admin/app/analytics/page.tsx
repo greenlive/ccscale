@@ -22,7 +22,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-const COLORS = ['#0A1628', '#ea580c', '#64748b', '#1e3a5f', '#94a3b8', '#f59e0b', '#10b981'];
+const COLORS = ['#0A1628', '#ea580c', '#64748b', '#1e3a5f', '#94a3b8', '#f59e0b', '#10b981', '#ec4899', '#8b5cf6'];
+
+// Social media platform colors
+const SOCIAL_COLORS: Record<string, string> = {
+  youtube: '#FF0000',
+  linkedin: '#0A66C2',
+  tiktok: '#000000',
+  facebook: '#1877F2',
+  instagram: '#E4405F',
+  twitter: '#1DA1F2',
+  whatsapp: '#25D366',
+  pinterest: '#E60023',
+};
 
 type DashboardResponse = {
   summary: {
@@ -31,10 +43,21 @@ type DashboardResponse = {
     totalPageViews: number;
     inquiriesCount: number;
   };
+  todayStats: { newInquiries: number; repliedInquiries: number; pendingInquiries: number };
+  inquiryStatusSummary: { total: number; new: number; replied: number };
+  inquiryFunnel: Array<{ status: string; label: string; count: number; color: string }>;
+  responseTimeStats: { avgHours: number; within4hCount: number; within4hPercent: number; totalReplied: number };
+  replyMethodDistribution: Array<{ method: string; label: string; count: number; color: string }>;
   trend: Array<{ date: string; visitors: number; pageViews: number; inquiries: number }>;
-  sourceDistribution: Array<{ name: string; value: number }>;
+  trafficSourceDistribution: Array<{ name: string; nameZh: string; value: number; color: string }>;
+  utmSourceDistribution: Array<{ source: string; sessions: number }>;
+  utmMediumDistribution: Array<{ medium: string; sessions: number }>;
+  socialMediaBreakdown: Array<{ source: string; sourceKey: string; sessions: number }>;
+  allChannels: Array<{ channel: string; source: string; medium: string; sessions: number; inquiries: number }>;
+  referrerDistribution: Array<{ domain: string; visits: number }>;
+  inquirySourceDistribution: Array<{ name: string; nameZh: string; value: number; color: string }>;
+  inquiryUtmDistribution: Array<{ source: string; inquiries: number }>;
   regionDistribution: Array<{ name: string; visitors: number }>;
-  statusDistribution: Array<{ status: string; count: number }>;
   productInterest: Array<{ name: string; views: number }>;
 };
 
@@ -114,32 +137,28 @@ export default function AnalyticsPage() {
       color: 'text-green-600',
     },
     {
-      title: '询盘数量',
-      value: dashboard?.summary.inquiriesCount ?? 0,
-      change: getChangeText(dashboard?.summary.inquiriesCount ?? 0, previousSummary?.inquiriesCount ?? null),
+      title: '今日新询盘',
+      value: dashboard?.todayStats.newInquiries ?? 0,
+      change: '—',
       icon: MessageSquare,
       color: 'text-orange-600',
     },
     {
-      title: '产品关注',
-      value: dashboard?.productInterest.reduce((sum, i) => sum + i.views, 0) ?? 0,
+      title: '今日已回复',
+      value: dashboard?.todayStats.repliedInquiries ?? 0,
+      change: '—',
+      icon: TrendingUp,
+      color: 'text-green-600',
+    },
+    {
+      title: '待回复',
+      value: dashboard?.todayStats.pendingInquiries ?? 0,
       change: '—',
       icon: Package,
-      color: 'text-purple-600',
+      color: 'text-red-600',
     },
   ];
 
-  const statusMeta: Record<string, { label: string; color: string; bg: string; hex: string }> = {
-    NEW: { label: '新询盘', color: 'text-yellow-700', bg: 'bg-yellow-500', hex: '#eab308' },
-    READ: { label: '已读', color: 'text-blue-700', bg: 'bg-blue-500', hex: '#3b82f6' },
-    IN_PROGRESS: { label: '处理中', color: 'text-purple-700', bg: 'bg-purple-500', hex: '#a855f7' },
-    REPLIED: { label: '已回复', color: 'text-green-700', bg: 'bg-green-500', hex: '#22c55e' },
-    CLOSED: { label: '已关闭', color: 'text-gray-700', bg: 'bg-gray-500', hex: '#6b7280' },
-    SPAM: { label: '垃圾', color: 'text-red-700', bg: 'bg-red-500', hex: '#ef4444' },
-  };
-
-  const totalStatusCount = (dashboard?.statusDistribution || []).reduce((sum, item) => sum + item.count, 0);
-  const statusData = (dashboard?.statusDistribution || []).slice().sort((a, b) => b.count - a.count);
 
   return (
     <AdminLayout>
@@ -173,7 +192,7 @@ export default function AnalyticsPage() {
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -246,33 +265,291 @@ export default function AnalyticsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>流量来源 - 平台分布</CardTitle>
+              <CardTitle>流量来源分布</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={dashboard?.sourceDistribution || []}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {(dashboard?.sourceDistribution || []).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              {(dashboard?.trafficSourceDistribution || []).length === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">暂无流量数据</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={dashboard?.trafficSourceDistribution || []}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {(dashboard?.trafficSourceDistribution || []).map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Charts Row 2 - 地区分布 */}
+        {/* Charts Row 2 - 社媒渠道细分 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64c.298 0 .593.036.88.107V9.4a6.33 6.33 0 00-.88-.065A4.83 4.83 0 003.36 14.3a4.83 4.83 0 001.35 9.57 4.83 4.83 0 009.52-1.36V17.8a8.18 8.18 0 004.83 1.36V9.27a4.85 4.85 0 01-1.78-2.58z"/>
+                </svg>
+                社媒渠道细分
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(dashboard?.socialMediaBreakdown || []).length === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">
+                  暂无社媒渠道数据<br/>
+                  <span className="text-xs">请确保社媒链接带有UTM参数</span>
+                </p>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={dashboard?.socialMediaBreakdown || []} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis type="number" stroke="#64748b" />
+                    <YAxis dataKey="source" type="category" stroke="#64748b" width={80} />
+                    <Tooltip
+                      formatter={(value: number) => [`${value} 次会话`, '会话数']}
+                    />
+                    <Bar dataKey="sessions" name="会话数" radius={[0, 4, 4, 0]}>
+                      {(dashboard?.socialMediaBreakdown || []).map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={SOCIAL_COLORS[entry.sourceKey] || COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>UTM营销渠道</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(dashboard?.utmMediumDistribution || []).length === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">
+                  暂无UTM数据<br/>
+                  <span className="text-xs">使用UTM参数追踪营销活动效果</span>
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {(dashboard?.utmMediumDistribution || []).map((item, index) => {
+                    const maxSessions = Math.max(...(dashboard?.utmMediumDistribution?.map(d => d.sessions) || [1]));
+                    const percentage = (item.sessions / maxSessions) * 100;
+                    return (
+                      <div key={item.medium} className="space-y-1">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-medium text-gray-700">{item.medium}</span>
+                          <span className="text-gray-600">{item.sessions}</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{
+                              width: `${percentage}%`,
+                              backgroundColor: COLORS[index % COLORS.length],
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* 完整渠道列表 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              完整流量来源
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(dashboard?.allChannels || []).length === 0 ? (
+              <p className="text-sm text-gray-500 py-4 text-center">暂无渠道数据</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-2 font-medium text-gray-600">渠道</th>
+                      <th className="text-left py-3 px-2 font-medium text-gray-600">类型</th>
+                      <th className="text-right py-3 px-2 font-medium text-gray-600">会话</th>
+                      <th className="text-right py-3 px-2 font-medium text-gray-600">占比</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(dashboard?.allChannels || []).map((channel, index) => {
+                      const total = (dashboard?.allChannels || []).reduce((sum, c) => sum + c.sessions, 0);
+                      const percentage = total > 0 ? ((channel.sessions / total) * 100).toFixed(1) : '0';
+                      return (
+                        <tr key={channel.channel + index} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-3 px-2">
+                            <div className="flex items-center gap-2">
+                              {channel.medium === 'utm' && (
+                                <span
+                                  className="w-3 h-3 rounded-full"
+                                  style={{ backgroundColor: SOCIAL_COLORS[channel.source.toLowerCase()] || COLORS[0] }}
+                                />
+                              )}
+                              {channel.medium === 'referral' && (
+                                <span className="w-3 h-3 rounded-full bg-blue-500" />
+                              )}
+                              {channel.medium === 'organic' && (
+                                <span className="w-3 h-3 rounded-full bg-green-500" />
+                              )}
+                              <span className="font-medium text-gray-800">{channel.channel}</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-2">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                              channel.medium === 'utm' ? 'bg-purple-100 text-purple-800' :
+                              channel.medium === 'referral' ? 'bg-blue-100 text-blue-800' :
+                              'bg-green-100 text-green-800'
+                            }`}>
+                              {channel.medium === 'utm' ? '社媒' : channel.medium === 'referral' ? '引荐' : '自然'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-2 text-right font-medium">{channel.sessions}</td>
+                          <td className="py-3 px-2 text-right text-gray-500">{percentage}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* 引荐来源 */}
+        {(dashboard?.referrerDistribution || []).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                引荐来源
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {(dashboard?.referrerDistribution || []).map((ref, index) => {
+                  const maxVisits = Math.max(...(dashboard?.referrerDistribution?.map(d => d.visits) || [1]));
+                  const percentage = (ref.visits / maxVisits) * 100;
+                  return (
+                    <div key={ref.domain} className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium text-gray-700">{ref.domain}</span>
+                        <span className="text-gray-600">{ref.visits}次访问</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-blue-500 transition-all duration-500"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Charts Row 3 - 询盘来源分析 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>询盘来源分布</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(dashboard?.inquirySourceDistribution || []).length === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">
+                  暂无询盘来源数据
+                </p>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={dashboard?.inquirySourceDistribution || []}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {(dashboard?.inquirySourceDistribution || []).map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>询盘渠道来源（UTM）</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(dashboard?.inquiryUtmDistribution || []).length === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">
+                  暂无UTM询盘数据<br/>
+                  <span className="text-xs">带UTM参数的询盘将显示在这里</span>
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {(dashboard?.inquiryUtmDistribution || []).map((item, index) => {
+                    const total = (dashboard?.inquiryUtmDistribution || []).reduce((sum, d) => sum + d.inquiries, 0);
+                    const percentage = total > 0 ? (item.inquiries / total) * 100 : 0;
+                    return (
+                      <div key={item.source} className="space-y-1">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-medium text-gray-700">{item.source}</span>
+                          <span className="text-gray-600">{item.inquiries} ({percentage.toFixed(1)}%)</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-terracotta transition-all duration-500"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Charts Row 4 - 地区和产品分布 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -312,84 +589,158 @@ export default function AnalyticsPage() {
           </Card>
         </div>
 
+        {/* 询盘状态统计 */}
         <Card>
           <CardHeader>
-            <CardTitle>询盘状态占比</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              询盘状态统计
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {statusData.length === 0 ? (
-              <p className="text-sm text-gray-500">暂无状态数据</p>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-                <div className="space-y-4">
-                  {statusData.map((item) => {
-                    const meta = statusMeta[item.status] || {
-                      label: item.status,
-                      color: 'text-gray-700',
-                      bg: 'bg-gray-500',
-                      hex: '#6b7280',
-                    };
-                    const percent = totalStatusCount > 0 ? (item.count / totalStatusCount) * 100 : 0;
+            {/* 总览数据 */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="bg-gray-50 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-[#0A1628]">{dashboard?.inquiryStatusSummary?.total || 0}</div>
+                <div className="text-sm text-gray-600 mt-1">总询盘数</div>
+              </div>
+              <div className="bg-yellow-50 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-yellow-600">{dashboard?.inquiryStatusSummary?.new || 0}</div>
+                <div className="text-sm text-gray-600 mt-1">新询盘</div>
+              </div>
+              <div className="bg-green-50 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-green-600">{dashboard?.inquiryStatusSummary?.replied || 0}</div>
+                <div className="text-sm text-gray-600 mt-1">已回复</div>
+              </div>
+            </div>
 
+            {/* 回复方式明细 */}
+            <div className="border-t border-gray-200 pt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">回复方式明细</h4>
+              {(dashboard?.replyMethodDistribution || []).length === 0 ? (
+                <p className="text-sm text-gray-400 py-4 text-center">暂无回复记录</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {(dashboard?.replyMethodDistribution || []).map((item) => {
+                    const total = dashboard?.inquiryStatusSummary?.replied || 1;
+                    const percent = total > 0 ? (item.count / total) * 100 : 0;
                     return (
-                      <div key={item.status} className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <div className={`font-medium ${meta.color}`}>{meta.label}</div>
-                          <div className="text-gray-600">
-                            {item.count} ({percent.toFixed(1)}%)
+                      <div key={item.method} className="bg-gray-50 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                            <span className="text-sm font-medium text-gray-700">{item.label}</span>
                           </div>
+                          <span className="text-sm font-bold text-gray-800">{item.count}</span>
                         </div>
-                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-                          <div className={`h-full ${meta.bg}`} style={{ width: `${percent}%` }} />
+                        <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${percent}%`, backgroundColor: item.color }} />
                         </div>
                       </div>
                     );
                   })}
                 </div>
-
-                <div className="h-[260px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={statusData}
-                        dataKey="count"
-                        nameKey="status"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={55}
-                        outerRadius={95}
-                        paddingAngle={2}
-                        label={({ status, percent }) => {
-                          const meta = statusMeta[String(status)] || {
-                            label: String(status),
-                          };
-                          return `${meta.label} ${(Number(percent) * 100).toFixed(0)}%`;
-                        }}
-                      >
-                        {statusData.map((item) => {
-                          const meta = statusMeta[item.status] || { hex: '#6b7280' };
-                          return <Cell key={item.status} fill={meta.hex} />;
-                        })}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number, name: string) => {
-                          const meta = statusMeta[name] || { label: name };
-                          return [`${value} 条`, meta.label];
-                        }}
-                      />
-                      <Legend
-                        formatter={(value) => {
-                          const meta = statusMeta[value] || { label: String(value) };
-                          return meta.label;
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </CardContent>
         </Card>
+
+        {/* 询盘转化漏斗 & 响应时效 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* 询盘转化漏斗 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                询盘转化漏斗
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(dashboard?.inquiryFunnel || []).length === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">暂无询盘数据</p>
+              ) : (
+                <div className="space-y-3">
+                  {(dashboard?.inquiryFunnel || []).map((item, index) => {
+                    const maxCount = Math.max(...(dashboard?.inquiryFunnel?.map(f => f.count) || [1]));
+                    const width = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                    return (
+                      <div key={item.status} className="space-y-1">
+                        <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                            <span className="font-medium text-gray-700">{item.label}</span>
+                          </div>
+                          <span className="text-gray-600">{item.count}</span>
+                        </div>
+                        <div className="h-3 rounded-full bg-gray-100 overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ width: `${width}%`, backgroundColor: item.color }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* 响应时效分析 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                响应时效分析
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {dashboard?.responseTimeStats?.totalReplied === 0 ? (
+                <p className="text-sm text-gray-500 py-8 text-center">暂无回复数据</p>
+              ) : (
+                <div className="space-y-6">
+                  {/* 平均响应时间 */}
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-[#0A1628]">
+                      {dashboard?.responseTimeStats?.avgHours || 0}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">小时平均响应时间</div>
+                  </div>
+
+                  {/* 4小时响应率 */}
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">4小时内响应</span>
+                      <span className="text-lg font-bold text-green-600">
+                        {dashboard?.responseTimeStats?.within4hPercent || 0}%
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-green-200 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-green-500 transition-all duration-500"
+                        style={{ width: `${dashboard?.responseTimeStats?.within4hPercent || 0}%` }}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {dashboard?.responseTimeStats?.within4hCount || 0} / {dashboard?.responseTimeStats?.totalReplied || 0} 条询盘
+                    </div>
+                  </div>
+
+                  {/* 提示 */}
+                  <div className="bg-blue-50 rounded-lg p-3 text-sm text-blue-700">
+                    <p>B2B行业最佳实践：4小时内回复询盘可提升50%成交率</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AdminLayout>
   );
