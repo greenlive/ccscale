@@ -179,38 +179,110 @@ function categorizeByUtm(source: string | null, medium: string | null, campaign:
   const m = (medium || '').toLowerCase();
   const c = (campaign || '').toLowerCase();
 
-  // 检测付费广告
-  if (PAID_SOURCES.some(ps => s.includes(ps.toLowerCase()) || m.includes(ps.toLowerCase()))) {
-    return TrafficSource.PAID_SEARCH;
+  // 统一平台名称映射 - 将各种命名规范统一为标准名称
+  const platformMap: Record<string, string> = {
+    'google ads': 'google',
+    'google-adwords': 'google',
+    'google_ads': 'google',
+    'adwords': 'google',
+    'google': 'google',
+    'bing ads': 'bing',
+    'bing-ads': 'bing',
+    'bingads': 'bing',
+    'facebook ads': 'facebook',
+    'facebook-ads': 'facebook',
+    'facebook_ad': 'facebook',
+    'meta ads': 'facebook',
+    'meta-ads': 'meta',
+    'instagram ads': 'instagram',
+    'instagram-ads': 'instagram',
+    'linkedin ads': 'linkedin',
+    'linkedin-ads': 'linkedin',
+    'linkedin-sponsored': 'linkedin',
+    'linkedin': 'linkedin',
+    'tiktok ads': 'tiktok',
+    'tiktok-ads': 'tiktok',
+    'tiktok-sponsored': 'tiktok',
+    'tiktok': 'tiktok',
+    'youtube ads': 'youtube',
+    'youtube-ads': 'youtube',
+    'youtube': 'youtube',
+    'pinterest ads': 'pinterest',
+    'pinterest-ads': 'pinterest',
+    'pinterest': 'pinterest',
+    'twitter ads': 'twitter',
+    'twitter-ads': 'twitter',
+    'twitter': 'twitter',
+    'x ads': 'x',
+    'x-ads': 'x',
+    'newsletter': 'email',
+    'direct': 'direct',
+  };
+
+  // 获取标准化平台名
+  const getPlatform = (str: string): string => {
+    const lower = str.toLowerCase();
+    return platformMap[lower] || lower;
+  };
+
+  const platform = getPlatform(s);
+  const platformMedium = getPlatform(m);
+
+  // 检测是否为付费广告 (cpc, ppc, paid, sponsored 等关键词)
+  const isPaid = m.includes('cpc') || m.includes('ppc') || m.includes('paid') ||
+                 m.includes('sponsored') || m.includes('display') || m.includes('banner') ||
+                 m.includes('cpm');
+
+  // 检测付费广告 - 根据平台返回对应TrafficSource
+  if (PAID_SOURCES.some(ps => s.includes(ps.toLowerCase()) || m.includes(ps.toLowerCase())) || isPaid) {
+    // 社交平台付费广告
+    if (['facebook', 'instagram', 'linkedin', 'tiktok', 'twitter', 'x', 'pinterest'].includes(platform)) {
+      return TrafficSource.SOCIAL_PAID;
+    }
+    // 视频平台付费
+    if (['youtube'].includes(platform)) {
+      return TrafficSource.VIDEO;
+    }
+    // 搜索引擎付费广告
+    if (['google', 'bing', 'baidu'].includes(platform)) {
+      return TrafficSource.PAID_SEARCH;
+    }
+    // 其他展示广告
+    return TrafficSource.DISPLAY;
   }
 
   // 检测邮件营销
-  if (m.includes('email') || m.includes('mail') || s.includes('newsletter')) {
+  if (m.includes('email') || m.includes('mail') || s.includes('newsletter') || platform === 'email') {
     return TrafficSource.EMAIL;
   }
 
-  // 检测展示广告
+  // 检测展示广告（非付费的展示类）
   if (m.includes('display') || m.includes('banner') || m.includes('cpm')) {
     return TrafficSource.DISPLAY;
   }
 
   // 检测视频平台
-  if (s.includes('youtube') || s.includes('tiktok') || s.includes('video')) {
+  if (['youtube', 'tiktok', 'vimeo'].includes(platform)) {
     return TrafficSource.VIDEO;
   }
 
   // 检测社交媒体
-  if (m.includes('social') || m.includes('social-media')) {
+  if (m.includes('social') || m.includes('social-media') || platformMedium.includes('social')) {
     return m.includes('paid') ? TrafficSource.SOCIAL_PAID : TrafficSource.SOCIAL_ORGANIC;
   }
 
+  // 社交平台自然流量
+  if (['linkedin', 'facebook', 'instagram', 'twitter', 'x', 'pinterest', 'whatsapp', 'telegram', 'reddit', 'quora'].includes(platform)) {
+    return TrafficSource.SOCIAL_ORGANIC;
+  }
+
   // 检测搜索引擎
-  if (m.includes('organic') || m.includes('search')) {
+  if (m.includes('organic') || m.includes('search') || platformMedium.includes('organic')) {
     return TrafficSource.ORGANIC_SEARCH;
   }
 
   // 引荐链接
-  if (m.includes('referral') || m.includes('banner') || m.includes('cpc')) {
+  if (m.includes('referral') || m.includes('cpc')) {
     return TrafficSource.REFERRAL;
   }
 

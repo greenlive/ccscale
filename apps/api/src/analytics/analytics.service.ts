@@ -246,12 +246,41 @@ export class AnalyticsService {
       }))
       .sort((a, b) => b.value - a.value);
 
-    // UTM 来源分布（详细渠道）
+    // UTM 来源分布（详细渠道）- 增加平台类型和颜色
+    const CHANNEL_COLORS: Record<string, { color: string; type: string }> = {
+      google: { color: '#4285F4', type: 'search' },
+      'google ads': { color: '#4285F4', type: 'paid-search' },
+      bing: { color: '#008373', type: 'search' },
+      baidu: { color: '#2932e1', type: 'search' },
+      linkedin: { color: '#0A66C2', type: 'social' },
+      facebook: { color: '#1877F2', type: 'social' },
+      instagram: { color: '#E4405F', type: 'social' },
+      tiktok: { color: '#000000', type: 'video' },
+      youtube: { color: '#FF0000', type: 'video' },
+      twitter: { color: '#1DA1F2', type: 'social' },
+      x: { color: '#000000', type: 'social' },
+      pinterest: { color: '#E60023', type: 'social' },
+      whatsapp: { color: '#25D366', type: 'social' },
+      reddit: { color: '#FF4500', type: 'social' },
+      quora: { color: '#B92B27', type: 'social' },
+      direct: { color: '#64748b', type: 'direct' },
+      newsletter: { color: '#ec4899', type: 'email' },
+      email: { color: '#ec4899', type: 'email' },
+    };
+
     const utmSourceDistribution = utmSourceGroups
-      .map((g) => ({
-        source: g.utmSource || 'Unknown',
-        sessions: g._count,
-      }))
+      .map((g) => {
+        const sourceKey = (g.utmSource || '').toLowerCase();
+        const meta = CHANNEL_COLORS[sourceKey] || { color: '#94a3b8', type: 'other' };
+        return {
+          source: capitalizeFirst(g.utmSource || 'Unknown'),
+          sourceKey: sourceKey,
+          sessions: g._count,
+          color: meta.color,
+          type: meta.type,
+          typeLabel: getTypeLabel(meta.type),
+        };
+      })
       .sort((a, b) => b.sessions - a.sessions);
 
     // 询盘来源分析
@@ -584,4 +613,20 @@ function buildReferrerDistribution(sessions: Array<{ referrer?: string | null }>
 function capitalizeFirst(str: string): string {
   if (!str) return 'Unknown';
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+// 获取渠道类型标签
+function getTypeLabel(type: string): string {
+  const labels: Record<string, string> = {
+    'search': '搜索引擎',
+    'paid-search': '付费搜索',
+    'social': '社交媒体',
+    'video': '视频平台',
+    'email': '邮件营销',
+    'display': '展示广告',
+    'referral': '引荐链接',
+    'direct': '直接访问',
+    'other': '其他',
+  };
+  return labels[type] || labels.other;
 }

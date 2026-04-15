@@ -50,7 +50,7 @@ type DashboardResponse = {
   replyMethodDistribution: Array<{ method: string; label: string; count: number; color: string }>;
   trend: Array<{ date: string; visitors: number; pageViews: number; inquiries: number }>;
   trafficSourceDistribution: Array<{ name: string; nameZh: string; value: number; color: string }>;
-  utmSourceDistribution: Array<{ source: string; sessions: number }>;
+  utmSourceDistribution: Array<{ source: string; sourceKey: string; sessions: number; color: string; type: string; typeLabel: string }>;
   utmMediumDistribution: Array<{ medium: string; sessions: number }>;
   socialMediaBreakdown: Array<{ source: string; sourceKey: string; sessions: number }>;
   allChannels: Array<{ channel: string; source: string; medium: string; sessions: number; inquiries: number }>;
@@ -340,28 +340,49 @@ export default function AnalyticsPage() {
               <CardTitle>UTM营销渠道</CardTitle>
             </CardHeader>
             <CardContent>
-              {(dashboard?.utmMediumDistribution || []).length === 0 ? (
+              {(dashboard?.utmSourceDistribution || []).length === 0 ? (
                 <p className="text-sm text-gray-500 py-8 text-center">
                   暂无UTM数据<br/>
                   <span className="text-xs">使用UTM参数追踪营销活动效果</span>
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {(dashboard?.utmMediumDistribution || []).map((item, index) => {
-                    const maxSessions = Math.max(...(dashboard?.utmMediumDistribution?.map(d => d.sessions) || [1]));
+                  {(dashboard?.utmSourceDistribution || []).map((item, index) => {
+                    const maxSessions = Math.max(...(dashboard?.utmSourceDistribution?.map(d => d.sessions) || [1]));
                     const percentage = (item.sessions / maxSessions) * 100;
+                    const total = (dashboard?.utmSourceDistribution || []).reduce((sum, d) => sum + d.sessions, 0);
+                    const sharePercent = total > 0 ? ((item.sessions / total) * 100).toFixed(1) : '0';
                     return (
-                      <div key={item.medium} className="space-y-1">
+                      <div key={item.source} className="space-y-1">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium text-gray-700">{item.medium}</span>
-                          <span className="text-gray-600">{item.sessions}</span>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: item.color || COLORS[index % COLORS.length] }}
+                            />
+                            <span className="font-medium text-gray-700">{item.source}</span>
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${
+                              item.type === 'paid-search' ? 'bg-orange-100 text-orange-700' :
+                              item.type === 'social' ? 'bg-blue-100 text-blue-700' :
+                              item.type === 'video' ? 'bg-red-100 text-red-700' :
+                              item.type === 'email' ? 'bg-pink-100 text-pink-700' :
+                              item.type === 'search' ? 'bg-green-100 text-green-700' :
+                              'bg-gray-100 text-gray-600'
+                            }`}>
+                              {item.typeLabel}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="font-medium text-gray-800">{item.sessions}</span>
+                            <span className="text-gray-400 text-xs ml-1">({sharePercent}%)</span>
+                          </div>
                         </div>
                         <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                           <div
                             className="h-full rounded-full transition-all duration-500"
                             style={{
                               width: `${percentage}%`,
-                              backgroundColor: COLORS[index % COLORS.length],
+                              backgroundColor: item.color || COLORS[index % COLORS.length],
                             }}
                           />
                         </div>
