@@ -35,7 +35,7 @@
     "exploreProducts": "Explore Products",
     "getQuote": "Get Quote",
     "whyChooseUs": "Why Choose Us",
-    "ourProducts": "Our Products",
+    "ourProducts": "Product Categories",
     "viewAll": "View All",
     "oemProcess": "OEM Customization Process",
     "trustedPartners": "Trusted by Global Partners",
@@ -61,7 +61,7 @@
     "excellentServiceDesc": "24/7 technical support and after-sales service"
   },
   "products": {
-    "title": "Our Products",
+    "title": "Product Categories",
     "categories": "Categories",
     "allProducts": "All Products",
     "noProducts": "No products found",

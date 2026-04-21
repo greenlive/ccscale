@@ -35,7 +35,7 @@
     "exploreProducts": "浏览产品",
     "getQuote": "获取报价",
     "whyChooseUs": "为什么选择我们",
-    "ourProducts": "我们的产品",
+    "ourProducts": "产品分类",
     "viewAll": "查看全部",
     "oemProcess": "OEM定制流程",
     "trustedPartners": "全球合作伙伴",
@@ -61,7 +61,7 @@
     "excellentServiceDesc": "24/7技术支持和售后服务"
   },
   "products": {
-    "title": "我们的产品",
+    "title": "产品分类",
     "categories": "产品分类",
     "allProducts": "全部产品",
     "noProducts": "未找到产品",

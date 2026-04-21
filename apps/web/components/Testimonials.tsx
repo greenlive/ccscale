@@ -33,7 +33,7 @@ export default function Testimonials({ locale }: { locale: string }) {
   const touchStartTimeRef = useRef<number>(0);
   const itemsPerPage = 3;
   const minSwipeDistance = 50;
-  const maxSwipeTime = 500; // 最大滑动时间（毫秒），超过则不视为有意滑动
+  const maxSwipeTime = 500;
 
   useEffect(() => {
     fetchTestimonials();
@@ -44,7 +44,6 @@ export default function Testimonials({ locale }: { locale: string }) {
       const response = await fetch(getApiUrl('testimonials?isActive=true'));
       if (response.ok) {
         const data = await response.json();
-        // Sort by order field
         const sorted = data.sort((a: Testimonial, b: Testimonial) => a.order - b.order);
         setTestimonials(sorted);
       }
@@ -85,7 +84,6 @@ export default function Testimonials({ locale }: { locale: string }) {
     const distance = touchStartXRef.current - touchEndXRef.current;
     const timeDiff = Date.now() - touchStartTimeRef.current;
 
-    // 检查滑动距离和时间，避免误触
     if (Math.abs(distance) < minSwipeDistance || timeDiff > maxSwipeTime) return;
 
     if (distance > 0) {
@@ -100,7 +98,6 @@ export default function Testimonials({ locale }: { locale: string }) {
     return testimonials.slice(start, start + itemsPerPage);
   };
 
-  // Auto-play carousel
   useEffect(() => {
     if (testimonials.length <= itemsPerPage || isPaused) return;
 
@@ -116,31 +113,30 @@ export default function Testimonials({ locale }: { locale: string }) {
       <section className="py-16 bg-gradient-to-b from-gray-50 to-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-3 mb-12">
-            <div className="h-px w-12 bg-accent"></div>
+            <div className="h-px w-12 bg-accent" />
             <h2 className="text-3xl font-bold text-center text-[#0A1628]">
               {t('whatClientsSay')}
             </h2>
-            <div className="h-px w-12 bg-accent"></div>
+            <div className="h-px w-12 bg-accent" />
           </div>
-          {/* Skeleton Loading */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-white rounded-2xl shadow-lg p-6 md:p-8 animate-pulse">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="w-12 h-12 bg-gray-200 rounded-full" />
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-32"></div>
+                    <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
+                    <div className="h-3 bg-gray-200 rounded w-32" />
                   </div>
                 </div>
                 <div className="space-y-2 mb-6">
-                  <div className="h-3 bg-gray-200 rounded w-full"></div>
-                  <div className="h-3 bg-gray-200 rounded w-full"></div>
-                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-full" />
+                  <div className="h-3 bg-gray-200 rounded w-full" />
+                  <div className="h-3 bg-gray-200 rounded w-3/4" />
                 </div>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <div key={star} className="w-4 h-4 bg-gray-200 rounded-full"></div>
+                    <div key={star} className="w-4 h-4 bg-gray-200 rounded-full" />
                   ))}
                 </div>
               </div>
@@ -157,7 +153,6 @@ export default function Testimonials({ locale }: { locale: string }) {
 
   const currentTestimonials = getCurrentTestimonials();
 
-  // Get dynamic grid classes based on number of items
   const getGridClasses = () => {
     const count = currentTestimonials.length;
     if (count === 1) {
@@ -172,11 +167,11 @@ export default function Testimonials({ locale }: { locale: string }) {
     <section className="py-16 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center gap-3 mb-12">
-          <div className="h-px w-12 bg-accent"></div>
+          <div className="h-px w-12 bg-accent" />
           <h2 className="text-3xl font-bold text-center text-[#0A1628]">
             {t('whatClientsSay')}
           </h2>
-          <div className="h-px w-12 bg-accent"></div>
+          <div className="h-px w-12 bg-accent" />
         </div>
 
         <div
@@ -193,7 +188,6 @@ export default function Testimonials({ locale }: { locale: string }) {
           tabIndex={0}
           aria-label={locale === 'en' ? 'Testimonials carousel' : '客户评价轮播'}
         >
-          {/* Testimonials Grid */}
           <div className={getGridClasses()}>
             {currentTestimonials.map((testimonial, index) => {
               const name = locale === 'en' ? testimonial.nameEn : testimonial.nameZh;
@@ -204,61 +198,95 @@ export default function Testimonials({ locale }: { locale: string }) {
               return (
                 <div
                   key={testimonial.id}
-                  className="relative bg-white rounded-2xl shadow-lg p-6 md:p-8 flex flex-col h-full transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1"
+                  className="relative bg-white rounded-2xl shadow-lg p-6 md:p-8 flex flex-col h-full transform transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  {/* Quote Icon */}
                   <div className="absolute -top-3 -left-2">
                     <div className="bg-accent/10 rounded-full p-2">
                       <Quote className="h-5 w-5 text-accent" />
                     </div>
                   </div>
 
-                  {/* Rating */}
-                  <div className="flex gap-0.5 mb-4">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-4 w-4 ${
-                          star <= (testimonial.rating || 5)
-                            ? 'text-yellow-400 fill-current'
-                            : 'text-gray-200'
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-grow mb-6">
-                    <p className="text-gray-600 leading-relaxed line-clamp-5">
-                      &ldquo;{content}&rdquo;
-                    </p>
-                  </div>
-
-                  {/* Author */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-                    {testimonial.avatarUrl ? (
-                      <img
-                        src={testimonial.avatarUrl}
-                        alt={name}
-                        className="h-12 w-12 rounded-full object-cover border-2 border-accent/20"
-                      />
-                    ) : (
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent/20 to-accent/40 flex items-center justify-center">
-                        <span className="text-lg font-semibold text-accent">
-                          {name.charAt(0).toUpperCase()}
-                        </span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center p-8 z-10">
+                    <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <Quote className="h-8 w-8 mx-auto mb-4 text-accent" />
+                      <p className="text-base leading-relaxed mb-4">
+                        &ldquo;{content}&rdquo;
+                      </p>
+                      <p className="font-semibold">{name}</p>
+                      <p className="text-sm text-gray-300">
+                        {company && `${company}`}
+                        {company && country && ' · '}
+                        {country && country}
+                      </p>
+                      <div className="flex justify-center gap-1 mt-3">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-4 w-4 ${
+                              star <= (testimonial.rating || 5)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-500'
+                            }`}
+                          />
+                        ))}
                       </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-[#0A1628] truncate">{name}</p>
-                      {(company || country) && (
-                        <p className="text-xs text-gray-500 truncate">
-                          {company && `${company}`}
-                          {company && country && ' · '}
-                          {country && country}
-                        </p>
+                      <a
+                        href="/contact"
+                        className="inline-flex items-center gap-2 mt-4 text-sm text-accent hover:text-white transition-colors"
+                      >
+                        {locale === 'en' ? 'Get Your Quote' : '获取报价'}
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="default-content transition-opacity duration-500 group-hover:opacity-0">
+                    <div className="flex gap-0.5 mb-4">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 ${
+                            star <= (testimonial.rating || 5)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="flex-grow mb-6">
+                      <p className="text-gray-600 leading-relaxed line-clamp-5">
+                        &ldquo;{content}&rdquo;
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                      {testimonial.avatarUrl ? (
+                        <img
+                          src={testimonial.avatarUrl}
+                          alt={name}
+                          className="h-12 w-12 rounded-full object-cover border-2 border-accent/20"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent/20 to-accent/40 flex items-center justify-center">
+                          <span className="text-lg font-semibold text-accent">
+                            {name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
                       )}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-[#0A1628] truncate">{name}</p>
+                        {(company || country) && (
+                          <p className="text-xs text-gray-500 truncate">
+                            {company && `${company}`}
+                            {company && country && ' · '}
+                            {country && country}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -266,7 +294,6 @@ export default function Testimonials({ locale }: { locale: string }) {
             })}
           </div>
 
-          {/* Navigation Arrows */}
           {testimonials.length > itemsPerPage && (
             <>
               <button
@@ -287,7 +314,6 @@ export default function Testimonials({ locale }: { locale: string }) {
           )}
         </div>
 
-        {/* Dots Navigation */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 mt-10">
             {Array.from({ length: totalPages }).map((_, index) => (
@@ -305,7 +331,6 @@ export default function Testimonials({ locale }: { locale: string }) {
           </div>
         )}
 
-        {/* Testimonial Counter */}
         {testimonials.length > itemsPerPage && (
           <div className="text-center mt-4">
             <span className="text-sm text-gray-500">

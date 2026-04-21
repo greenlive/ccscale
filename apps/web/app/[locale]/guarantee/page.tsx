@@ -199,7 +199,7 @@ function GuaranteePageContent() {
             {t('cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button asChild size="lg" variant="outline" className="border-2 border-blue-200 text-[#0A1628] hover:bg-white hover:text-[#0A1628]">
               <Link href="/about">
                 {t('cta.bookFactoryVisit')}
               </Link>
