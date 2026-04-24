@@ -75,13 +75,13 @@ function CasesContent() {
 
   return (
     <div>
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-16">
+      <section className="bg-primary text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <Building2 className="h-16 w-16 mx-auto mb-6 text-blue-300" />
+          <Building2 className="h-16 w-16 mx-auto mb-6 text-warm-silver" />
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
             {isZh ? '客户案例' : 'Case Studies'}
           </h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {isZh
               ? '全球客户的信赖之选，共同成长的合作伙伴'
               : 'Trusted by global clients, partners for mutual growth'}
@@ -98,7 +98,7 @@ function CasesContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-3xl font-bold text-[#0A1628] mb-2">
+              <h3 className="text-3xl font-bold text-primary mb-2">
                 500+
               </h3>
               <p className="text-gray-600">
@@ -109,7 +109,7 @@ function CasesContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Globe className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-3xl font-bold text-[#0A1628] mb-2">
+              <h3 className="text-3xl font-bold text-primary mb-2">
                 80+
               </h3>
               <p className="text-gray-600">
@@ -120,7 +120,7 @@ function CasesContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Calendar className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-3xl font-bold text-[#0A1628] mb-2">
+              <h3 className="text-3xl font-bold text-primary mb-2">
                 15+
               </h3>
               <p className="text-gray-600">
@@ -129,7 +129,7 @@ function CasesContent() {
             </div>
           </div>
 
-          <h2 className="text-3xl font-bold text-[#0A1628] text-center mb-12">
+          <h2 className="text-3xl font-bold text-primary text-center mb-12">
             {isZh ? '出货展示' : 'Shipment Gallery'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -148,7 +148,7 @@ function CasesContent() {
                       />
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold text-[#0A1628]">{title}</h3>
+                      <h3 className="font-semibold text-primary">{title}</h3>
                     </CardContent>
                   </Card>
                 )
@@ -157,12 +157,12 @@ function CasesContent() {
         </div>
       </section>
 
-      <section className="py-16 bg-[#0A1628] text-white">
+      <section className="py-16 bg-primary text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             {isZh ? '成为我们的合作伙伴' : 'Become Our Partner'}
           </h2>
-          <p className="text-xl text-blue-200 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver mb-8 max-w-2xl mx-auto">
             {isZh
               ? '加入我们的全球合作伙伴网络，共同开拓市场'
               : 'Join our global partner network and explore markets together'}

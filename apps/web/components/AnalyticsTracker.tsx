@@ -1,17 +1,21 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
-import { getSessionId } from '@/lib/utils/tracking';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { getSessionId, getStoredTrackingData, saveTrackingData } from '@/lib/utils/tracking';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const sessionCreated = useRef(false);
   const sessionId = useRef<string>('');
 
   useEffect(() => {
+    // Save UTM data from URL to localStorage when page loads
+    saveTrackingData();
+
     // Create or get session ID
     const sid = getSessionId();
     sessionId.current = sid;
@@ -19,7 +23,10 @@ export function AnalyticsTracker() {
     if (!sessionCreated.current) {
       sessionCreated.current = true;
 
-      // Report new session
+      // Get UTM tracking data
+      const trackingData = getStoredTrackingData();
+
+      // Report new session with UTM data
       fetch(`${API_URL}/api/analytics/session`, {
         method: 'POST',
         headers: {
@@ -30,11 +37,19 @@ export function AnalyticsTracker() {
           sessionId: sid,
           userAgent: navigator.userAgent,
           landingPage: window.location.href,
+          // UTM tracking data
+          utmSource: trackingData.utmSource,
+          utmMedium: trackingData.utmMedium,
+          utmCampaign: trackingData.utmCampaign,
+          utmContent: trackingData.utmContent,
+          utmTerm: trackingData.utmTerm,
+          trafficSource: trackingData.trafficSource,
         }),
       }).catch(() => {
         // silently ignore analytics errors
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -47,12 +62,12 @@ export function AnalyticsTracker() {
       body: JSON.stringify({
         sessionId: sessionId.current,
         eventType: 'PAGE_VIEW',
-        pageUrl: pathname,
+        pageUrl: pathname + (searchParams.toString() ? `?${searchParams.toString()}` : ''),
       }),
     }).catch(() => {
       // silently ignore analytics errors
     });
-  }, [pathname]);
+  }, [pathname, searchParams]);
 
   return null;
 }

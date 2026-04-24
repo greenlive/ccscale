@@ -85,9 +85,10 @@ export default function ProductCategories({ locale }: { locale: string }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {displayCategories.map((category) => {
+            const cat = category as any;
             const name = locale === 'en'
-              ? (category as any).nameEn || category.name
-              : (category as any).nameZh || category.name;
+              ? cat.nameEn || cat.name || ''
+              : cat.nameZh || cat.name || '';
             return (
               <Link key={category.id} href="/products">
                 <Card className="group hover:shadow-xl transition-all duration-300 overflow-hidden">

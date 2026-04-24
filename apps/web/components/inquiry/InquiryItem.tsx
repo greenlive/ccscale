@@ -71,7 +71,7 @@ export function InquiryItem({ item, onRemove }: InquiryItemProps) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-[#0A1628] truncate">
+        <h4 className="font-semibold text-primary truncate">
           {productName}
         </h4>
         <p className="text-sm text-gray-500 mt-1">SKU: {item.sku}</p>

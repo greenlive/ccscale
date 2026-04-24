@@ -46,7 +46,7 @@ export function ProductDownloads({
 
   return (
     <section className="py-8">
-      <h3 className="text-2xl font-bold text-[#0A1628] mb-6">
+      <h3 className="text-2xl font-bold text-primary mb-6">
         {title}
       </h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -61,7 +61,7 @@ export function ProductDownloads({
                 {getFileIcon(download.fileType)}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-[#0A1628] truncate">
+                <h4 className="font-medium text-primary truncate">
                   {downloadTitle}
                 </h4>
                 {download.fileSize && (

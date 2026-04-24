@@ -41,7 +41,7 @@ export function RelatedProducts({
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-[#0A1628]">
+          <h2 className="text-3xl font-bold text-primary">
             {title}
           </h2>
           <Link
@@ -75,7 +75,7 @@ export function RelatedProducts({
                         SKU: {product.sku}
                       </div>
                     )}
-                    <h3 className="font-semibold text-lg text-[#0A1628] group-hover:text-accent transition-colors">
+                    <h3 className="font-semibold text-lg text-primary group-hover:text-accent transition-colors">
                       {productName}
                     </h3>
                     {(product.priceMin || product.priceMax) && (

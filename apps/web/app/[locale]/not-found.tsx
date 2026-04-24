@@ -12,7 +12,7 @@ export default function NotFound() {
       <div className="container mx-auto px-4 text-center">
         <div className="max-w-md mx-auto">
           <div className="text-9xl font-bold text-accent mb-4">404</div>
-          <h2 className="text-3xl font-bold text-[#0A1628] mb-4">
+          <h2 className="text-3xl font-bold text-primary mb-4">
             {t('pageNotFound')}
           </h2>
           <p className="text-gray-600 mb-8">

@@ -58,7 +58,7 @@ export function ContactForm({ locale }: ContactFormProps) {
     return (
       <div className="text-center py-12">
         <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-[#0A1628] mb-2">
+        <h3 className="text-lg font-semibold text-primary mb-2">
           {t('Message sent!', '留言已发送！')}
         </h3>
         <p className="text-gray-600">
@@ -110,7 +110,7 @@ export function ContactForm({ locale }: ContactFormProps) {
         <Textarea name="message" value={formData.message} onChange={handleChange} rows={4} placeholder={t('Tell us about your needs...', '请告诉我们您的需求...')} className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:ring-white/30" />
         {errors.message && <p className="text-xs text-red-300 mt-1">{errors.message}</p>}
       </div>
-      <Button type="submit" disabled={status === 'submitting'} className="w-full bg-white text-[#0A1628] hover:bg-white/90 font-semibold">
+      <Button type="submit" disabled={status === 'submitting'} className="w-full bg-white text-primary hover:bg-white/90 font-semibold">
         {status === 'submitting' ? (
           t('Sending...', '发送中...')
         ) : (

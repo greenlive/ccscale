@@ -34,7 +34,7 @@ export default function AlibabaTrustBadge() {
 
               {/* Right - Content */}
               <div className="md:col-span-3 p-8">
-                <h2 className="text-2xl font-bold text-[#0A1628] mb-4">
+                <h2 className="text-2xl font-bold text-primary mb-4">
                   {isZh ? '通过Alibaba平台交易，更安全有保障' : 'Trade via Alibaba Platform for Extra Security'}
                 </h2>
 
@@ -42,7 +42,7 @@ export default function AlibabaTrustBadge() {
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-semibold text-[#0A1628]">
+                      <h4 className="font-semibold text-primary">
                         {isZh ? 'Trade Assurance保障' : 'Trade Assurance Covered'}
                       </h4>
                       <p className="text-sm text-gray-600">
@@ -55,7 +55,7 @@ export default function AlibabaTrustBadge() {
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-semibold text-[#0A1628]">
+                      <h4 className="font-semibold text-primary">
                         {isZh ? '第三方验厂认证' : 'Third-party Factory Audit'}
                       </h4>
                       <p className="text-sm text-gray-600">
@@ -68,7 +68,7 @@ export default function AlibabaTrustBadge() {
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-semibold text-[#0A1628]">
+                      <h4 className="font-semibold text-primary">
                         {isZh ? '争议在线处理' : 'Online Dispute Resolution'}
                       </h4>
                       <p className="text-sm text-gray-600">

@@ -11,7 +11,13 @@ import { QuickInquiryButton } from '@/components/inquiry/QuickInquiryButton';
 import { useProducts, useProductCategories } from '@/lib/api/queries';
 import { GridSkeleton, ErrorBoundary } from '@/components/ErrorBoundary';
 
-const categories = [
+// Default categories for initial render (before API loads)
+const defaultCategories = [
+  { id: 'all', nameEn: 'All Products', nameZh: '全部产品' },
+];
+
+// Extended fallback categories (used when API returns empty)
+const fallbackCategories = [
   { id: 'all', nameEn: 'All Products', nameZh: '全部产品' },
   { id: 'body-scales', nameEn: 'Body Scales', nameZh: '体重秤' },
   { id: 'hanging-scales', nameEn: 'Hanging Scales', nameZh: '吊秤' },
@@ -109,6 +115,22 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
   const { data: apiProducts = [], isLoading: productsLoading, error: productsError } = useProducts();
   const { data: apiCategories = [], isLoading: categoriesLoading } = useProductCategories();
 
+  // Use API categories if available, otherwise use fallback
+  const categories = useMemo(() => {
+    if (apiCategories.length > 0) {
+      return [
+        { id: 'all', nameEn: 'All Products', nameZh: '全部产品', slug: 'all' },
+        ...apiCategories.map((cat: any) => ({
+          id: cat.slug || String(cat.id),
+          nameEn: cat.nameEn || cat.name || '',
+          nameZh: cat.nameZh || cat.name || cat.nameEn || '',
+          slug: cat.slug || String(cat.id),
+        })),
+      ];
+    }
+    return fallbackCategories;
+  }, [apiCategories]);
+
   // Initialize from URL params
   const [selectedCategory, setSelectedCategory] = useState(() => {
     const category = searchParams.get('category');
@@ -173,7 +195,7 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-      const name = locale === 'en' ? product.name.en : product.name.zh;
+      const name = locale === 'en' ? (product.name?.en || '') : (product.name?.zh || '');
       const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
@@ -399,12 +421,12 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
                         <QuickInquiryButton
                           product={{
                             id: product.id,
-                            nameEn: product.name.en,
-                            nameZh: product.name.zh,
-                            sku: product.sku,
-                            mainImage: product.image,
-                            priceMin: product.priceMin,
-                            priceMax: product.priceMax,
+                            nameEn: product.name?.en || '',
+                            nameZh: product.name?.zh || '',
+                            sku: product.sku || '',
+                            mainImage: product.image || '',
+                            priceMin: product.priceMin || 0,
+                            priceMax: product.priceMax || 0,
                           }}
                           className="w-full justify-center"
                         />

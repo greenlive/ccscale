@@ -61,12 +61,12 @@ function BlogListContent() {
 
   return (
     <div>
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-16">
+      <section className="bg-primary text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
             {isZh ? '博客与资讯' : 'Blog & Insights'}
           </h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {isZh
               ? '行业动态、产品资讯和技术知识'
               : 'Industry news, product updates, and technical knowledge'}

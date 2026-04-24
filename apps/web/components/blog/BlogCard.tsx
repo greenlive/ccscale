@@ -50,7 +50,7 @@ export function BlogCard({ post }: BlogCardProps) {
               {readingTime} {isZh ? '分钟' : 'min'}
             </span>
           </div>
-          <h3 className="text-xl font-bold text-[#0A1628] group-hover:text-accent transition-colors mb-2">
+          <h3 className="text-xl font-bold text-primary group-hover:text-accent transition-colors mb-2">
             {title}
           </h3>
           {excerpt && (

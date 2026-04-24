@@ -70,13 +70,13 @@ function CertificationsContent() {
 
   return (
     <div>
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-16">
+      <section className="bg-primary text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <Shield className="h-16 w-16 mx-auto mb-6 text-blue-300" />
+          <Shield className="h-16 w-16 mx-auto mb-6 text-warm-silver" />
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
             {isZh ? '资质认证' : 'Certifications'}
           </h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {isZh
               ? '我们致力于提供符合国际标准的高品质产品'
               : 'We are committed to providing high-quality products that meet international standards'}
@@ -91,7 +91,7 @@ function CertificationsContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Award className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-xl font-bold text-[#0A1628] mb-2">
+              <h3 className="text-xl font-bold text-primary mb-2">
                 {isZh ? '国际认证' : 'International Certifications'}
               </h3>
               <p className="text-gray-600">
@@ -104,7 +104,7 @@ function CertificationsContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-xl font-bold text-[#0A1628] mb-2">
+              <h3 className="text-xl font-bold text-primary mb-2">
                 {isZh ? '严格质检' : 'Strict Quality Control'}
               </h3>
               <p className="text-gray-600">
@@ -117,7 +117,7 @@ function CertificationsContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-xl font-bold text-[#0A1628] mb-2">
+              <h3 className="text-xl font-bold text-primary mb-2">
                 {isZh ? '合规保障' : 'Compliance Guaranteed'}
               </h3>
               <p className="text-gray-600">
@@ -141,7 +141,7 @@ function CertificationsContent() {
 
       <section className="py-16">
         <div className="container mx-auto px-4 max-w-3xl text-center">
-          <h2 className="text-3xl font-bold text-[#0A1628] mb-6">
+          <h2 className="text-3xl font-bold text-primary mb-6">
             {isZh ? '需要更多认证信息？' : 'Need More Certification Information?'}
           </h2>
           <p className="text-lg text-gray-600 mb-8">

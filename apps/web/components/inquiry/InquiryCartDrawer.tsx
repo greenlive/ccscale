@@ -103,7 +103,7 @@ export function InquiryCartDrawer({ open, onClose }: InquiryCartDrawerProps) {
         open ? 'translate-x-0' : 'translate-x-full'
       )}>
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-xl font-bold text-[#0A1628]">
+          <h2 className="text-xl font-bold text-primary">
             {isZh ? '询价车' : 'Inquiry Cart'}
             {!isEmpty && (
               <span className="ml-2 text-sm text-gray-500">
@@ -137,16 +137,16 @@ export function InquiryCartDrawer({ open, onClose }: InquiryCartDrawerProps) {
           ) : undoItem ? (
             <div className="space-y-4">
               {/* Undo Banner */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between animate-in slide-in-from-top">
+              <div className="bg-warm-sand border border-warm-sand rounded-lg p-4 flex items-center justify-between animate-in slide-in-from-top">
                 <div className="flex items-center gap-3">
-                  <div className="bg-blue-100 rounded-full p-2">
-                    <Undo2 className="h-4 w-4 text-blue-600" />
+                  <div className="bg-muted rounded-full p-2">
+                    <Undo2 className="h-4 w-4 text-dark-surface" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-blue-800">
+                    <p className="text-sm font-medium text-stone-gray">
                       {isZh ? '已删除 1 件商品' : '1 item removed'}
                     </p>
-                    <p className="text-xs text-blue-600">
+                    <p className="text-xs text-dark-surface">
                       {isZh ? '点击"撤销"恢复' : 'Click "Undo" to restore'}
                     </p>
                   </div>
@@ -155,7 +155,7 @@ export function InquiryCartDrawer({ open, onClose }: InquiryCartDrawerProps) {
                   variant="ghost"
                   size="sm"
                   onClick={handleUndo}
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+                  className="text-dark-surface hover:text-stone-gray hover:bg-muted"
                 >
                   <Undo2 className="h-4 w-4 mr-1" />
                   {isZh ? '撤销' : 'Undo'}

@@ -113,7 +113,7 @@ export default async function AISummaryPage({
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <article className="prose prose-lg max-w-none">
           <header className="mb-12">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#0A1628] mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-4">
               {isZh ? 'CC Scale - 企业信息摘要' : 'CC Scale - Company Information Summary'}
             </h1>
             <p className="text-base sm:text-xl text-gray-600">
@@ -124,7 +124,7 @@ export default async function AISummaryPage({
           </header>
 
           <section aria-labelledby="company-overview" className="mb-12">
-            <h2 id="company-overview" className="text-xl sm:text-2xl font-bold text-[#0A1628] mb-4 flex items-center">
+            <h2 id="company-overview" className="text-xl sm:text-2xl font-bold text-primary mb-4 flex items-center">
               <span className="text-accent mr-2">#</span>
               {isZh ? '公司概述' : 'Company Overview'}
             </h2>
@@ -153,14 +153,14 @@ export default async function AISummaryPage({
           </section>
 
           <section aria-labelledby="product-categories" className="mb-12">
-            <h2 id="product-categories" className="text-xl sm:text-2xl font-bold text-[#0A1628] mb-4 flex items-center">
+            <h2 id="product-categories" className="text-xl sm:text-2xl font-bold text-primary mb-4 flex items-center">
               <span className="text-accent mr-2">#</span>
               {isZh ? '产品类别' : 'Product Categories'}
             </h2>
             <div className="space-y-6">
               {productCategories.map((category) => (
                 <article key={category.id} className="border-l-4 border-accent pl-4">
-                  <h3 className="text-lg sm:text-xl font-semibold text-[#0A1628]">
+                  <h3 className="text-lg sm:text-xl font-semibold text-primary">
                     {isZh ? category.nameZh : category.nameEn}
                   </h3>
                   <p className="text-gray-600 mt-2">
@@ -175,7 +175,7 @@ export default async function AISummaryPage({
           </section>
 
           <section aria-labelledby="oem-services" className="mb-12">
-            <h2 id="oem-services" className="text-xl sm:text-2xl font-bold text-[#0A1628] mb-4 flex items-center">
+            <h2 id="oem-services" className="text-xl sm:text-2xl font-bold text-primary mb-4 flex items-center">
               <span className="text-accent mr-2">#</span>
               {isZh ? 'OEM/ODM服务' : 'OEM/ODM Services'}
             </h2>
@@ -193,7 +193,7 @@ export default async function AISummaryPage({
           </section>
 
           <section aria-labelledby="certifications" className="mb-12">
-            <h2 id="certifications" className="text-xl sm:text-2xl font-bold text-[#0A1628] mb-4 flex items-center">
+            <h2 id="certifications" className="text-xl sm:text-2xl font-bold text-primary mb-4 flex items-center">
               <span className="text-accent mr-2">#</span>
               {isZh ? '认证资质' : 'Certifications'}
             </h2>
@@ -208,7 +208,7 @@ export default async function AISummaryPage({
           </section>
 
           <section aria-labelledby="contact-info" className="mb-12">
-            <h2 id="contact-info" className="text-xl sm:text-2xl font-bold text-[#0A1628] mb-4 flex items-center">
+            <h2 id="contact-info" className="text-xl sm:text-2xl font-bold text-primary mb-4 flex items-center">
               <span className="text-accent mr-2">#</span>
               {isZh ? '联系信息' : 'Contact Information'}
             </h2>
@@ -232,7 +232,7 @@ export default async function AISummaryPage({
             </dl>
           </section>
 
-          <section aria-labelledby="keywords" className="mb-12 bg-[#0A1628] text-white p-6 sm:p-8 rounded-lg">
+          <section aria-labelledby="keywords" className="mb-12 bg-primary text-white p-6 sm:p-8 rounded-lg">
             <h2 id="keywords" className="text-xl sm:text-2xl font-bold mb-4 flex items-center">
               <span className="text-accent mr-2">#</span>
               {isZh ? '关键词' : 'Keywords'}

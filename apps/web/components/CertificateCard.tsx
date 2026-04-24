@@ -33,7 +33,7 @@ export function CertificateCard({ certificate }: CertificateCardProps) {
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
             <Button
               variant="outline"
-              className="bg-white text-[#0A1628] border-white"
+              className="bg-white text-primary border-white"
               onClick={() => setShowModal(true)}
             >
               <ZoomIn className="h-4 w-4 mr-2" />
@@ -42,7 +42,7 @@ export function CertificateCard({ certificate }: CertificateCardProps) {
           </div>
         </div>
         <CardContent className="p-4">
-          <h3 className="font-semibold text-lg text-[#0A1628] mb-2">
+          <h3 className="font-semibold text-lg text-primary mb-2">
             {name}
           </h3>
           {description && (

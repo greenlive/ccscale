@@ -34,7 +34,7 @@ export default function AdvantagesWithData() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12 text-[#0A1628]">
+        <h2 className="text-3xl font-bold text-center mb-12 text-primary">
           {tHome('whyChooseUs')}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
@@ -46,8 +46,8 @@ export default function AdvantagesWithData() {
                 className="group hover:shadow-lg transition-all duration-300 border-none bg-white"
               >
                 <CardContent className="p-6 text-center">
-                  <div className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors mb-4">
-                    <Icon className="h-8 w-8 text-[#0A1628]" />
+                  <div className="mx-auto w-16 h-16 bg-warm-sand rounded-full flex items-center justify-center hover:bg-warm-sand transition-colors mb-4">
+                    <Icon className="h-8 w-8 text-primary" />
                   </div>
                   <div className="text-3xl font-bold text-accent mb-2">
                     {t(adv.valueKey)}

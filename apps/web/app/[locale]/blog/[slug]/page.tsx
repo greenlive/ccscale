@@ -113,7 +113,7 @@ function BlogPostContent({ post }: { post: typeof mockBlogPosts[0] }) {
         <div className="container mx-auto px-4">
           <Link
             href="/blog"
-            className="inline-flex items-center text-gray-600 hover:text-[#0A1628] mb-6"
+            className="inline-flex items-center text-gray-600 hover:text-primary mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {isZh ? '返回博客' : 'Back to Blog'}
@@ -124,7 +124,7 @@ function BlogPostContent({ post }: { post: typeof mockBlogPosts[0] }) {
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-4xl">
           <header className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#0A1628] mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4">
               {title}
             </h1>
 

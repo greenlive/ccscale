@@ -25,12 +25,12 @@ export default function TrustBadges() {
                 className="text-center rounded-xl border border-white/10 bg-white/5 px-3 py-4 backdrop-blur-sm motion-safe:transition motion-safe:hover:bg-white/10"
               >
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mb-2">
-                  <Icon className="h-6 w-6 text-blue-200 shrink-0" aria-hidden />
+                  <Icon className="h-6 w-6 text-warm-silver shrink-0" aria-hidden />
                   <span className="text-xl sm:text-2xl md:text-3xl font-bold text-white tabular-nums">
                     {t(badge.valueKey)}
                   </span>
                 </div>
-                <p className="text-blue-200/95 text-xs sm:text-sm leading-snug px-1">
+                <p className="text-warm-silver/95 text-xs sm:text-sm leading-snug px-1">
                   {t(badge.labelKey)}
                 </p>
               </div>

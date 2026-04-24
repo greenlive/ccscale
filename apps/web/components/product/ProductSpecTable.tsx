@@ -29,7 +29,7 @@ export function ProductSpecTable({
 
   return (
     <section className="py-8">
-      <h3 className="text-2xl font-bold text-[#0A1628] mb-6">
+      <h3 className="text-2xl font-bold text-primary mb-6">
         {isZh ? titleZh : titleEn}
       </h3>
       <div className="overflow-x-auto">
@@ -43,7 +43,7 @@ export function ProductSpecTable({
                   key={index}
                   className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
                 >
-                  <td className="py-3 px-4 border border-gray-200 font-medium text-[#0A1628] w-1/3">
+                  <td className="py-3 px-4 border border-gray-200 font-medium text-primary w-1/3">
                     {key}
                   </td>
                   <td className="py-3 px-4 border border-gray-200 text-gray-600">

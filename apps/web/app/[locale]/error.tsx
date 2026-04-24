@@ -18,7 +18,7 @@ export default function Error({
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="container mx-auto px-4 text-center">
         <div className="max-w-md mx-auto">
-          <h2 className="text-4xl font-bold text-[#0A1628] mb-4">
+          <h2 className="text-4xl font-bold text-primary mb-4">
             Something went wrong
           </h2>
           <p className="text-gray-600 mb-8">

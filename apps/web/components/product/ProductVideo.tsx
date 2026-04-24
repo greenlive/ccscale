@@ -39,7 +39,7 @@ export function ProductVideo({
 
   return (
     <section className="py-8">
-      <h3 className="text-2xl font-bold text-[#0A1628] mb-6">
+      <h3 className="text-2xl font-bold text-primary mb-6">
         {title}
       </h3>
       <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
