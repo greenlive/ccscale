@@ -10,7 +10,7 @@ export default function Hero() {
   const t = useTranslations('home');
 
   return (
-    <section className="relative bg-gradient-to-br from-dark-surface via-[#1e3a5f] to-dark-surface text-ivory py-16 sm:py-20 md:py-24 overflow-hidden">
+    <section className="relative bg-primary text-ivory py-16 sm:py-20 md:py-24 overflow-hidden">
       {/* Photo wash + soft orbs */}
       <div className="absolute inset-0 opacity-[0.12]">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920')] bg-cover bg-center" />
@@ -29,14 +29,14 @@ export default function Hero() {
           {t('trustRibbon')}
         </p>
         <div className="max-w-3xl rounded-2xl border border-ivory/15 bg-ivory/5 p-6 shadow-2xl backdrop-blur-md sm:p-8 md:p-10">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight tracking-tight font-serif">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 leading-tight tracking-tight font-serif font-medium">
             {t('heroTitle')}
           </h1>
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-ivory/80 mb-6 sm:mb-8 leading-relaxed">
             {t('heroSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <Button asChild size="lg" className="text-base sm:text-lg h-12 sm:h-14 px-6 sm:px-8 bg-terracotta hover:bg-terracotta/90 text-ivory shadow-lg shadow-black/20">
+            <Button asChild size="lg" className="text-base sm:text-lg h-12 sm:h-14 px-6 sm:px-8 bg-terracotta hover:bg-terracotta/90 text-ivory">
               <Link href="/products">
                 {t('exploreProducts')}
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" aria-hidden />

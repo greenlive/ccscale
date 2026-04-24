@@ -93,10 +93,10 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-20">
+      <section className="bg-primary text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('oem')}</h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {locale === 'en'
               ? 'Custom weighing solutions tailored to your brand and specifications'
               : '根据您的品牌和规格定制的衡器解决方案'}
@@ -107,7 +107,7 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
       {/* Benefits */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-[#0A1628]">
+          <h2 className="text-3xl font-bold text-center mb-12 text-primary">
             {locale === 'en' ? 'Why Choose Our OEM Service' : '为什么选择我们的OEM服务'}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -116,10 +116,10 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
               return (
                 <Card key={index} className="text-center border-none shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
-                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-8 w-8 text-[#0A1628]" />
+                    <div className="w-16 h-16 bg-warm-sand rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Icon className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2 text-[#0A1628]">
+                    <h3 className="font-semibold text-lg mb-2 text-primary">
                       {locale === 'en' ? benefit.titleEn : benefit.titleZh}
                     </h3>
                     <p className="text-gray-600 text-sm">
@@ -137,12 +137,12 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
       <section className="py-20 bg-gray-50 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-warm-sand rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500 rounded-full blur-3xl"></div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <h2 className="text-3xl font-bold text-center mb-4 text-[#0A1628]">
+          <h2 className="text-3xl font-bold text-center mb-4 text-primary">
             {tHome('oemProcess')}
           </h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
@@ -153,7 +153,7 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
 
           <div className="relative">
             {/* Connecting Line */}
-            <div className="hidden lg:block absolute top-20 left-[8%] right-[8%] h-1 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 -z-10"></div>
+            <div className="hidden lg:block absolute top-20 left-[8%] right-[8%] h-1 bg-gradient-to-r from-warm-sand via-stone-gray to-warm-sand -z-10"></div>
 
             {/* Animated Flow Container */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
@@ -167,7 +167,7 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ${
                         index < oemSteps.length - 1
-                          ? 'bg-gradient-to-br from-blue-500 to-blue-600'
+                          ? 'bg-gradient-to-br from-accent to-accent/80'
                           : 'bg-gradient-to-br from-green-500 to-green-600'
                       }`}>
                         {index < oemSteps.length - 1 ? stepNumber : '✓'}
@@ -176,13 +176,13 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
 
                     <Card className="text-center border-none shadow-sm h-full relative overflow-hidden group hover:shadow-xl transition-all duration-500">
                       {/* Progress indicator */}
-                      <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-700"></div>
+                      <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-gradient-to-r from-accent to-accent/80 transition-all duration-700"></div>
 
                       <CardContent className="p-6 pt-10">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-blue-100 group-hover:to-blue-200 transition-colors">
-                          <Icon className="h-8 w-8 text-[#0A1628]" />
+                        <div className="w-16 h-16 bg-gradient-to-br from-warm-sand to-muted rounded-full flex items-center justify-center mx-auto mb-4 group-hover:from-muted group-hover:to-warm-sand transition-colors">
+                          <Icon className="h-8 w-8 text-primary" />
                         </div>
-                        <h3 className="font-semibold text-lg mb-2 text-[#0A1628]">
+                        <h3 className="font-semibold text-lg mb-2 text-primary">
                           {locale === 'en' ? step.titleEn : step.titleZh}
                         </h3>
                         <p className="text-gray-600 text-sm">
@@ -194,7 +194,7 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
                       {index < oemSteps.length - 1 && (
                         <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10">
                           <div className="w-6 h-6 bg-white rounded-full shadow-md items-center justify-center flex">
-                            <svg className="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3 h-3 text-dark-surface" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                             </svg>
                           </div>
@@ -209,23 +209,23 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
             {/* Timeline Bottom Bar */}
             <div className="hidden lg:flex justify-between mt-8 px-[8%]">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">1-3</div>
+                <div className="text-2xl font-bold text-accent">1-3</div>
                 <div className="text-xs text-gray-500">{locale === 'en' ? 'Days' : '天'}</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">7-14</div>
+                <div className="text-2xl font-bold text-accent">7-14</div>
                 <div className="text-xs text-gray-500">{locale === 'en' ? 'Days' : '天'}</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">14-30</div>
+                <div className="text-2xl font-bold text-accent">14-30</div>
                 <div className="text-xs text-gray-500">{locale === 'en' ? 'Days' : '天'}</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">30-45</div>
+                <div className="text-2xl font-bold text-accent">30-45</div>
                 <div className="text-xs text-gray-500">{locale === 'en' ? 'Days' : '天'}</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">45-60</div>
+                <div className="text-2xl font-bold text-accent">45-60</div>
                 <div className="text-xs text-gray-500">{locale === 'en' ? 'Days' : '天'}</div>
               </div>
               <div className="text-center">
@@ -242,7 +242,7 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6 text-[#0A1628]">
+              <h2 className="text-3xl font-bold mb-6 text-primary">
                 {locale === 'en' ? 'Our Customization Capabilities' : '我们的定制能力'}
               </h2>
               <ul className="space-y-4">
@@ -275,12 +275,12 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#0A1628]">
+      <section className="py-20 bg-primary">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             {locale === 'en' ? 'Ready to Start Your OEM Project?' : '准备好开始您的OEM项目了吗？'}
           </h2>
-          <p className="text-blue-200 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-warm-silver text-lg mb-8 max-w-2xl mx-auto">
             {locale === 'en'
               ? 'Contact our OEM specialists today to discuss your custom requirements and get a quote.'
               : '立即联系我们的OEM专家，讨论您的定制需求并获取报价。'}

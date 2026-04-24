@@ -52,10 +52,10 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-20">
+      <section className="bg-primary text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('about')}</h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {locale === 'en'
               ? 'Two decades of excellence in weighing solutions'
               : '二十年衡器解决方案的卓越经验'}
@@ -84,7 +84,7 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6 text-[#0A1628]">
+              <h2 className="text-3xl font-bold mb-6 text-primary">
                 {locale === 'en' ? 'Our Story' : '我们的故事'}
               </h2>
               <p className="text-gray-600 mb-4 leading-relaxed">
@@ -112,13 +112,13 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
       </section>
 
       {/* Factory Video */}
-      <section className="py-20 bg-[#0A1628]">
+      <section className="py-20 bg-primary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {locale === 'en' ? 'Take a Tour of Our Factory' : '参观我们的工厂'}
             </h2>
-            <p className="text-blue-200 text-lg max-w-2xl mx-auto">
+            <p className="text-warm-silver text-lg max-w-2xl mx-auto">
               {locale === 'en'
                 ? 'See our state-of-the-art production facilities and quality control processes in action.'
                 : '观看我们先进的生产设施和质量控制流程。'}
@@ -190,9 +190,9 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
       </section>
 
       {/* Milestones */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-warm-sand">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-16 text-[#0A1628]">
+          <h2 className="text-3xl font-bold text-center mb-16 text-primary">
             {locale === 'en' ? 'Our Journey' : '我们的历程'}
           </h2>
           <div className="relative">
@@ -208,7 +208,7 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
                       </div>
                       <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100 flex-1">
                         <span className="text-accent font-bold text-lg">{milestone.year}</span>
-                        <h3 className="text-lg md:text-xl font-semibold mt-2 text-[#0A1628]">
+                        <h3 className="text-lg md:text-xl font-semibold mt-2 text-primary">
                           {locale === 'en' ? milestone.titleEn : milestone.titleZh}
                         </h3>
                         <p className="text-gray-600 mt-2 text-sm md:text-base">
@@ -231,16 +231,16 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
       {/* Values */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-[#0A1628]">
+          <h2 className="text-3xl font-bold text-center mb-12 text-primary">
             {locale === 'en' ? 'Our Values' : '我们的价值观'}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="text-center border-none shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-8 w-8 text-[#0A1628]" />
+                <div className="w-16 h-16 bg-warm-sand rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-[#0A1628]">
+                <h3 className="text-xl font-semibold mb-3 text-primary">
                   {locale === 'en' ? 'Quality First' : '质量第一'}
                 </h3>
                 <p className="text-gray-600">
@@ -252,10 +252,10 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
             </Card>
             <Card className="text-center border-none shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-8 w-8 text-[#0A1628]" />
+                <div className="w-16 h-16 bg-warm-sand rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-[#0A1628]">
+                <h3 className="text-xl font-semibold mb-3 text-primary">
                   {locale === 'en' ? 'Customer Focus' : '客户至上'}
                 </h3>
                 <p className="text-gray-600">
@@ -267,10 +267,10 @@ function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
             </Card>
             <Card className="text-center border-none shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="h-8 w-8 text-[#0A1628]" />
+                <div className="w-16 h-16 bg-warm-sand rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-[#0A1628]">
+                <h3 className="text-xl font-semibold mb-3 text-primary">
                   {locale === 'en' ? 'Continuous Innovation' : '持续创新'}
                 </h3>
                 <p className="text-gray-600">

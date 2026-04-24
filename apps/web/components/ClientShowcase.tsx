@@ -27,9 +27,9 @@ export function ClientShowcase({
   }
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-warm-sand">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-[#0A1628] text-center mb-12">
+        <h2 className="text-3xl font-bold text-primary text-center mb-12">
           {title}
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
@@ -49,7 +49,7 @@ export function ClientShowcase({
                 ) : (
                   <Card className="w-full p-4 text-center">
                     <CardContent>
-                      <p className="font-semibold text-[#0A1628]">{name}</p>
+                      <p className="font-semibold text-primary">{name}</p>
                       <p className="text-sm text-gray-500">
                         {isZh ? clientCase.countryZh : clientCase.countryEn}
                       </p>

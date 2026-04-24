@@ -18,7 +18,7 @@ export default function RiskReversal() {
     <section className="py-16 bg-gradient-to-br from-accent/5 to-accent/10">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0A1628] mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             {t('title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -32,13 +32,13 @@ export default function RiskReversal() {
             return (
               <Card
                 key={index}
-                className="group hover:shadow-xl transition-all duration-300 border-none bg-white"
+                className="group hover:shadow-ring-warm transition-all duration-300 border-none bg-white"
               >
                 <CardContent className="p-8 text-center">
                   <div className="mx-auto w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 mb-6">
                     <Icon className="h-10 w-10 text-white" />
                   </div>
-                  <h3 className="font-bold text-xl text-[#0A1628] mb-3">
+                  <h3 className="font-bold text-xl text-primary mb-3">
                     {t(item.titleKey)}
                   </h3>
                   <p className="text-gray-600">

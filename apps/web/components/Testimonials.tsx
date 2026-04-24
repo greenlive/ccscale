@@ -110,18 +110,18 @@ export default function Testimonials({ locale }: { locale: string }) {
 
   if (loading) {
     return (
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-gray-100">
+      <section className="py-16 bg-gradient-to-b from-warm-sand to-muted">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-3 mb-12">
             <div className="h-px w-12 bg-accent" />
-            <h2 className="text-3xl font-bold text-center text-[#0A1628]">
+            <h2 className="text-3xl font-bold text-center text-primary">
               {t('whatClientsSay')}
             </h2>
             <div className="h-px w-12 bg-accent" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl shadow-lg p-6 md:p-8 animate-pulse">
+              <div key={i} className="bg-white rounded-2xl shadow-whisper p-6 md:p-8 animate-pulse">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 bg-gray-200 rounded-full" />
                   <div className="flex-1">
@@ -164,11 +164,11 @@ export default function Testimonials({ locale }: { locale: string }) {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+    <section className="py-16 bg-gradient-to-b from-warm-sand to-muted overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center gap-3 mb-12">
           <div className="h-px w-12 bg-accent" />
-          <h2 className="text-3xl font-bold text-center text-[#0A1628]">
+          <h2 className="text-3xl font-bold text-center text-primary">
             {t('whatClientsSay')}
           </h2>
           <div className="h-px w-12 bg-accent" />
@@ -198,7 +198,7 @@ export default function Testimonials({ locale }: { locale: string }) {
               return (
                 <div
                   key={testimonial.id}
-                  className="relative bg-white rounded-2xl shadow-lg p-6 md:p-8 flex flex-col h-full transform transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group"
+                  className="relative bg-white rounded-2xl shadow-whisper p-6 md:p-8 flex flex-col h-full transform transition-all duration-500 hover:shadow-ring-warm hover:-translate-y-2 group"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="absolute -top-3 -left-2">
@@ -207,7 +207,7 @@ export default function Testimonials({ locale }: { locale: string }) {
                     </div>
                   </div>
 
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center p-8 z-10">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary to-dark-surface rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center p-8 z-10">
                     <div className="text-center text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                       <Quote className="h-8 w-8 mx-auto mb-4 text-accent" />
                       <p className="text-base leading-relaxed mb-4">
@@ -278,7 +278,7 @@ export default function Testimonials({ locale }: { locale: string }) {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-[#0A1628] truncate">{name}</p>
+                        <p className="font-semibold text-primary truncate">{name}</p>
                         {(company || country) && (
                           <p className="text-xs text-gray-500 truncate">
                             {company && `${company}`}
@@ -298,14 +298,14 @@ export default function Testimonials({ locale }: { locale: string }) {
             <>
               <button
                 onClick={goToPrevious}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-8 bg-white rounded-full p-3 shadow-lg hover:bg-gray-50 transition-all hover:scale-110"
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-8 bg-white rounded-full p-3 shadow-whisper hover:bg-gray-50 transition-all hover:scale-110"
                 aria-label="Previous testimonials"
               >
                 <ChevronLeft className="h-6 w-6 text-gray-700" />
               </button>
               <button
                 onClick={goToNext}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-8 bg-white rounded-full p-3 shadow-lg hover:bg-gray-50 transition-all hover:scale-110"
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-8 bg-white rounded-full p-3 shadow-whisper hover:bg-gray-50 transition-all hover:scale-110"
                 aria-label="Next testimonials"
               >
                 <ChevronRight className="h-6 w-6 text-gray-700" />

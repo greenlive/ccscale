@@ -29,7 +29,7 @@ export default function SupplierComparison() {
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0A1628] mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             {t('comparisonTitle')}
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -38,10 +38,10 @@ export default function SupplierComparison() {
         </div>
 
         <div className="max-w-5xl mx-auto">
-          <Card className="overflow-hidden border-none shadow-xl">
+          <Card className="overflow-hidden border-none shadow-whisper">
             <CardContent className="p-0">
               {/* Header */}
-              <div className="grid grid-cols-3 bg-[#0A1628] text-white">
+              <div className="grid grid-cols-3 bg-primary text-white">
                 <div className="p-6 border-r border-white/20">
                   <span className="text-lg font-semibold opacity-80">
                     {t('comparisonTitle')}
@@ -70,14 +70,14 @@ export default function SupplierComparison() {
                   }`}
                 >
                   <div className="p-6 border-r border-gray-200">
-                    <span className="font-semibold text-[#0A1628]">
+                    <span className="font-semibold text-primary">
                       {t(item.categoryKey)}
                     </span>
                   </div>
                   <div className="p-6 border-r border-gray-200 text-gray-600">
                     {t(item.normalKey)}
                   </div>
-                  <div className="p-6 bg-accent/5 text-[#0A1628] font-medium">
+                  <div className="p-6 bg-accent/5 text-primary font-medium">
                     {t(item.ccScaleKey)}
                   </div>
                 </div>

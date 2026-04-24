@@ -64,13 +64,13 @@ function GuaranteeSection({
   const isZh = locale === 'zh';
 
   const accentClasses = {
-    blue: 'from-blue-500 to-blue-600',
+    blue: 'from-accent to-accent/80',
     green: 'from-green-500 to-green-600',
     orange: 'from-orange-500 to-orange-600',
   };
 
   const bgClasses = {
-    blue: 'bg-blue-50',
+    blue: 'bg-warm-sand',
     green: 'bg-green-50',
     orange: 'bg-orange-50',
   };
@@ -82,7 +82,7 @@ function GuaranteeSection({
           <div className={`mx-auto w-20 h-20 bg-gradient-to-br ${accentClasses[accentColor]} rounded-2xl flex items-center justify-center mb-6`}>
             <Icon className="h-10 w-10 text-white" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0A1628] mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             {t(titleKey)}
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -102,9 +102,9 @@ function GuaranteeSection({
               >
                 <CardContent className="p-8 text-center">
                   <div className={`mx-auto w-16 h-16 ${bgClasses[accentColor]} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 mb-4`}>
-                    <ItemIcon className="h-8 w-8 text-[#0A1628]" />
+                    <ItemIcon className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="font-bold text-lg text-[#0A1628] mb-2">
+                  <h3 className="font-bold text-lg text-primary mb-2">
                     {t(item.titleKey)}
                   </h3>
                   <p className="text-gray-600 text-sm">
@@ -128,13 +128,13 @@ function GuaranteePageContent() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-16">
+      <section className="bg-primary text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <Shield className="h-16 w-16 mx-auto mb-6 text-blue-300" />
+          <Shield className="h-16 w-16 mx-auto mb-6 text-warm-silver" />
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
             {t('title')}
           </h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {t('description')}
           </p>
         </div>
@@ -143,7 +143,7 @@ function GuaranteePageContent() {
       {/* Subtitle */}
       <section className="py-8 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#0A1628]">
+          <h2 className="text-2xl md:text-3xl font-bold text-primary">
             {t('subtitle')}
           </h2>
         </div>
@@ -190,16 +190,16 @@ function GuaranteePageContent() {
       </div>
 
       {/* CTA */}
-      <section className="py-20 bg-[#0A1628]">
+      <section className="py-20 bg-primary">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             {t('cta.title')}
           </h2>
-          <p className="text-blue-200 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-warm-silver text-lg mb-8 max-w-2xl mx-auto">
             {t('cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" variant="outline" className="border-2 border-blue-200 text-[#0A1628] hover:bg-white hover:text-[#0A1628]">
+            <Button asChild size="lg" variant="outline" className="border-warm-sand text-primary hover:bg-white hover:text-primary">
               <Link href="/about">
                 {t('cta.bookFactoryVisit')}
               </Link>

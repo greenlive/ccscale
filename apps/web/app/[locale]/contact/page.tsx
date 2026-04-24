@@ -43,10 +43,10 @@ function ContactPageContent() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] text-white py-16">
+      <section className="bg-primary text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('contact')}</h1>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {locale === 'en'
               ? 'Get in touch with us for inquiries, quotes, or technical support'
               : '与我们联系以获取询盘、报价或技术支持'}
@@ -60,17 +60,17 @@ function ContactPageContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
             {/* Contact Information */}
             <div className="lg:col-span-1">
-              <h2 className="text-2xl font-bold mb-8 text-[#0A1628]">
+              <h2 className="text-2xl font-bold mb-8 text-primary">
                 {locale === 'en' ? 'Contact Information' : '联系信息'}
               </h2>
 
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-[#0A1628]" />
+                  <div className="w-12 h-12 bg-warm-sand rounded-full flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-6 w-6 text-primary" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-[#0A1628] mb-1">
+                    <h3 className="font-semibold text-primary mb-1">
                       {locale === 'en' ? 'Address' : '地址'}
                     </h3>
                     <p className="text-gray-600">
@@ -82,11 +82,11 @@ function ContactPageContent() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-6 w-6 text-[#0A1628]" />
+                  <div className="w-12 h-12 bg-warm-sand rounded-full flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-[#0A1628] mb-1">
+                    <h3 className="font-semibold text-primary mb-1">
                       {locale === 'en' ? 'Email' : '邮箱'}
                     </h3>
                     <p className="text-gray-600">
@@ -97,11 +97,11 @@ function ContactPageContent() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-6 w-6 text-[#0A1628]" />
+                  <div className="w-12 h-12 bg-warm-sand rounded-full flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-6 w-6 text-primary" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-[#0A1628] mb-1">
+                    <h3 className="font-semibold text-primary mb-1">
                       {locale === 'en' ? 'Phone' : '电话'}
                     </h3>
                     <p className="text-gray-600">
@@ -112,11 +112,11 @@ function ContactPageContent() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-6 w-6 text-[#0A1628]" />
+                  <div className="w-12 h-12 bg-warm-sand rounded-full flex items-center justify-center flex-shrink-0">
+                    <Clock className="h-6 w-6 text-primary" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="font-semibold text-[#0A1628] mb-1">
+                    <h3 className="font-semibold text-primary mb-1">
                       {locale === 'en' ? 'Business Hours' : '工作时间'}
                     </h3>
                     <p className="text-gray-600">
@@ -140,7 +140,7 @@ function ContactPageContent() {
 
             {/* Inquiry CTA */}
             <div className="lg:col-span-2">
-              <div className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] rounded-lg p-6 md:p-8 text-white">
+              <div className="bg-primary rounded-lg p-6 md:p-8 text-white">
                 <div className="flex items-start gap-4 mb-6">
                   <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
                     <MessageSquare className="h-6 w-6" />
@@ -149,13 +149,13 @@ function ContactPageContent() {
                     <h2 className="text-2xl font-bold mb-2">
                       {tInquiry('title')}
                     </h2>
-                    <p className="text-blue-200">
+                    <p className="text-warm-silver">
                       {tInquiry('subtitle')}
                     </p>
                   </div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-6 mb-6">
-                  <p className="text-sm text-blue-100 mb-4">
+                  <p className="text-sm text-muted mb-4">
                     {locale === 'en'
                       ? 'Use our Request Quote feature to select products and submit an inquiry with your requirements. Our team will respond within 24 hours.'
                       : '使用我们的"Request Quote"功能选择产品并提交询盘。我们的团队将在24小时内回复。'}
@@ -167,7 +167,7 @@ function ContactPageContent() {
                         {locale === 'en' ? 'Go to Inquiry Cart' : '前往询价车'}
                       </Link>
                     </Button>
-                    <Button asChild variant="outline" className="border-2 border-blue-200 text-[#0A1628] hover:bg-white hover:text-[#0A1628]">
+                    <Button asChild variant="outline" className="border-2 border-warm-sand text-primary hover:bg-white hover:text-primary">
                       <Link href="/products">
                         {locale === 'en' ? 'Browse Products' : '浏览产品'}
                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -175,13 +175,13 @@ function ContactPageContent() {
                     </Button>
                   </div>
                 </div>
-                <p className="text-sm text-blue-200">
+                <p className="text-sm text-warm-silver">
                   {tInquiry('responseTime')}
                 </p>
               </div>
 
               {/* Direct Contact Form */}
-              <div className="bg-gradient-to-br from-[#0A1628] to-[#1e3a5f] rounded-lg p-6 mt-6 border border-white/10">
+              <div className="bg-primary rounded-lg p-6 mt-6 border border-white/10">
                 <h3 className="text-lg font-semibold text-white mb-4">
                   {locale === 'en' ? 'Send a Direct Message' : '直接发送留言'}
                 </h3>

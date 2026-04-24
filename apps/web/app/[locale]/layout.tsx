@@ -4,12 +4,13 @@ import { NextIntlClientProvider } from 'next-intl';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { locales } from '@/i18n/routing';
+import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToMain from '@/components/SkipToMain';
 import { OrganizationSchema, WebSiteSchema } from '@/components/SchemaOrg';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
-import { AnalyticsTracker } from '@/components/AnalyticsTracker';
+const AnalyticsTracker = dynamic(() => import('@/components/AnalyticsTracker').then(m => ({ default: m.AnalyticsTracker })), { ssr: false });
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -105,8 +106,8 @@ export default async function LocaleLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#0A1628" />
-        <meta name="msapplication-TileColor" content="#0A1628" />
+        <meta name="theme-color" content="#141413" />
+        <meta name="msapplication-TileColor" content="#141413" />
       </head>
       <body className="min-h-screen bg-parchment antialiased" suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
