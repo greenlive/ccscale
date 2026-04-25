@@ -10,6 +10,7 @@ import { Textarea } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
 import { FileUpload } from '@/components/FileUpload';
 import { ProductSpecs } from '@/components/ProductSpecs';
+import { api } from '@/lib/apiClient';
 
 interface UploadedFile {
   id: string;
@@ -17,6 +18,7 @@ interface UploadedFile {
   preview: string;
   type: 'image' | 'video';
   isMain?: boolean;
+  uploadedUrl?: string;
 }
 
 interface SpecItem {
@@ -28,174 +30,297 @@ interface SpecItem {
   order: number;
 }
 
-// 模拟产品数据 - 实际项目中从API获取
-const mockProducts = [
-  {
-    id: 1,
-    sku: 'BS-200',
-    nameEn: 'Digital Body Scale BS-200',
-    nameZh: '数字体重秤 BS-200',
-    slug: 'digital-body-scale-bs-200',
-    categoryId: '1',
-    shortDescEn: 'Professional digital body scale for home and commercial use',
-    shortDescZh: '适用于家庭和商业用途的专业数字体重秤',
-    descEn: 'High-precision digital body scale with advanced weighing technology. Features include step-on activation, auto-calibration, and large LCD display.',
-    descZh: '高精度数字体重秤，采用先进的称重技术。功能包括即踩即称、自动校准和大液晶显示屏。',
-    priceMin: 15,
-    priceMax: 25,
-    moq: 100,
-    leadTime: '15-20 days',
-    isActive: true,
-    isFeatured: true,
-    sortOrder: 0,
-    seoTitleEn: 'Digital Body Scale BS-200 | CC Scale',
-    seoTitleZh: '数字体重秤 BS-200 | CC Scale',
-    seoDescEn: 'High-quality digital body scale with precision sensors. Perfect for B2B buyers and distributors.',
-    seoDescZh: '采用精密传感器的高质量数字体重秤。完美适合B2B买家和经销商。',
-    seoKeywordsEn: 'body scale, digital scale, weighing scale, bathroom scale',
-    seoKeywordsZh: '体重秤, 电子秤, 衡器, 人体秤',
-    specs: [
-      { id: '1', keyEn: 'Capacity', keyZh: '最大称重', valueEn: '180kg / 400lb', valueZh: '180公斤 / 400磅', order: 0 },
-      { id: '2', keyEn: 'Division', keyZh: '分度值', valueEn: '100g', valueZh: '100克', order: 1 },
-      { id: '3', keyEn: 'Display', keyZh: '显示', valueEn: 'LCD, 3.5"', valueZh: '液晶显示屏, 3.5英寸', order: 2 },
-      { id: '4', keyEn: 'Power', keyZh: '电源', valueEn: '2 x AAA batteries', valueZh: '2节AAA电池', order: 3 },
-    ],
-    images: [] as UploadedFile[],
-    videos: [] as UploadedFile[],
-  },
-  {
-    id: 2,
-    sku: 'HS-500',
-    nameEn: 'Industrial Hanging Scale HS-500',
-    nameZh: '工业吊秤 HS-500',
-    slug: 'industrial-hanging-scale-hs-500',
-    categoryId: '2',
-    shortDescEn: 'Heavy-duty hanging scale for industrial use',
-    shortDescZh: '工业用重型吊秤',
-    descEn: 'Heavy-duty industrial hanging scale designed for commercial and industrial applications.',
-    descZh: '重型工业吊秤，专为商业和工业应用设计。',
-    priceMin: 45,
-    priceMax: 85,
-    moq: 50,
-    leadTime: '20-25 days',
-    isActive: true,
-    isFeatured: true,
-    sortOrder: 1,
-    seoTitleEn: '',
-    seoTitleZh: '',
-    seoDescEn: '',
-    seoDescZh: '',
-    seoKeywordsEn: '',
-    seoKeywordsZh: '',
-    specs: [],
-    images: [] as UploadedFile[],
-    videos: [] as UploadedFile[],
-  },
-  {
-    id: 3,
-    sku: 'KS-300',
-    nameEn: 'Precision Kitchen Scale KS-300',
-    nameZh: '精密厨房秤 KS-300',
-    slug: 'precision-kitchen-scale-ks-300',
-    categoryId: '3',
-    shortDescEn: 'Accurate digital kitchen scale',
-    shortDescZh: '精确的数字厨房秤',
-    descEn: 'Professional precision kitchen scale for accurate food measurement.',
-    descZh: '专业精密厨房秤，用于精确食物测量。',
-    priceMin: 12,
-    priceMax: 20,
-    moq: 200,
-    leadTime: '12-15 days',
-    isActive: true,
-    isFeatured: false,
-    sortOrder: 2,
-    seoTitleEn: '',
-    seoTitleZh: '',
-    seoDescEn: '',
-    seoDescZh: '',
-    seoKeywordsEn: '',
-    seoKeywordsZh: '',
-    specs: [],
-    images: [] as UploadedFile[],
-    videos: [] as UploadedFile[],
-  },
-  {
-    id: 4,
-    sku: 'BS-100',
-    nameEn: 'Smart Body Composition Scale',
-    nameZh: '智能体脂秤',
-    slug: 'smart-body-composition-scale',
-    categoryId: '1',
-    shortDescEn: '',
-    shortDescZh: '',
-    descEn: '',
-    descZh: '',
-    priceMin: 25,
-    priceMax: 45,
-    moq: 80,
-    leadTime: '',
-    isActive: false,
-    isFeatured: false,
-    sortOrder: 3,
-    seoTitleEn: '',
-    seoTitleZh: '',
-    seoDescEn: '',
-    seoDescZh: '',
-    seoKeywordsEn: '',
-    seoKeywordsZh: '',
-    specs: [],
-    images: [] as UploadedFile[],
-    videos: [] as UploadedFile[],
-  },
-];
+interface Category {
+  id: number;
+  nameEn: string;
+  nameZh: string;
+  slug: string;
+}
 
 export default function EditProductPage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const productId = parseInt(params.id);
+
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [product, setProduct] = useState<any>(null);
-  const [images, setImages] = useState<UploadedFile[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [mainImages, setMainImages] = useState<UploadedFile[]>([]);
+  const [detailImages, setDetailImages] = useState<UploadedFile[]>([]);
   const [videos, setVideos] = useState<UploadedFile[]>([]);
   const [specs, setSpecs] = useState<SpecItem[]>([]);
 
-  const productId = parseInt(params.id);
+  const [formData, setFormData] = useState({
+    sku: '',
+    categoryId: '',
+    nameEn: '',
+    nameZh: '',
+    slug: '',
+    shortDescEn: '',
+    shortDescZh: '',
+    descriptionEn: '',
+    descriptionZh: '',
+    priceMin: '',
+    priceMax: '',
+    moq: '',
+    leadTime: '',
+    seoTitleEn: '',
+    seoTitleZh: '',
+    seoDescEn: '',
+    seoDescZh: '',
+    seoKeywordsEn: '',
+    seoKeywordsZh: '',
+    isActive: true,
+    isFeatured: false,
+    order: '0',
+  });
 
-  // 加载产品数据
   useEffect(() => {
-    // 模拟API加载延迟
-    const timer = setTimeout(() => {
-      const foundProduct = mockProducts.find(p => p.id === productId);
-      if (foundProduct) {
-        setProduct(foundProduct);
-        setSpecs(foundProduct.specs);
-        // 图片和视频初始化为空（实际项目中从API获取）
-        setImages([]);
-        setVideos([]);
-      }
-      setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
+    document.title = 'CC Scale 管理后台 - 编辑产品';
+    fetchProduct();
+    fetchCategories();
   }, [productId]);
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await api.get<{ data: Category[] }>('/products/categories');
+      if (response.success && response.data) {
+        const categoriesData = Array.isArray(response.data)
+          ? response.data
+          : (response.data as any).data || [];
+        setCategories(categoriesData);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  const fetchProduct = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get<{ data: any }>(`/products/${productId}`);
+      if (response.success && response.data) {
+        const product = response.data.data || response.data;
+
+        setFormData({
+          sku: product.sku || '',
+          categoryId: product.categoryId?.toString() || '',
+          nameEn: product.nameEn || '',
+          nameZh: product.nameZh || '',
+          slug: product.slug || '',
+          shortDescEn: product.shortDescEn || '',
+          shortDescZh: product.shortDescZh || '',
+          descriptionEn: product.descriptionEn || '',
+          descriptionZh: product.descriptionZh || '',
+          priceMin: product.priceMin?.toString() || '',
+          priceMax: product.priceMax?.toString() || '',
+          moq: product.moq?.toString() || '',
+          leadTime: product.leadTime || '',
+          seoTitleEn: product.seoTitleEn || '',
+          seoTitleZh: product.seoTitleZh || '',
+          seoDescEn: product.seoDescEn || '',
+          seoDescZh: product.seoDescZh || '',
+          seoKeywordsEn: product.seoKeywordsEn || '',
+          seoKeywordsZh: product.seoKeywordsZh || '',
+          isActive: product.isActive ?? true,
+          isFeatured: product.isFeatured ?? false,
+          order: product.order?.toString() || '0',
+        });
+
+        // Load existing images - check mainImage first, then images array
+        const imageUrls = new Set<string>();
+        if (product.mainImage) {
+          imageUrls.add(product.mainImage);
+        }
+        if (product.images && Array.isArray(product.images)) {
+          product.images.forEach((img: any) => {
+            if (img.imageUrl) {
+              imageUrls.add(img.imageUrl);
+            }
+          });
+        }
+
+        if (imageUrls.size > 0) {
+          const mainImgs: UploadedFile[] = [];
+          const detailImgs: UploadedFile[] = [];
+          let idx = 0;
+
+          imageUrls.forEach((url) => {
+            const uploadedFile: UploadedFile = {
+              id: `existing-${idx}`,
+              file: new File([], url, { type: 'image/jpeg' }),
+              preview: url,
+              type: 'image',
+              isMain: idx === 0,
+              uploadedUrl: url,
+            };
+
+            if (idx === 0) {
+              mainImgs.push(uploadedFile);
+            } else {
+              detailImgs.push(uploadedFile);
+            }
+            idx++;
+          });
+
+          setMainImages(mainImgs);
+          setDetailImages(detailImgs);
+        }
+
+        // Load existing videos
+        if (product.videoUrl) {
+          setVideos([{
+            id: 'video-0',
+            file: new File([], product.videoUrl, { type: 'video/mp4' }),
+            preview: product.videoUrl,
+            type: 'video' as const,
+            uploadedUrl: product.videoUrl,
+          }]);
+        }
+
+        // Load specs
+        if (product.specs && Array.isArray(product.specs)) {
+          setSpecs(product.specs.map((spec: any, idx: number) => ({
+            id: `spec-${idx}`,
+            keyEn: spec.labelEn || spec.keyEn || '',
+            keyZh: spec.labelZh || spec.keyZh || '',
+            valueEn: spec.valueEn || spec.value || '',
+            valueZh: spec.valueZh || spec.value || '',
+            order: spec.order ?? idx,
+          })));
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching product:', err);
+      setError('加载产品数据失败');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
+
+  const uploadFiles = async (files: UploadedFile[]): Promise<string[]> => {
+    const uploadedUrls: string[] = [];
+
+    for (const file of files) {
+      if (file.uploadedUrl) {
+        uploadedUrls.push(file.uploadedUrl);
+      } else if (file.file && file.file.size > 0) {
+        const uploadType = file.type === 'image' ? 'product-image' : 'product-video';
+        try {
+          const result = await api.upload<{ url: string }>(
+            `/upload/${uploadType}`,
+            file.file,
+            uploadType
+          );
+          if (result.success && result.data) {
+            const url = (result.data as any).url || result.data;
+            uploadedUrls.push(url);
+          }
+        } catch (err) {
+          console.error('Upload failed for file:', file.file.name, err);
+        }
+      }
+    }
+
+    return uploadedUrls;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setSaveSuccess(false);
     setIsSaving(true);
 
-    // 模拟保存
-    console.log('Updating product with:', { product, images, videos, specs });
+    try {
+      // Simple validation
+      if (!formData.sku.trim() || !formData.nameEn.trim() || !formData.categoryId) {
+        throw new Error('请填写必填项');
+      }
 
-    setTimeout(() => {
+      // Upload files
+      const uploadedMainImageUrls = await uploadFiles(mainImages);
+      const uploadedDetailImageUrls = await uploadFiles(detailImages);
+      const uploadedVideoUrls = await uploadFiles(videos);
+
+      // Combine images (without type field to avoid enum validation issues)
+      const allImages = [
+        ...uploadedMainImageUrls.map((url, idx) => ({
+          imageUrl: url,
+          order: idx,
+          isMain: idx === 0,
+        })),
+        ...uploadedDetailImageUrls.map((url, idx) => ({
+          imageUrl: url,
+          order: idx,
+          isMain: false,
+        })),
+      ];
+
+      // Product data
+      const productData = {
+        sku: formData.sku.trim(),
+        categoryId: parseInt(formData.categoryId),
+        nameEn: formData.nameEn.trim(),
+        nameZh: formData.nameZh.trim() || formData.nameEn.trim(),
+        slug: formData.slug.trim() || formData.nameEn.toLowerCase().replace(/\s+/g, '-'),
+        shortDescEn: formData.shortDescEn.trim(),
+        shortDescZh: formData.shortDescZh.trim(),
+        descriptionEn: formData.descriptionEn.trim(),
+        descriptionZh: formData.descriptionZh.trim(),
+        priceMin: formData.priceMin ? parseFloat(formData.priceMin) : undefined,
+        priceMax: formData.priceMax ? parseFloat(formData.priceMax) : undefined,
+        moq: formData.moq ? parseInt(formData.moq) : undefined,
+        leadTime: formData.leadTime.trim() || undefined,
+        seoTitleEn: formData.seoTitleEn.trim(),
+        seoTitleZh: formData.seoTitleZh.trim(),
+        seoDescEn: formData.seoDescEn.trim(),
+        seoDescZh: formData.seoDescZh.trim(),
+        seoKeywordsEn: formData.seoKeywordsEn.trim(),
+        seoKeywordsZh: formData.seoKeywordsZh.trim(),
+        isActive: formData.isActive,
+        isFeatured: formData.isFeatured,
+        order: parseInt(formData.order) || 0,
+        mainImage: uploadedMainImageUrls[0],
+        videoUrl: uploadedVideoUrls[0],
+        images: allImages,
+        specs: specs.map((spec, index) => ({
+          keyEn: spec.keyEn,
+          keyZh: spec.keyZh,
+          valueEn: spec.valueEn,
+          valueZh: spec.valueZh,
+          order: index,
+        })),
+      };
+
+      const response = await api.put(`/products/${productId}`, productData);
+
+      if (response.success) {
+        setSaveSuccess(true);
+        setIsSaving(false);
+        setTimeout(() => {
+          router.push('/products');
+        }, 1500);
+      } else {
+        throw new Error(response.error?.message || '保存失败');
+      }
+    } catch (err: any) {
+      setError(err.message || '保存失败');
       setIsSaving(false);
-      router.push('/products');
-    }, 1500);
-  };
-
-  const handleFieldChange = (field: string, value: any) => {
-    setProduct((prev: any) => ({
-      ...prev,
-      [field]: value,
-    }));
+    }
   };
 
   if (isLoading) {
@@ -211,12 +336,12 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     );
   }
 
-  if (!product) {
+  if (error && !formData.nameEn) {
     return (
       <AdminLayout>
         <div className="text-center py-20">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">产品未找到</h2>
-          <p className="text-gray-600 mb-6">ID为 {productId} 的产品不存在</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">加载失败</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
           <Button asChild variant="outline">
             <button onClick={() => router.push('/products')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -238,9 +363,23 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-[#0A1628]">编辑产品</h1>
-            <p className="text-gray-600">编辑产品: {product.nameEn} (SKU: {product.sku})</p>
+            <p className="text-gray-600">编辑产品: {formData.nameEn || '加载中...'}</p>
           </div>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
+            <span>{error}</span>
+            <button onClick={() => setError(null)} className="ml-auto text-red-500 hover:text-red-700">×</button>
+          </div>
+        )}
+
+        {saveSuccess && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
+            <span>保存成功！</span>
+            <button onClick={() => setSaveSuccess(false)} className="ml-auto text-green-500 hover:text-green-700">×</button>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -257,10 +396,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                         SKU *
                       </label>
                       <Input
+                        name="sku"
                         required
                         placeholder="e.g. BS-200"
-                        value={product.sku}
-                        onChange={(e) => handleFieldChange('sku', e.target.value)}
+                        value={formData.sku}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div>
@@ -268,16 +408,19 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                         分类 *
                       </label>
                       <select
+                        name="categoryId"
                         required
                         className="h-10 w-full px-3 border border-gray-200 rounded-md"
-                        value={product.categoryId}
-                        onChange={(e) => handleFieldChange('categoryId', e.target.value)}
+                        value={formData.categoryId}
+                        onChange={handleInputChange}
+                        disabled={loadingCategories}
                       >
                         <option value="">选择分类</option>
-                        <option value="1">Body Scales</option>
-                        <option value="2">Hanging Scales</option>
-                        <option value="3">Kitchen Scales</option>
-                        <option value="4">Baby Scales</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id.toString()}>
+                            {cat.nameEn} / {cat.nameZh}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -287,34 +430,35 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       产品名称 (英文) *
                     </label>
                     <Input
+                      name="nameEn"
                       required
                       placeholder="Enter product name"
-                      value={product.nameEn}
-                      onChange={(e) => handleFieldChange('nameEn', e.target.value)}
+                      value={formData.nameEn}
+                      onChange={handleInputChange}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      产品名称 (中文) *
+                      产品名称 (中文)
                     </label>
                     <Input
-                      required
+                      name="nameZh"
                       placeholder="输入产品名称"
-                      value={product.nameZh}
-                      onChange={(e) => handleFieldChange('nameZh', e.target.value)}
+                      value={formData.nameZh}
+                      onChange={handleInputChange}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      URL别名 (Slug) *
+                      URL别名 (Slug)
                     </label>
                     <Input
-                      required
+                      name="slug"
                       placeholder="product-url-slug"
-                      value={product.slug}
-                      onChange={(e) => handleFieldChange('slug', e.target.value)}
+                      value={formData.slug}
+                      onChange={handleInputChange}
                     />
                   </div>
 
@@ -323,9 +467,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       简短描述 (英文)
                     </label>
                     <Input
+                      name="shortDescEn"
                       placeholder="Brief description"
-                      value={product.shortDescEn}
-                      onChange={(e) => handleFieldChange('shortDescEn', e.target.value)}
+                      value={formData.shortDescEn}
+                      onChange={handleInputChange}
                     />
                   </div>
 
@@ -334,9 +479,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       简短描述 (中文)
                     </label>
                     <Input
+                      name="shortDescZh"
                       placeholder="简短描述"
-                      value={product.shortDescZh}
-                      onChange={(e) => handleFieldChange('shortDescZh', e.target.value)}
+                      value={formData.shortDescZh}
+                      onChange={handleInputChange}
                     />
                   </div>
 
@@ -345,10 +491,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       详细描述 (英文)
                     </label>
                     <Textarea
+                      name="descriptionEn"
                       rows={6}
                       placeholder="Full product description"
-                      value={product.descEn}
-                      onChange={(e) => handleFieldChange('descEn', e.target.value)}
+                      value={formData.descriptionEn}
+                      onChange={handleInputChange}
                     />
                   </div>
 
@@ -357,10 +504,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       详细描述 (中文)
                     </label>
                     <Textarea
+                      name="descriptionZh"
                       rows={6}
                       placeholder="完整产品描述"
-                      value={product.descZh}
-                      onChange={(e) => handleFieldChange('descZh', e.target.value)}
+                      value={formData.descriptionZh}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </CardContent>
@@ -386,10 +534,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                         最低价格
                       </label>
                       <Input
+                        name="priceMin"
                         type="number"
                         placeholder="0.00"
-                        value={product.priceMin}
-                        onChange={(e) => handleFieldChange('priceMin', parseFloat(e.target.value) || 0)}
+                        value={formData.priceMin}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div>
@@ -397,10 +546,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                         最高价格
                       </label>
                       <Input
+                        name="priceMax"
                         type="number"
                         placeholder="0.00"
-                        value={product.priceMax}
-                        onChange={(e) => handleFieldChange('priceMax', parseFloat(e.target.value) || 0)}
+                        value={formData.priceMax}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div>
@@ -408,10 +558,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                         最小起订量 (MOQ)
                       </label>
                       <Input
+                        name="moq"
                         type="number"
                         placeholder="100"
-                        value={product.moq}
-                        onChange={(e) => handleFieldChange('moq', parseInt(e.target.value) || 0)}
+                        value={formData.moq}
+                        onChange={handleInputChange}
                       />
                     </div>
                   </div>
@@ -420,9 +571,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       交期
                     </label>
                     <Input
+                      name="leadTime"
                       placeholder="15-20 days"
-                      value={product.leadTime}
-                      onChange={(e) => handleFieldChange('leadTime', e.target.value)}
+                      value={formData.leadTime}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </CardContent>
@@ -438,9 +590,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       SEO 标题 (英文)
                     </label>
                     <Input
+                      name="seoTitleEn"
                       placeholder="SEO title for search engines"
-                      value={product.seoTitleEn}
-                      onChange={(e) => handleFieldChange('seoTitleEn', e.target.value)}
+                      value={formData.seoTitleEn}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div>
@@ -448,9 +601,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       SEO 标题 (中文)
                     </label>
                     <Input
+                      name="seoTitleZh"
                       placeholder="搜索引擎优化标题"
-                      value={product.seoTitleZh}
-                      onChange={(e) => handleFieldChange('seoTitleZh', e.target.value)}
+                      value={formData.seoTitleZh}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div>
@@ -458,10 +612,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       SEO 描述 (英文)
                     </label>
                     <Textarea
+                      name="seoDescEn"
                       rows={3}
                       placeholder="Meta description for search engines"
-                      value={product.seoDescEn}
-                      onChange={(e) => handleFieldChange('seoDescEn', e.target.value)}
+                      value={formData.seoDescEn}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div>
@@ -469,10 +624,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       SEO 描述 (中文)
                     </label>
                     <Textarea
+                      name="seoDescZh"
                       rows={3}
                       placeholder="搜索引擎元描述"
-                      value={product.seoDescZh}
-                      onChange={(e) => handleFieldChange('seoDescZh', e.target.value)}
+                      value={formData.seoDescZh}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div>
@@ -480,9 +636,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       SEO 关键词 (英文)
                     </label>
                     <Input
+                      name="seoKeywordsEn"
                       placeholder="comma, separated, keywords"
-                      value={product.seoKeywordsEn}
-                      onChange={(e) => handleFieldChange('seoKeywordsEn', e.target.value)}
+                      value={formData.seoKeywordsEn}
+                      onChange={handleInputChange}
                     />
                   </div>
                   <div>
@@ -490,9 +647,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       SEO 关键词 (中文)
                     </label>
                     <Input
+                      name="seoKeywordsZh"
                       placeholder="关键词，用逗号分隔"
-                      value={product.seoKeywordsZh}
-                      onChange={(e) => handleFieldChange('seoKeywordsZh', e.target.value)}
+                      value={formData.seoKeywordsZh}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </CardContent>
@@ -510,8 +668,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                     <input
                       type="checkbox"
                       id="isActive"
-                      checked={product.isActive}
-                      onChange={(e) => handleFieldChange('isActive', e.target.checked)}
+                      name="isActive"
+                      checked={formData.isActive}
+                      onChange={handleInputChange}
                       className="rounded"
                     />
                     <label htmlFor="isActive" className="text-sm text-gray-700">
@@ -522,8 +681,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                     <input
                       type="checkbox"
                       id="isFeatured"
-                      checked={product.isFeatured}
-                      onChange={(e) => handleFieldChange('isFeatured', e.target.checked)}
+                      name="isFeatured"
+                      checked={formData.isFeatured}
+                      onChange={handleInputChange}
                       className="rounded"
                     />
                     <label htmlFor="isFeatured" className="text-sm text-gray-700">
@@ -535,10 +695,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                       排序
                     </label>
                     <Input
+                      name="order"
                       type="number"
                       placeholder="0"
-                      value={product.sortOrder}
-                      onChange={(e) => handleFieldChange('sortOrder', parseInt(e.target.value) || 0)}
+                      value={formData.order}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </CardContent>
@@ -546,19 +707,39 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
               <Card>
                 <CardHeader>
-                  <CardTitle>产品图片</CardTitle>
+                  <CardTitle>产品图库 (1-5张) *</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <FileUpload
                     type="image"
                     accept="image/*"
                     multiple
-                    maxFiles={10}
-                    files={images}
-                    onChange={setImages}
+                    maxFiles={5}
+                    files={mainImages}
+                    onChange={setMainImages}
                     showMainImageToggle
-                    label="图片"
-                    hint="JPG, PNG, WebP up to 5MB each. First image will be the main image."
+                    label="主图"
+                    hint="白色背景正面图，1200×1200px，JPG/WebP，≤500KB/张，第一张为封面"
+                    uploadType="product-image"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>详情图 (0-8张)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FileUpload
+                    type="image"
+                    accept="image/*"
+                    multiple
+                    maxFiles={8}
+                    files={detailImages}
+                    onChange={setDetailImages}
+                    label="详情图"
+                    hint="产品详情页图库图片，场景图/细节图，1600×1200px，JPG/WebP，≤800KB/张"
+                    uploadType="product-image"
                   />
                 </CardContent>
               </Card>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
@@ -10,6 +10,7 @@ import { Textarea } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
 import { FileUpload } from '@/components/FileUpload';
 import { ProductSpecs } from '@/components/ProductSpecs';
+import { api } from '@/lib/apiClient';
 
 interface UploadedFile {
   id: string;
@@ -17,6 +18,7 @@ interface UploadedFile {
   preview: string;
   type: 'image' | 'video';
   isMain?: boolean;
+  uploadedUrl?: string;
 }
 
 interface SpecItem {
@@ -28,45 +30,231 @@ interface SpecItem {
   order: number;
 }
 
+interface Category {
+  id: number;
+  nameEn: string;
+  nameZh: string;
+  slug: string;
+}
+
+interface ProductFormData {
+  sku: string;
+  categoryId: string;
+  nameEn: string;
+  nameZh: string;
+  slug: string;
+  shortDescEn: string;
+  shortDescZh: string;
+  descriptionEn: string;
+  descriptionZh: string;
+  priceMin: string;
+  priceMax: string;
+  moq: string;
+  leadTime: string;
+  seoTitleEn: string;
+  seoTitleZh: string;
+  seoDescEn: string;
+  seoDescZh: string;
+  seoKeywordsEn: string;
+  seoKeywordsZh: string;
+  isActive: boolean;
+  isFeatured: boolean;
+  order: string;
+}
+
+const initialFormData: ProductFormData = {
+  sku: '',
+  categoryId: '',
+  nameEn: '',
+  nameZh: '',
+  slug: '',
+  shortDescEn: '',
+  shortDescZh: '',
+  descriptionEn: '',
+  descriptionZh: '',
+  priceMin: '',
+  priceMax: '',
+  moq: '',
+  leadTime: '',
+  seoTitleEn: '',
+  seoTitleZh: '',
+  seoDescEn: '',
+  seoDescZh: '',
+  seoKeywordsEn: '',
+  seoKeywordsZh: '',
+  isActive: true,
+  isFeatured: false,
+  order: '0',
+};
+
 export default function NewProductPage() {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const [images, setImages] = useState<UploadedFile[]>([]);
+  const [mainImages, setMainImages] = useState<UploadedFile[]>([]);
+  const [detailImages, setDetailImages] = useState<UploadedFile[]>([]);
   const [videos, setVideos] = useState<UploadedFile[]>([]);
   const [specs, setSpecs] = useState<SpecItem[]>([]);
-  const [nameEn, setNameEn] = useState('');
-  const [slug, setSlug] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [formData, setFormData] = useState<ProductFormData>(initialFormData);
+  const [error, setError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
-  useEffect(() => { document.title = 'CC Scale 管理后台 - 添加产品'; }, []);
+  useEffect(() => {
+    document.title = 'CC Scale 管理后台 - 添加产品';
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await api.get<{ data: Category[] }>('/products/categories');
+      if (response.success && response.data) {
+        const categoriesData = Array.isArray(response.data)
+          ? response.data
+          : (response.data as any).data || [];
+        setCategories(categoriesData);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
 
   const toSlug = (name: string) =>
     name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
 
-  const handleNameEnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNameEn(value);
-    if (!slugManuallyEdited) {
-      setSlug(toSlug(value));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    }));
+
+    if (name === 'nameEn' && !slugManuallyEdited) {
+      setFormData((prev) => ({ ...prev, slug: toSlug(value) }));
     }
   };
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSlug(e.target.value);
+    setFormData((prev) => ({ ...prev, slug: e.target.value }));
     setSlugManuallyEdited(true);
+  };
+
+  const uploadFiles = async (files: UploadedFile[]): Promise<string[]> => {
+    const uploadedUrls: string[] = [];
+
+    for (const file of files) {
+      if (file.uploadedUrl) {
+        uploadedUrls.push(file.uploadedUrl);
+      } else if (file.file) {
+        const uploadType = file.type === 'image' ? 'product-image' : 'product-video';
+        const result = await api.upload<{ url: string }>(
+          `/upload/${uploadType}`,
+          file.file,
+          uploadType
+        );
+        if (result.success && result.data) {
+          const url = (result.data as any).url || result.data;
+          uploadedUrls.push(url);
+        }
+      }
+    }
+
+    return uploadedUrls;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setIsSaving(true);
 
-    // Simulate save
-    console.log('Saving product with:', { images, videos, specs });
+    try {
+      // Validate required fields
+      if (!formData.sku.trim()) {
+        throw new Error('SKU不能为空');
+      }
+      if (!formData.nameEn.trim()) {
+        throw new Error('产品英文名称不能为空');
+      }
+      if (!formData.categoryId) {
+        throw new Error('请选择产品分类');
+      }
 
-    setTimeout(() => {
+      // Upload images and videos first
+      const uploadedMainImageUrls = await uploadFiles(mainImages);
+      const uploadedDetailImageUrls = await uploadFiles(detailImages);
+      const uploadedVideoUrls = await uploadFiles(videos);
+
+      // Combine all images (without type field to avoid enum validation issues)
+      const allImages = [
+        ...uploadedMainImageUrls.map((url, idx) => ({
+          imageUrl: url,
+          order: idx,
+          isMain: idx === 0,
+        })),
+        ...uploadedDetailImageUrls.map((url, idx) => ({
+          imageUrl: url,
+          order: idx,
+          isMain: false,
+        })),
+      ];
+
+      // Prepare product data
+      const productData = {
+        sku: formData.sku.trim(),
+        categoryId: parseInt(formData.categoryId),
+        nameEn: formData.nameEn.trim(),
+        nameZh: formData.nameZh.trim() || formData.nameEn.trim(),
+        slug: formData.slug.trim() || toSlug(formData.nameEn),
+        shortDescEn: formData.shortDescEn.trim(),
+        shortDescZh: formData.shortDescZh.trim(),
+        descriptionEn: formData.descriptionEn.trim(),
+        descriptionZh: formData.descriptionZh.trim(),
+        priceMin: formData.priceMin ? parseFloat(formData.priceMin) : undefined,
+        priceMax: formData.priceMax ? parseFloat(formData.priceMax) : undefined,
+        moq: formData.moq ? parseInt(formData.moq) : undefined,
+        leadTime: formData.leadTime.trim() || undefined,
+        seoTitleEn: formData.seoTitleEn.trim(),
+        seoTitleZh: formData.seoTitleZh.trim(),
+        seoDescEn: formData.seoDescEn.trim(),
+        seoDescZh: formData.seoDescZh.trim(),
+        seoKeywordsEn: formData.seoKeywordsEn.trim(),
+        seoKeywordsZh: formData.seoKeywordsZh.trim(),
+        isActive: formData.isActive,
+        isFeatured: formData.isFeatured,
+        order: parseInt(formData.order) || 0,
+        mainImage: uploadedMainImageUrls[0] || undefined,
+        videoUrl: uploadedVideoUrls[0] || undefined,
+        images: allImages,
+        specs: specs.map((spec, index) => ({
+          keyEn: spec.keyEn,
+          keyZh: spec.keyZh,
+          valueEn: spec.valueEn,
+          valueZh: spec.valueZh,
+          order: index,
+        })),
+      };
+
+      // Submit to API
+      const response = await api.post<{ data: { id: number } }>('/products', productData);
+
+      if (response.success) {
+        setSaveSuccess(true);
+        setIsSaving(false);
+        setTimeout(() => {
+          router.push('/products');
+        }, 1500);
+      } else {
+        throw new Error(response.error?.message || '保存失败');
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+      setError(err instanceof Error ? err.message : '保存失败，请重试');
       setIsSaving(false);
-      router.push('/products');
-    }, 1500);
+    }
   };
 
   return (
@@ -75,13 +263,27 @@ export default function NewProductPage() {
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            返回
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-[#0A1628]">Add New Product</h1>
-            <p className="text-gray-600">Create a new product in your catalog</p>
+            <h1 className="text-3xl font-bold text-[#0A1628]">添加产品</h1>
+            <p className="text-gray-600">创建新产品</p>
           </div>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
+            <AlertCircle className="h-5 w-5" />
+            {error}
+          </div>
+        )}
+
+        {saveSuccess && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
+            <span>保存成功！</span>
+            <button onClick={() => setSaveSuccess(false)} className="ml-auto text-green-500 hover:text-green-700">×</button>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -89,7 +291,7 @@ export default function NewProductPage() {
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Product Information</CardTitle>
+                  <CardTitle>基本信息</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -97,77 +299,130 @@ export default function NewProductPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         SKU *
                       </label>
-                      <Input required placeholder="e.g. BS-200" />
+                      <Input
+                        name="sku"
+                        required
+                        placeholder="例如: BS-200"
+                        value={formData.sku}
+                        onChange={handleInputChange}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Category *
+                        分类 *
                       </label>
-                      <select required className="h-10 w-full px-3 border border-gray-200 rounded-md">
-                        <option value="">Select category</option>
-                        <option value="1">Body Scales</option>
-                        <option value="2">Hanging Scales</option>
-                        <option value="3">Kitchen Scales</option>
-                        <option value="4">Baby Scales</option>
+                      <select
+                        name="categoryId"
+                        required
+                        className="h-10 w-full px-3 border border-gray-200 rounded-md"
+                        value={formData.categoryId}
+                        onChange={handleInputChange}
+                        disabled={loadingCategories}
+                      >
+                        <option value="">选择分类</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.nameZh || cat.nameEn} ({cat.nameEn})
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Product Name (English) *
+                      产品名称 (英文) *
                     </label>
-                    <Input required placeholder="Enter product name" value={nameEn} onChange={handleNameEnChange} />
+                    <Input
+                      name="nameEn"
+                      required
+                      placeholder="Enter product name"
+                      value={formData.nameEn}
+                      onChange={handleInputChange}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Product Name (Chinese) *
+                      产品名称 (中文)
                     </label>
-                    <Input required placeholder="输入产品名称" />
+                    <Input
+                      name="nameZh"
+                      placeholder="输入产品名称"
+                      value={formData.nameZh}
+                      onChange={handleInputChange}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Slug *
                     </label>
-                    <Input required placeholder="product-url-slug" value={slug} onChange={handleSlugChange} />
+                    <Input
+                      name="slug"
+                      required
+                      placeholder="product-url-slug"
+                      value={formData.slug}
+                      onChange={handleSlugChange}
+                    />
                     <p className="text-xs text-gray-400 mt-1">自动从英文名生成，可手动修改</p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Short Description (English)
+                      短描述 (英文)
                     </label>
-                    <Input placeholder="Brief description" />
+                    <Input
+                      name="shortDescEn"
+                      placeholder="Brief description"
+                      value={formData.shortDescEn}
+                      onChange={handleInputChange}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Short Description (Chinese)
+                      短描述 (中文)
                     </label>
-                    <Input placeholder="简短描述" />
+                    <Input
+                      name="shortDescZh"
+                      placeholder="简短描述"
+                      value={formData.shortDescZh}
+                      onChange={handleInputChange}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description (English)
+                      详细描述 (英文)
                     </label>
-                    <Textarea rows={6} placeholder="Full product description" />
+                    <Textarea
+                      name="descriptionEn"
+                      rows={6}
+                      placeholder="Full product description"
+                      value={formData.descriptionEn}
+                      onChange={handleInputChange}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description (Chinese)
+                      详细描述 (中文)
                     </label>
-                    <Textarea rows={6} placeholder="完整产品描述" />
+                    <Textarea
+                      name="descriptionZh"
+                      rows={6}
+                      placeholder="完整产品描述"
+                      value={formData.descriptionZh}
+                      onChange={handleInputChange}
+                    />
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Product Specifications</CardTitle>
+                  <CardTitle>产品规格</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ProductSpecs specs={specs} onChange={setSpecs} />
@@ -176,34 +431,59 @@ export default function NewProductPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Pricing & Availability</CardTitle>
+                  <CardTitle>价格与交期</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Minimum Price
+                        最低价
                       </label>
-                      <Input type="number" placeholder="0.00" />
+                      <Input
+                        name="priceMin"
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={formData.priceMin}
+                        onChange={handleInputChange}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Maximum Price
+                        最高价
                       </label>
-                      <Input type="number" placeholder="0.00" />
+                      <Input
+                        name="priceMax"
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={formData.priceMax}
+                        onChange={handleInputChange}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        MOQ
+                        最小起订量
                       </label>
-                      <Input type="number" placeholder="100" />
+                      <Input
+                        name="moq"
+                        type="number"
+                        placeholder="100"
+                        value={formData.moq}
+                        onChange={handleInputChange}
+                      />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Lead Time
+                      交期
                     </label>
-                    <Input placeholder="15-20 days" />
+                    <Input
+                      name="leadTime"
+                      placeholder="15-20 days"
+                      value={formData.leadTime}
+                      onChange={handleInputChange}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -213,41 +493,77 @@ export default function NewProductPage() {
                   <CardTitle>SEO</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SEO Title (English)
-                    </label>
-                    <Input placeholder="SEO title for search engines" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        SEO标题 (英文)
+                      </label>
+                      <Input
+                        name="seoTitleEn"
+                        placeholder="SEO title for search engines"
+                        value={formData.seoTitleEn}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        SEO标题 (中文)
+                      </label>
+                      <Input
+                        name="seoTitleZh"
+                        placeholder="搜索引擎优化标题"
+                        value={formData.seoTitleZh}
+                        onChange={handleInputChange}
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SEO Title (Chinese)
+                      SEO描述 (英文)
                     </label>
-                    <Input placeholder="搜索引擎优化标题" />
+                    <Textarea
+                      name="seoDescEn"
+                      rows={3}
+                      placeholder="Meta description for search engines"
+                      value={formData.seoDescEn}
+                      onChange={handleInputChange}
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SEO Description (English)
+                      SEO描述 (中文)
                     </label>
-                    <Textarea rows={3} placeholder="Meta description for search engines" />
+                    <Textarea
+                      name="seoDescZh"
+                      rows={3}
+                      placeholder="搜索引擎元描述"
+                      value={formData.seoDescZh}
+                      onChange={handleInputChange}
+                    />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SEO Description (Chinese)
-                    </label>
-                    <Textarea rows={3} placeholder="搜索引擎元描述" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SEO Keywords (English)
-                    </label>
-                    <Input placeholder="comma, separated, keywords" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      SEO Keywords (Chinese)
-                    </label>
-                    <Input placeholder="关键词，用逗号分隔" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        SEO关键词 (英文)
+                      </label>
+                      <Input
+                        name="seoKeywordsEn"
+                        placeholder="comma, separated, keywords"
+                        value={formData.seoKeywordsEn}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        SEO关键词 (中文)
+                      </label>
+                      <Input
+                        name="seoKeywordsZh"
+                        placeholder="关键词，用逗号分隔"
+                        value={formData.seoKeywordsZh}
+                        onChange={handleInputChange}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -257,44 +573,65 @@ export default function NewProductPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Status</CardTitle>
+                  <CardTitle>状态</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <input type="checkbox" id="isActive" defaultChecked className="rounded" />
+                    <input
+                      type="checkbox"
+                      id="isActive"
+                      name="isActive"
+                      checked={formData.isActive}
+                      onChange={handleInputChange}
+                      className="rounded"
+                    />
                     <label htmlFor="isActive" className="text-sm text-gray-700">
-                      Active
+                      启用
                     </label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <input type="checkbox" id="isFeatured" className="rounded" />
+                    <input
+                      type="checkbox"
+                      id="isFeatured"
+                      name="isFeatured"
+                      checked={formData.isFeatured}
+                      onChange={handleInputChange}
+                      className="rounded"
+                    />
                     <label htmlFor="isFeatured" className="text-sm text-gray-700">
-                      Featured
+                      精选产品
                     </label>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Sort Order
+                      排序
                     </label>
-                    <Input type="number" placeholder="0" />
+                    <Input
+                      name="order"
+                      type="number"
+                      placeholder="0"
+                      value={formData.order}
+                      onChange={handleInputChange}
+                    />
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Product Images</CardTitle>
+                  <CardTitle>产品图库 (1-5张) *</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <FileUpload
                     type="image"
                     accept="image/*"
                     multiple
-                    maxFiles={10}
-                    files={images}
-                    onChange={setImages}
+                    maxFiles={5}
+                    files={mainImages}
+                    onChange={setMainImages}
                     showMainImageToggle
-                    label="Images"
+                    label="主图"
+                    hint="白色背景正面图，1200×1200px，JPG/WebP，≤500KB/张，第一张为封面"
                     uploadType="product-image"
                   />
                 </CardContent>
@@ -302,17 +639,37 @@ export default function NewProductPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Product Videos</CardTitle>
+                  <CardTitle>详情图 (0-8张)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FileUpload
+                    type="image"
+                    accept="image/*"
+                    multiple
+                    maxFiles={8}
+                    files={detailImages}
+                    onChange={setDetailImages}
+                    label="详情图"
+                    hint="产品详情页图库图片，场景图/细节图，1600×1200px，JPG/WebP，≤800KB/张"
+                    uploadType="product-image"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>产品视频</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <FileUpload
                     type="video"
                     accept="video/*"
                     multiple
-                    maxFiles={3}
+                    maxFiles={1}
                     files={videos}
                     onChange={setVideos}
-                    label="Videos"
+                    label="视频"
+                    hint="MP4格式，最大100MB，时长30-60秒"
                     uploadType="product-video"
                   />
                 </CardContent>
@@ -324,12 +681,17 @@ export default function NewProductPage() {
                   variant="outline"
                   className="flex-1"
                   onClick={() => router.back()}
+                  disabled={isSaving}
                 >
-                  Cancel
+                  取消
                 </Button>
-                <Button type="submit" className="flex-1 bg-accent hover:bg-accent/90" disabled={isSaving}>
+                <Button
+                  type="submit"
+                  className="flex-1 bg-accent hover:bg-accent/90"
+                  disabled={isSaving}
+                >
                   <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? 'Saving...' : 'Save Product'}
+                  {isSaving ? '保存中...' : '保存产品'}
                 </Button>
               </div>
             </div>

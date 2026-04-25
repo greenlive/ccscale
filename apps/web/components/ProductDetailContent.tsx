@@ -2,12 +2,12 @@
 
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { MessageSquare, Mail, Phone, Factory, Award, Shield, Clock, DollarSign, Share2, Heart, CheckCircle, Play } from 'lucide-react';
+import { MessageSquare, Mail, Phone, Factory, Award, Shield, Clock, DollarSign, Share2, Heart, CheckCircle, Settings, Truck, Scale, Gauge, Ruler } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import { ProductGallery } from '@/components/ProductGallery';
 import { QuickInquiryButton } from '@/components/inquiry/QuickInquiryButton';
-import { useProduct, type ProductSpec } from '@/lib/api/queries';
-import { useState } from 'react';
+import { useProduct, useRelatedProducts, type ProductSpec } from '@/lib/api/queries';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface DisplaySpec {
@@ -76,15 +76,25 @@ export function ProductDetailContent({ slug }: { slug: string }) {
   const isZh = locale === 'zh';
   const [isFavorite, setIsFavorite] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
 
   const { data: apiProduct, isLoading, error } = useProduct(slug);
+  const { data: relatedProducts } = useRelatedProducts(apiProduct?.id ?? 0, 4);
   const product = apiProduct || mockProduct;
+
+  // Sticky bar scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowStickyBar(window.scrollY > 500);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const productImages = product.images || [];
   const mainImage = productImages.find((img) => img.isMain) || productImages[0];
   const mainImageUrl = mainImage?.imageUrl || product.mainImage || '';
   const galleryImages = productImages.map((img) => img.imageUrl);
-  const detailImages = productImages.filter((img) => !img.isMain).map((img) => img.imageUrl);
 
   const displaySpecs: DisplaySpec[] = (product.specs || []).map((spec: ProductSpec) => ({
     keyEn: spec.labelEn,
@@ -154,48 +164,6 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                 onVideoClick={() => setShowVideo(true)}
               />
             </div>
-
-            {/* Video Section */}
-            {product.videoUrl && (
-              <div className="bg-gray-50 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-primary flex items-center gap-2">
-                    <Play className="w-5 h-5" />
-                    {isZh ? '产品视频' : 'Product Video'}
-                  </h3>
-                </div>
-                <div className="aspect-video bg-black rounded-lg overflow-hidden">
-                  <video
-                    src={product.videoUrl}
-                    controls
-                    className="w-full h-full object-contain"
-                    poster={mainImageUrl}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Detail Images */}
-            {detailImages.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-primary mb-4">
-                  {isZh ? '产品详情图' : 'Product Images'}
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {detailImages.map((img, idx) => (
-                    <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                      <Image
-                        src={img}
-                        alt={`${name} detail ${idx + 1}`}
-                        width={400}
-                        height={400}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Right Column - Product Info */}
@@ -238,19 +206,63 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               </div>
             </div>
 
-            {/* Key Specifications */}
+            {/* Key Specifications Cards */}
+            {(() => {
+              const keySpecKeys = ['Capacity', 'Division', 'Platform Size', 'Power'];
+              const keySpecs = displaySpecs.filter(spec =>
+                keySpecKeys.includes(spec.keyEn)
+              );
+              const specIcons: Record<string, React.ReactNode> = {
+                'Capacity': <Scale className="w-5 h-5" />,
+                'Division': <Gauge className="w-5 h-5" />,
+                'Platform Size': <Ruler className="w-5 h-5" />,
+                'Power': <Award className="w-5 h-5" />,
+              };
+
+              if (keySpecs.length === 0) return null;
+
+              return (
+                <div className="grid grid-cols-2 gap-3">
+                  {keySpecs.map((spec, idx) => (
+                    <div key={idx} className="bg-gray-50 rounded-lg p-4 flex items-start gap-3">
+                      <div className="text-primary mt-0.5">
+                        {specIcons[spec.keyEn] || <Award className="w-5 h-5" />}
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">
+                          {isZh ? spec.keyZh : spec.keyEn}
+                        </div>
+                        <div className="font-bold text-primary text-sm">
+                          {isZh ? spec.valueZh : spec.valueEn}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Specifications Table */}
             {displaySpecs.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                 <div className="bg-primary text-white px-4 py-3 font-semibold">
                   {isZh ? '技术规格' : 'Specifications'}
                 </div>
-                <div className="divide-y divide-gray-100">
-                  {displaySpecs.map((spec, idx) => (
-                    <div key={idx} className="flex justify-between px-4 py-3 text-sm">
-                      <span className="text-gray-500">{isZh ? spec.keyZh : spec.keyEn}</span>
-                      <span className="font-medium text-primary">{isZh ? spec.valueZh : spec.valueEn}</span>
-                    </div>
-                  ))}
+                <div className="p-4 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <tbody className="divide-y divide-gray-100">
+                      {displaySpecs.map((spec, idx) => (
+                        <tr key={idx}>
+                          <th className="text-left py-3 px-4 text-gray-500 font-medium whitespace-nowrap">
+                            {isZh ? spec.keyZh : spec.keyEn}
+                          </th>
+                          <td className="py-3 px-4 text-primary font-medium">
+                            {isZh ? spec.valueZh : spec.valueEn}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
@@ -265,6 +277,48 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   {description || (isZh ? '暂无详细描述' : 'No description available')}
                 </p>
               </div>
+            </div>
+
+            {/* OEM/ODM Section */}
+            <div className="bg-gradient-to-r from-primary/5 to-transparent border border-gray-200 rounded-xl p-6">
+              <h3 className="font-bold text-primary mb-2 flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                {isZh ? 'OEM/ODM 定制服务' : 'OEM/ODM Customization'}
+              </h3>
+              <p className="text-gray-600 text-sm mb-3">
+                {isZh
+                  ? '我们提供全面的OEM/ODM服务，支持-logo定制、包装定制、功能定制等。'
+                  : 'We provide full OEM/ODM services including logo customization, packaging design, and feature modifications.'}
+              </p>
+              <Link href="/oem-odm" className="text-primary text-sm font-medium hover:underline">
+                {isZh ? '查看定制流程 →' : 'View Customization Process →'}
+              </Link>
+            </div>
+
+            {/* Quality Control Section */}
+            <div className="bg-gradient-to-r from-green-50 to-transparent border border-green-200 rounded-xl p-6">
+              <h3 className="font-bold text-green-700 mb-2 flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                {isZh ? '质量控制' : 'Quality Control Process'}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {isZh
+                  ? '每个产品在包装前都会经过全量程校准(Full Calibration)和72小时老化测试(Aging Test)，确保产品性能稳定。'
+                  : 'Every product undergoes Full Calibration and 72-hour Aging Test before packaging to ensure stable performance.'}
+              </p>
+            </div>
+
+            {/* Logistics Section */}
+            <div className="bg-gradient-to-r from-blue-50 to-transparent border border-blue-200 rounded-xl p-6">
+              <h3 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                <Truck className="w-5 h-5" />
+                {isZh ? '物流与包装' : 'Shipping & Packaging'}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {isZh
+                  ? '采用加固出口包装（多层泡沫保护+强化纸箱），适合长途海运和空运，有效防损。'
+                  : 'Reinforced export packaging with multi-layer foam protection and reinforced cartons, suitable for long-distance sea and air freight.'}
+              </p>
             </div>
 
             {/* Action Buttons */}
@@ -352,6 +406,58 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             </div>
           </div>
         </div>
+
+        {/* Related Products */}
+        {relatedProducts && relatedProducts.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <h2 className="text-lg font-bold text-primary mb-4">
+              {isZh ? '其他产品推荐' : 'You May Also Like'}
+            </h2>
+            <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-2">
+              {relatedProducts.map((related) => {
+                const relatedName = isZh ? (related.nameZh || related.nameEn || '') : (related.nameEn || related.nameZh || '');
+                const relatedMainImage = related.images?.find((img: any) => img.isMain)?.imageUrl || related.mainImage || '';
+                const relatedPriceMin = related.priceMin ?? 0;
+                const relatedPriceMax = related.priceMax ?? 0;
+                const relatedPriceDisplay = relatedPriceMax > relatedPriceMin
+                  ? `$${relatedPriceMin}-$${relatedPriceMax}`
+                  : `$${relatedPriceMin}`;
+
+                return (
+                  <Link
+                    key={related.id}
+                    href={`/products/${related.slug}`}
+                    className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                  >
+                    <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+                      {relatedMainImage ? (
+                        <Image
+                          src={relatedMainImage}
+                          alt={relatedName}
+                          fill
+                          sizes="150px"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                          No Image
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-1.5">
+                      <h3 className="font-medium text-[10px] text-primary line-clamp-2 leading-tight">
+                        {relatedName}
+                      </h3>
+                      <p className="text-[10px] font-bold text-primary mt-0.5">
+                        {relatedPriceDisplay}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Video Modal */}
@@ -372,6 +478,41 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             </button>
             <div className="aspect-video bg-black rounded-lg overflow-hidden">
               <video src={product.videoUrl} controls autoPlay className="w-full h-full" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Inquiry Bar */}
+      {showStickyBar && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Image
+                src={mainImageUrl}
+                alt={name}
+                width={50}
+                height={50}
+                className="rounded-lg object-cover"
+              />
+              <div>
+                <div className="font-bold text-primary">{name}</div>
+                <div className="text-sm text-gray-500">{priceDisplay} / {isZh ? '件' : 'pc'}</div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <QuickInquiryButton
+                product={{
+                  id: product.id,
+                  nameEn: product.nameEn || '',
+                  nameZh: product.nameZh || '',
+                  sku: product.sku || '',
+                  mainImage: mainImageUrl || '',
+                  priceMin: product.priceMin || 0,
+                  priceMax: product.priceMax || 0,
+                }}
+                className="px-6"
+              />
             </div>
           </div>
         </div>
