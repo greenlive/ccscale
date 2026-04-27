@@ -10,6 +10,11 @@ import { Textarea } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
 import { FileUpload } from '@/components/FileUpload';
 import { ProductSpecs } from '@/components/ProductSpecs';
+import { ProductCertifications } from '@/components/ProductCertifications';
+import { ProductFAQ } from '@/components/ProductFAQ';
+import { ProductCoreSellingPoints } from '@/components/ProductCoreSellingPoints';
+import { ProductTradeInfo } from '@/components/ProductTradeInfo';
+import { ProductFactoryInfo } from '@/components/ProductFactoryInfo';
 import { api } from '@/lib/apiClient';
 
 interface UploadedFile {
@@ -28,6 +33,20 @@ interface SpecItem {
   valueEn: string;
   valueZh: string;
   order: number;
+}
+
+interface FAQItem {
+  id: string;
+  questionEn: string;
+  questionZh: string;
+  answerEn: string;
+  answerZh: string;
+}
+
+interface CoreSellingPoint {
+  id: string;
+  pointEn: string;
+  pointZh: string;
 }
 
 interface Category {
@@ -52,6 +71,20 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   const [detailImages, setDetailImages] = useState<UploadedFile[]>([]);
   const [videos, setVideos] = useState<UploadedFile[]>([]);
   const [specs, setSpecs] = useState<SpecItem[]>([]);
+  const [certifications, setCertifications] = useState<string[]>([]);
+  const [faqs, setFaqs] = useState<FAQItem[]>([]);
+  const [sellingPoints, setSellingPoints] = useState<CoreSellingPoint[]>([]);
+  const [tradeInfo, setTradeInfo] = useState({
+    hsCode: '',
+    paymentTerms: '',
+    shippingTerms: '',
+    warrantyInfo: '',
+  });
+  const [factoryInfo, setFactoryInfo] = useState({
+    manufacturerName: '',
+    factoryLocation: '',
+    productionCapacity: '',
+  });
 
   const [formData, setFormData] = useState({
     sku: '',
@@ -76,6 +109,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     isActive: true,
     isFeatured: false,
     order: '0',
+    // B2B fields
+    applicationScenariosEn: '',
+    applicationScenariosZh: '',
+    packagingInfoEn: '',
+    packagingInfoZh: '',
   });
 
   useEffect(() => {
@@ -131,6 +169,65 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           isActive: product.isActive ?? true,
           isFeatured: product.isFeatured ?? false,
           order: product.order?.toString() || '0',
+          applicationScenariosEn: product.applicationScenariosEn || '',
+          applicationScenariosZh: product.applicationScenariosZh || '',
+          packagingInfoEn: product.packagingInfoEn || '',
+          packagingInfoZh: product.packagingInfoZh || '',
+        });
+
+        // Load B2B certifications
+        if (product.certifications) {
+          try {
+            setCertifications(JSON.parse(product.certifications));
+          } catch {
+            setCertifications([]);
+          }
+        }
+
+        // Load B2B FAQs
+        if (product.faqEn) {
+          try {
+            const faqEnData = JSON.parse(product.faqEn);
+            setFaqs(faqEnData.map((f: any, idx: number) => ({
+              id: `faq-${idx}`,
+              questionEn: f.q || '',
+              questionZh: f.a || '',
+              answerEn: f.a || '',
+              answerZh: '',
+            })));
+          } catch {
+            setFaqs([]);
+          }
+        }
+
+        // Load B2B selling points
+        if (product.coreSellingPointsEn) {
+          try {
+            const pointsEn = JSON.parse(product.coreSellingPointsEn);
+            const pointsZh = product.coreSellingPointsZh ? JSON.parse(product.coreSellingPointsZh) : [];
+            setSellingPoints(pointsEn.map((p: string, idx: number) => ({
+              id: `point-${idx}`,
+              pointEn: p,
+              pointZh: pointsZh[idx] || '',
+            })));
+          } catch {
+            setSellingPoints([]);
+          }
+        }
+
+        // Load B2B trade info
+        setTradeInfo({
+          hsCode: product.hsCode || '',
+          paymentTerms: product.paymentTerms || '',
+          shippingTerms: product.shippingTerms || '',
+          warrantyInfo: product.warrantyInfo || '',
+        });
+
+        // Load B2B factory info
+        setFactoryInfo({
+          manufacturerName: product.manufacturerName || '',
+          factoryLocation: product.factoryLocation || '',
+          productionCapacity: product.productionCapacity || '',
         });
 
         // Load existing images - check mainImage first, then images array
@@ -304,6 +401,23 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           valueZh: spec.valueZh,
           order: index,
         })),
+        // B2B fields
+        coreSellingPointsEn: sellingPoints.length > 0 ? JSON.stringify(sellingPoints.map(p => p.pointEn)) : undefined,
+        coreSellingPointsZh: sellingPoints.length > 0 ? JSON.stringify(sellingPoints.map(p => p.pointZh)) : undefined,
+        applicationScenariosEn: formData.applicationScenariosEn.trim() || undefined,
+        applicationScenariosZh: formData.applicationScenariosZh.trim() || undefined,
+        faqEn: faqs.length > 0 ? JSON.stringify(faqs.map(f => ({ q: f.questionEn, a: f.answerEn }))) : undefined,
+        faqZh: faqs.length > 0 ? JSON.stringify(faqs.map(f => ({ q: f.questionZh, a: f.answerZh }))) : undefined,
+        certifications: certifications.length > 0 ? JSON.stringify(certifications) : undefined,
+        hsCode: tradeInfo.hsCode.trim() || undefined,
+        paymentTerms: tradeInfo.paymentTerms.trim() || undefined,
+        shippingTerms: tradeInfo.shippingTerms.trim() || undefined,
+        warrantyInfo: tradeInfo.warrantyInfo.trim() || undefined,
+        packagingInfoEn: formData.packagingInfoEn.trim() || undefined,
+        packagingInfoZh: formData.packagingInfoZh.trim() || undefined,
+        manufacturerName: factoryInfo.manufacturerName.trim() || undefined,
+        factoryLocation: factoryInfo.factoryLocation.trim() || undefined,
+        productionCapacity: factoryInfo.productionCapacity.trim() || undefined,
       };
 
       const response = await api.put(`/products/${productId}`, productData);
@@ -582,6 +696,65 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
               <Card>
                 <CardHeader>
+                  <CardTitle>B2B 核心卖点</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ProductCoreSellingPoints points={sellingPoints} onChange={setSellingPoints} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 应用场景</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Application Scenarios (English)
+                    </label>
+                    <Textarea
+                      name="applicationScenariosEn"
+                      rows={4}
+                      placeholder="Describe where and how the product is used..."
+                      value={formData.applicationScenariosEn}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      应用场景 (中文)
+                    </label>
+                    <Textarea
+                      name="applicationScenariosZh"
+                      rows={4}
+                      placeholder="描述产品使用场景..."
+                      value={formData.applicationScenariosZh}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 认证</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ProductCertifications certifications={certifications} onChange={setCertifications} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B FAQ</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ProductFAQ faqs={faqs} onChange={setFaqs} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
                   <CardTitle>SEO 优化</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -740,6 +913,62 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                     label="详情图"
                     hint="产品详情页图库图片，场景图/细节图，1600×1200px，JPG/WebP，≤800KB/张"
                     uploadType="product-image"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 贸易信息</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ProductTradeInfo
+                    formData={tradeInfo}
+                    onChange={setTradeInfo}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 包装信息</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Packaging Info (English)
+                    </label>
+                    <Textarea
+                      name="packagingInfoEn"
+                      rows={3}
+                      placeholder="e.g. 10 pcs/carton, 42x38x28 cm, G.W. 12kg"
+                      value={formData.packagingInfoEn}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      包装信息 (中文)
+                    </label>
+                    <Textarea
+                      name="packagingInfoZh"
+                      rows={3}
+                      placeholder="例如：10个/箱，42x38x28厘米，毛重12公斤"
+                      value={formData.packagingInfoZh}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 工厂信息</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ProductFactoryInfo
+                    formData={factoryInfo}
+                    onChange={setFactoryInfo}
                   />
                 </CardContent>
               </Card>

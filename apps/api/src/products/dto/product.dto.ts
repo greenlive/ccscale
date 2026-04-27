@@ -1,6 +1,11 @@
-import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, ValidateNested, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+export enum ImageType {
+  MAIN = 'MAIN',
+  DETAIL = 'DETAIL',
+}
 
 export class ProductSpecDto {
   @ApiProperty()
@@ -23,6 +28,37 @@ export class ProductSpecDto {
   @IsNumber()
   @IsOptional()
   order?: number;
+}
+
+export class ProductImageDto {
+  @ApiProperty()
+  @IsString()
+  imageUrl: string;
+
+  @ApiPropertyOptional()
+  @IsEnum(ImageType)
+  @IsOptional()
+  type?: ImageType;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  altEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  altZh?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  order?: number;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  isMain?: boolean;
 }
 
 export class CreateProductDto {
@@ -111,12 +147,136 @@ export class CreateProductDto {
   @IsOptional()
   isActive?: boolean;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  seoTitleEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  seoTitleZh?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  seoDescEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  seoDescZh?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  seoKeywordsEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  seoKeywordsZh?: string;
+
+  // B2B 核心卖点（JSON数组字符串）
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  coreSellingPointsEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  coreSellingPointsZh?: string;
+
+  // B2B 应用场景
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  applicationScenariosEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  applicationScenariosZh?: string;
+
+  // B2B FAQ（JSON数组字符串）
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  faqEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  faqZh?: string;
+
+  // B2B 认证（JSON数组字符串）
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  certifications?: string;
+
+  // B2B 贸易信息
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  hsCode?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  paymentTerms?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  shippingTerms?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  warrantyInfo?: string;
+
+  // B2B 包装信息
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  packagingInfoEn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  packagingInfoZh?: string;
+
+  // B2B 工厂信息
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  manufacturerName?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  factoryLocation?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  productionCapacity?: string;
+
   @ApiPropertyOptional({ type: [ProductSpecDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductSpecDto)
   @IsOptional()
   specs?: ProductSpecDto[];
+
+  @ApiPropertyOptional({ type: [ProductImageDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductImageDto)
+  @IsOptional()
+  images?: ProductImageDto[];
 }
 
 export class UpdateProductDto extends CreateProductDto {

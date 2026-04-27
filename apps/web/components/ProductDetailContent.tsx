@@ -2,13 +2,21 @@
 
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { MessageSquare, Mail, Phone, Factory, Award, Shield, Clock, DollarSign, Share2, Heart, CheckCircle, Settings, Truck, Scale, Gauge, Ruler } from 'lucide-react';
+import { MessageSquare, Mail, Phone, Factory, Award, Shield, Clock, DollarSign, Share2, Heart, CheckCircle, Settings, Truck, Scale, Gauge, Ruler, FileText } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import { ProductGallery } from '@/components/ProductGallery';
 import { QuickInquiryButton } from '@/components/inquiry/QuickInquiryButton';
 import { useProduct, useRelatedProducts, type ProductSpec } from '@/lib/api/queries';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { ProductBulletPoints } from '@/components/product/ProductBulletPoints';
+import { ProductApplicationScenarios } from '@/components/product/ProductApplicationScenarios';
+import { ProductCertifications } from '@/components/product/ProductCertifications';
+import { ProductFactoryShowcase } from '@/components/product/ProductFactoryShowcase';
+import { ProductPackagingInfo } from '@/components/product/ProductPackagingInfo';
+import { ProductFAQ } from '@/components/product/ProductFAQ';
+import { ProductTradeInfo } from '@/components/product/ProductTradeInfo';
+import { ProductSchema } from '@/components/SchemaOrg';
 
 interface DisplaySpec {
   keyEn: string;
@@ -132,6 +140,21 @@ export function ProductDetailContent({ slug }: { slug: string }) {
 
   return (
     <div className="bg-white min-h-screen">
+      {/* Schema.org Product Markup */}
+      <ProductSchema
+        name={product.nameEn || name}
+        description={product.descriptionEn || description}
+        image={mainImageUrl}
+        sku={product.sku}
+        brand="CC Scale"
+        offers={{
+          price: priceMin?.toString() || '0',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          url: `https://www.ccscale.com/${locale}/products/${product.slug}`,
+        }}
+      />
+
       {/* Breadcrumb */}
       <div className="bg-gray-50 border-b border-gray-200">
         <div className="container mx-auto px-4 py-3">
@@ -295,6 +318,31 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               </Link>
             </div>
 
+            {/* Core Selling Points - NEW */}
+            {(product as any).coreSellingPointsEn || (product as any).coreSellingPointsZh ? (
+              <ProductBulletPoints
+                pointsEn={(product as any).coreSellingPointsEn || ''}
+                pointsZh={(product as any).coreSellingPointsZh || ''}
+              />
+            ) : null}
+
+            {/* Application Scenarios - NEW */}
+            {(product as any).applicationScenariosEn || (product as any).applicationScenariosZh ? (
+              <ProductApplicationScenarios
+                scenariosEn={(product as any).applicationScenariosEn || ''}
+                scenariosZh={(product as any).applicationScenariosZh || ''}
+                mainImage={mainImageUrl}
+              />
+            ) : null}
+
+            {/* Trade Info - NEW */}
+            <ProductTradeInfo
+              hsCode={(product as any).hsCode}
+              paymentTerms={(product as any).paymentTerms}
+              shippingTerms={(product as any).shippingTerms}
+              warrantyInfo={(product as any).warrantyInfo}
+            />
+
             {/* Quality Control Section */}
             <div className="bg-gradient-to-r from-green-50 to-transparent border border-green-200 rounded-xl p-6">
               <h3 className="font-bold text-green-700 mb-2 flex items-center gap-2">
@@ -320,6 +368,30 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   : 'Reinforced export packaging with multi-layer foam protection and reinforced cartons, suitable for long-distance sea and air freight.'}
               </p>
             </div>
+
+            {/* Certifications - NEW */}
+            {(product as any).certifications ? (
+              <ProductCertifications certifications={(product as any).certifications} />
+            ) : null}
+
+            {/* Factory Showcase - NEW */}
+            <ProductFactoryShowcase
+              manufacturerName={(product as any).manufacturerName}
+              factoryLocation={(product as any).factoryLocation}
+              productionCapacity={(product as any).productionCapacity}
+            />
+
+            {/* Packaging Info - NEW */}
+            <ProductPackagingInfo
+              packagingInfoEn={(product as any).packagingInfoEn}
+              packagingInfoZh={(product as any).packagingInfoZh}
+            />
+
+            {/* FAQ - NEW */}
+            <ProductFAQ
+              faqEn={(product as any).faqEn}
+              faqZh={(product as any).faqZh}
+            />
 
             {/* Action Buttons */}
             <div className="space-y-3">

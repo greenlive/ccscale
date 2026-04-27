@@ -11,17 +11,52 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 export interface Product {
   id: number;
   name: string;
+  nameEn?: string;
+  nameZh?: string;
   slug: string;
+  sku?: string;
   description?: string;
+  descriptionEn?: string;
+  descriptionZh?: string;
+  shortDescEn?: string;
+  shortDescZh?: string;
   mainImage?: string;
   categoryId?: number;
   category?: ProductCategory;
   images?: ProductImage[];
   specs?: ProductSpec[];
   videoUrl?: string;
+  priceMin?: number;
+  priceMax?: number;
+  moq?: number;
+  leadTime?: string;
   isActive: boolean;
+  isFeatured?: boolean;
+  seoTitleEn?: string;
+  seoTitleZh?: string;
+  seoDescEn?: string;
+  seoDescZh?: string;
+  seoKeywordsEn?: string;
+  seoKeywordsZh?: string;
   createdAt: string;
   updatedAt: string;
+  // B2B fields
+  coreSellingPointsEn?: string;
+  coreSellingPointsZh?: string;
+  applicationScenariosEn?: string;
+  applicationScenariosZh?: string;
+  faqEn?: string;
+  faqZh?: string;
+  certifications?: string;
+  hsCode?: string;
+  paymentTerms?: string;
+  shippingTerms?: string;
+  warrantyInfo?: string;
+  packagingInfoEn?: string;
+  packagingInfoZh?: string;
+  manufacturerName?: string;
+  factoryLocation?: string;
+  productionCapacity?: string;
 }
 
 export interface ProductCategory {
@@ -129,6 +164,14 @@ export function useProduct(slug: string) {
   });
 }
 
+export function useRelatedProducts(productId: number, limit: number = 4) {
+  return useQuery({
+    queryKey: [...queryKeys.products.all, 'related', productId, limit],
+    queryFn: () => fetchApi<Product[]>(`/products/related/${productId}?limit=${limit}`),
+    enabled: !!productId,
+  });
+}
+
 export function useProductCategories() {
   return useQuery({
     queryKey: queryKeys.products.categories,
@@ -172,16 +215,29 @@ export function useSiteSetting(key: string) {
 
 // Inquiry Mutation
 export interface InquiryData {
-  name: string;
+  fullName: string;
   email: string;
   phone?: string;
+  whatsapp?: string;
   company?: string;
   country?: string;
+  city?: string;
   message: string;
-  products?: Array<{
+  source?: string;
+  // 来源追踪字段
+  trafficSource?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmTerm?: string;
+  referrer?: string;
+  items?: Array<{
     productId: number;
-    productName: string;
+    productNameEn: string;
+    productNameZh: string;
     quantity: number;
+    unitPrice?: number;
   }>;
 }
 

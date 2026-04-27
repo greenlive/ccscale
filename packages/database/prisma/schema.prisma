@@ -73,6 +73,29 @@ model Product {
   seoDescZh      String?
   seoKeywordsEn  String?
   seoKeywordsZh  String?
+  // B2B 核心卖点（存储为JSON数组字符串）
+  coreSellingPointsEn String?
+  coreSellingPointsZh String?
+  // B2B 应用场景
+  applicationScenariosEn String?
+  applicationScenariosZh String?
+  // B2B FAQ（存储为JSON数组字符串）
+  faqEn String?
+  faqZh String?
+  // B2B 认证（存储为JSON数组字符串，如 ["CE", "FCC", "RoHS"]）
+  certifications String?
+  // B2B 贸易信息
+  hsCode String?
+  paymentTerms String?
+  shippingTerms String?
+  warrantyInfo String?
+  // B2B 包装信息
+  packagingInfoEn String?
+  packagingInfoZh String?
+  // B2B 工厂信息
+  manufacturerName String?
+  factoryLocation String?
+  productionCapacity String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
@@ -83,16 +106,22 @@ model Product {
 }
 
 model ProductImage {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   productId Int
   imageUrl  String
   altEn     String?
   altZh     String?
-  order     Int      @default(0)
-  isMain    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  order     Int            @default(0)
+  type      ImageType      @default(MAIN)
+  isMain    Boolean        @default(false)
+  createdAt DateTime       @default(now())
 
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum ImageType {
+  MAIN    // 主图/封面图 (1-5张)
+  DETAIL  // 详情图/场景图 (0-8张)
 }
 
 model ProductSpec {
