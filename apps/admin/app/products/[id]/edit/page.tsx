@@ -24,6 +24,7 @@ interface UploadedFile {
   type: 'image' | 'video';
   isMain?: boolean;
   uploadedUrl?: string;
+  isServerUrl?: boolean;
 }
 
 interface SpecItem {
@@ -230,45 +231,42 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           productionCapacity: product.productionCapacity || '',
         });
 
-        // Load existing images - check mainImage first, then images array
-        const imageUrls = new Set<string>();
+        // Load existing images - separate main image from detail images
+        const mainImgs: UploadedFile[] = [];
+        const detailImgs: UploadedFile[] = [];
+
+        // First, add mainImage as the main image
         if (product.mainImage) {
-          imageUrls.add(product.mainImage);
+          mainImgs.push({
+            id: `main-${Date.now()}`,
+            file: new File([], product.mainImage, { type: 'image/jpeg' }),
+            preview: product.mainImage,
+            type: 'image',
+            isMain: true,
+            uploadedUrl: product.mainImage,
+            isServerUrl: true,
+          });
         }
+
+        // Then add images from the images array (excluding the mainImage URL)
         if (product.images && Array.isArray(product.images)) {
-          product.images.forEach((img: any) => {
-            if (img.imageUrl) {
-              imageUrls.add(img.imageUrl);
+          product.images.forEach((img: any, idx: number) => {
+            if (img.imageUrl && img.imageUrl !== product.mainImage) {
+              detailImgs.push({
+                id: `detail-${Date.now()}-${idx}`,
+                file: new File([], img.imageUrl, { type: 'image/jpeg' }),
+                preview: img.imageUrl,
+                type: 'image',
+                isMain: false,
+                uploadedUrl: img.imageUrl,
+                isServerUrl: true,
+              });
             }
           });
         }
 
-        if (imageUrls.size > 0) {
-          const mainImgs: UploadedFile[] = [];
-          const detailImgs: UploadedFile[] = [];
-          let idx = 0;
-
-          imageUrls.forEach((url) => {
-            const uploadedFile: UploadedFile = {
-              id: `existing-${idx}`,
-              file: new File([], url, { type: 'image/jpeg' }),
-              preview: url,
-              type: 'image',
-              isMain: idx === 0,
-              uploadedUrl: url,
-            };
-
-            if (idx === 0) {
-              mainImgs.push(uploadedFile);
-            } else {
-              detailImgs.push(uploadedFile);
-            }
-            idx++;
-          });
-
-          setMainImages(mainImgs);
-          setDetailImages(detailImgs);
-        }
+        setMainImages(mainImgs);
+        setDetailImages(detailImgs);
 
         // Load existing videos
         if (product.videoUrl) {

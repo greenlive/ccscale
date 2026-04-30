@@ -1,51 +1,24 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, X, ZoomIn, Play } from 'lucide-react';
+import { X, ZoomIn, Play } from 'lucide-react';
 
 interface ProductGalleryProps {
   mainImage: string;
-  images: string[];
   name: string;
   videoUrl?: string;
   onVideoClick?: () => void;
 }
 
-export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick }: ProductGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+export function ProductGallery({ mainImage, name, videoUrl, onVideoClick }: ProductGalleryProps) {
   const [imageError, setImageError] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isZooming, setIsZooming] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  const allImages = [mainImage, ...images.filter(img => img !== mainImage)].filter(Boolean);
-  const currentImage = allImages[selectedIndex] || mainImage;
-
-  const goNext = useCallback(() => {
-    setSelectedIndex(prev => (prev + 1) % allImages.length);
-    setImageError(false);
-    setIsZooming(false);
-  }, [allImages.length]);
-
-  const goPrev = useCallback(() => {
-    setSelectedIndex(prev => (prev - 1 + allImages.length) % allImages.length);
-    setImageError(false);
-    setIsZooming(false);
-  }, [allImages.length]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isFullscreen) {
-        if (e.key === 'ArrowLeft') goPrev();
-        if (e.key === 'ArrowRight') goNext();
-        if (e.key === 'Escape') setIsFullscreen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen, goNext, goPrev]);
+  const currentImage = mainImage;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageContainerRef.current) return;
@@ -58,18 +31,45 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
   };
 
   const handleImageClick = () => {
-    if (allImages.length > 1) {
-      setIsFullscreen(true);
-    }
+    setIsFullscreen(true);
   };
 
   return (
-    <div className="space-y-4">
-      {/* Main Image with Zoom */}
-      <div className="relative">
+    <div className="flex flex-col lg:flex-row gap-4">
+      {/* Left: Vertical Scrollable Thumbnails - Main Image + Video Only */}
+      <div className="hidden lg:flex flex-col gap-2 w-20 flex-shrink-0 overflow-y-auto max-h-[500px] scrollbar-thin">
+        {/* Main Image Thumbnail */}
+        <div
+          className="w-20 h-20 rounded-lg overflow-hidden border-2 border-primary ring-2 ring-primary/20"
+        >
+          <Image
+            src={mainImage}
+            alt={name}
+            width={80}
+            height={80}
+            className="w-full h-full object-cover"
+            onError={() => {}}
+          />
+        </div>
+        {/* Video Thumbnail */}
+        {videoUrl && onVideoClick && (
+          <button
+            onClick={onVideoClick}
+            className="w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-primary transition-all flex items-center justify-center bg-gray-100 flex-shrink-0"
+          >
+            <div className="flex flex-col items-center">
+              <Play className="w-6 h-6 text-primary" />
+              <span className="text-xs text-gray-500">Video</span>
+            </div>
+          </button>
+        )}
+      </div>
+
+      {/* Right: Main Image with Arrows Navigation */}
+      <div className="flex-1 relative">
         <div
           ref={imageContainerRef}
-          className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-crosshair"
+          className="relative aspect-square lg:aspect-auto lg:h-[500px] bg-gray-100 rounded-xl overflow-hidden cursor-crosshair group"
           onMouseEnter={() => setIsZooming(true)}
           onMouseLeave={() => setIsZooming(false)}
           onMouseMove={handleMouseMove}
@@ -77,12 +77,11 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
         >
           {currentImage && !imageError ? (
             <>
-              {/* Base Image */}
               <Image
                 src={currentImage}
                 alt={name}
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 768px) 100vw, 60vw"
                 className={`object-contain transition-transform duration-200 ${isZooming ? 'scale-150' : ''}`}
                 style={isZooming ? {
                   transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
@@ -91,7 +90,7 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
                 onError={() => setImageError(true)}
               />
 
-              {/* Zoom Overlay - Shows zoomed portion */}
+              {/* Zoom Overlay */}
               {isZooming && (
                 <div
                   className="absolute inset-0 pointer-events-none"
@@ -103,14 +102,6 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
                   }}
                 />
               )}
-
-              {/* Zoom Indicator */}
-              <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-2 shadow-md">
-                <ZoomIn className="w-4 h-4 text-gray-600" />
-                <span className="text-xs text-gray-600 font-medium">
-                  {isZooming ? 'Zoomed View' : 'Hover to Zoom'}
-                </span>
-              </div>
             </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -118,32 +109,13 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
             </div>
           )}
 
-          {/* Navigation Arrows */}
-          {allImages.length > 1 && (
-            <>
-              <button
-                onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-105 z-10"
-                aria-label="Previous"
-              >
-                <ChevronLeft className="w-6 h-6 text-gray-700" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); goNext(); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-105 z-10"
-                aria-label="Next"
-              >
-                <ChevronRight className="w-6 h-6 text-gray-700" />
-              </button>
-            </>
-          )}
-
-          {/* Image Counter */}
-          {allImages.length > 1 && (
-            <div className="absolute bottom-3 right-3 bg-primary/80 text-white text-sm px-3 py-1 rounded-full">
-              {selectedIndex + 1} / {allImages.length}
-            </div>
-          )}
+          {/* Zoom Indicator */}
+          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center gap-2 shadow-md">
+            <ZoomIn className="w-4 h-4 text-gray-600" />
+            <span className="text-xs text-gray-600 font-medium">
+              {isZooming ? 'Zoomed View' : 'Hover to Zoom'}
+            </span>
+          </div>
 
           {/* Video Button */}
           {videoUrl && onVideoClick && (
@@ -157,41 +129,28 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
           )}
         </div>
 
-        {/* Zoom Instructions */}
-        {isZooming && (
-          <div className="mt-2 text-center">
-            <span className="text-xs text-gray-500">
-              Move mouse to explore • Click for fullscreen
-            </span>
+        {/* Mobile: Main Image + Video Button Below */}
+        <div className="flex gap-2 overflow-x-auto pb-2 mt-4 lg:hidden">
+          <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-primary">
+            <Image
+              src={mainImage}
+              alt={name}
+              width={64}
+              height={64}
+              className="w-full h-full object-cover"
+              onError={() => {}}
+            />
           </div>
-        )}
-      </div>
-
-      {/* Thumbnails */}
-      {allImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {allImages.map((img, idx) => (
+          {videoUrl && onVideoClick && (
             <button
-              key={idx}
-              onClick={() => { setSelectedIndex(idx); setImageError(false); setIsZooming(false); }}
-              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                selectedIndex === idx
-                  ? 'border-primary ring-2 ring-primary/20'
-                  : 'border-gray-200 hover:border-gray-400'
-              }`}
+              onClick={onVideoClick}
+              className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-primary transition-all flex items-center justify-center bg-gray-100"
             >
-              <Image
-                src={img}
-                alt={`${name} ${idx + 1}`}
-                width={80}
-                height={80}
-                className="w-full h-full object-cover"
-                onError={() => {}}
-              />
+              <Play className="w-5 h-5 text-primary" />
             </button>
-          ))}
+          )}
         </div>
-      )}
+      </div>
 
       {/* Fullscreen Modal */}
       {isFullscreen && (
@@ -211,7 +170,7 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
             className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/10 text-white px-4 py-2 rounded-full text-sm cursor-pointer hover:bg-white/20"
             onClick={() => setIsFullscreen(false)}
           >
-            {selectedIndex + 1} / {allImages.length} • Click to close
+            Click to close
           </div>
 
           <div
@@ -228,47 +187,6 @@ export function ProductGallery({ mainImage, images, name, videoUrl, onVideoClick
                 onError={() => setImageError(true)}
               />
             )}
-          </div>
-
-          {allImages.length > 1 && (
-            <>
-              <button
-                onClick={(e) => { e.stopPropagation(); goPrev(); }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all hover:scale-110"
-                aria-label="Previous"
-              >
-                <ChevronLeft className="w-8 h-8 text-white" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); goNext(); }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all hover:scale-110"
-                aria-label="Next"
-              >
-                <ChevronRight className="w-8 h-8 text-white" />
-              </button>
-            </>
-          )}
-
-          {/* Thumbnail Strip */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 p-3 bg-black/50 rounded-xl max-w-[90vw] overflow-x-auto">
-            {allImages.map((img, idx) => (
-              <button
-                key={idx}
-                onClick={(e) => { e.stopPropagation(); setSelectedIndex(idx); setImageError(false); }}
-                className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${
-                  selectedIndex === idx ? 'border-white scale-110' : 'border-transparent hover:border-white/50'
-                }`}
-              >
-                <Image
-                  src={img}
-                  alt={`${name} ${idx + 1}`}
-                  width={56}
-                  height={56}
-                  className="w-full h-full object-cover"
-                  onError={() => {}}
-                />
-              </button>
-            ))}
           </div>
         </div>
       )}

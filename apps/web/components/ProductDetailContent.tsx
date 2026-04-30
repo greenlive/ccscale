@@ -2,7 +2,7 @@
 
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { MessageSquare, Mail, Phone, Factory, Award, Shield, Clock, DollarSign, Share2, Heart, CheckCircle, Settings, Truck, Scale, Gauge, Ruler, FileText } from 'lucide-react';
+import { MessageSquare, Mail, Phone, Factory, Shield, Clock, DollarSign, Share2, Heart, CheckCircle, Settings, Truck, Scale, Gauge, Ruler } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import { ProductGallery } from '@/components/ProductGallery';
 import { QuickInquiryButton } from '@/components/inquiry/QuickInquiryButton';
@@ -38,8 +38,8 @@ const mockProduct = {
     { id: 2, imageUrl: 'https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800', order: 1, isMain: false },
   ],
   videoUrl: '',
-  descriptionEn: 'High-precision digital body scale with advanced weighing technology. Features include step-on activation, auto-calibration, and large LCD display.',
-  descriptionZh: '高精度数字体重秤，采用先进的称重技术。功能包括即踩即称、自动校准和大液晶显示屏。',
+  descriptionEn: 'High-precision digital body scale with advanced weighing technology.',
+  descriptionZh: '高精度数字体重秤，采用先进的称重技术。',
   priceMin: 15,
   priceMax: 25,
   moq: 100,
@@ -49,9 +49,6 @@ const mockProduct = {
     { id: 1, labelEn: 'Capacity', labelZh: '最大称重', valueEn: '180kg / 400lb', valueZh: '180公斤 / 400磅', order: 0 },
     { id: 2, labelEn: 'Division', labelZh: '分度值', valueEn: '100g', valueZh: '100克', order: 1 },
     { id: 3, labelEn: 'Display', labelZh: '显示', valueEn: 'LCD, 3.5"', valueZh: '液晶显示屏, 3.5英寸', order: 2 },
-    { id: 4, labelEn: 'Power', labelZh: '电源', valueEn: '2 x AAA batteries', valueZh: '2节AAA电池', order: 3 },
-    { id: 5, labelEn: 'Material', labelZh: '材质', valueEn: 'Tempered Glass + ABS', valueZh: '钢化玻璃 + ABS', order: 4 },
-    { id: 6, labelEn: 'Platform Size', labelZh: '秤面尺寸', valueEn: '280 x 280 mm', valueZh: '280 x 280 毫米', order: 5 },
   ],
 };
 
@@ -59,16 +56,12 @@ function ProductDetailSkeleton() {
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-12">
-          <div className="animate-pulse">
+        <div className="flex flex-col xl:flex-row gap-12">
+          <div className="animate-pulse flex-1">
             <div className="aspect-square bg-gray-200 rounded-lg mb-4" />
-            <div className="flex gap-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-20 h-20 bg-gray-200 rounded" />
-              ))}
-            </div>
+            <div className="aspect-video bg-gray-200 rounded" />
           </div>
-          <div className="animate-pulse space-y-4">
+          <div className="w-full xl:w-[380px] animate-pulse space-y-4">
             <div className="h-8 bg-gray-200 rounded w-3/4" />
             <div className="h-4 bg-gray-200 rounded w-1/4" />
             <div className="h-24 bg-gray-200 rounded" />
@@ -84,20 +77,10 @@ export function ProductDetailContent({ slug }: { slug: string }) {
   const isZh = locale === 'zh';
   const [isFavorite, setIsFavorite] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  const [showStickyBar, setShowStickyBar] = useState(false);
 
   const { data: apiProduct, isLoading, error } = useProduct(slug);
   const { data: relatedProducts } = useRelatedProducts(apiProduct?.id ?? 0, 4);
   const product = apiProduct || mockProduct;
-
-  // Sticky bar scroll detection
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowStickyBar(window.scrollY > 500);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const productImages = product.images || [];
   const mainImage = productImages.find((img) => img.isMain) || productImages[0];
@@ -172,42 +155,47 @@ export function ProductDetailContent({ slug }: { slug: string }) {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content - New Layout with Sticky Right Column */}
       <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-12 xl:gap-16">
-          {/* Left Column - Product Images */}
-          <div className="space-y-6">
+        <div className="flex flex-col xl:flex-row gap-8 xl:gap-12">
+          {/* Left Column - Scrollable Content */}
+          <div className="flex-1 space-y-6">
             {/* Main Gallery */}
             <div className="relative">
               <ProductGallery
                 mainImage={mainImageUrl}
-                images={galleryImages.filter((img) => img !== mainImageUrl)}
                 name={name}
                 videoUrl={product.videoUrl}
                 onVideoClick={() => setShowVideo(true)}
               />
             </div>
-          </div>
 
-          {/* Right Column - Product Info */}
-          <div className="space-y-6">
-            {/* Product Header */}
-            <div>
-              <div className="text-sm text-gray-500 mb-2">
-                {product.category?.name || (isZh ? '产品分类' : 'Product')}
+            {/* Detail Images - Stacked Full-Width */}
+            {galleryImages.filter((img) => img !== mainImageUrl).length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-gray-500">
+                  {isZh ? '详情图片' : 'Product Details'}
+                </h3>
+                {galleryImages.filter((img) => img !== mainImageUrl).map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="relative aspect-video rounded-lg overflow-hidden bg-gray-100 cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => {
+                      const win = window.open(img, '_blank');
+                      win?.focus();
+                    }}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${name} detail ${idx + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                      className="object-contain"
+                    />
+                  </div>
+                ))}
               </div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-primary mb-2">
-                {name}
-              </h1>
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <span>SKU: {product.sku}</span>
-                {product.isFeatured && (
-                  <span className="bg-primary text-white px-2 py-0.5 rounded text-xs">
-                    {isZh ? '精选' : 'Featured'}
-                  </span>
-                )}
-              </div>
-            </div>
+            )}
 
             {/* Quick Specs Strip */}
             <div className="bg-gray-50 rounded-xl p-4">
@@ -239,7 +227,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                 'Capacity': <Scale className="w-5 h-5" />,
                 'Division': <Gauge className="w-5 h-5" />,
                 'Platform Size': <Ruler className="w-5 h-5" />,
-                'Power': <Award className="w-5 h-5" />,
+                'Power': <Settings className="w-5 h-5" />,
               };
 
               if (keySpecs.length === 0) return null;
@@ -249,7 +237,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   {keySpecs.map((spec, idx) => (
                     <div key={idx} className="bg-gray-50 rounded-lg p-4 flex items-start gap-3">
                       <div className="text-primary mt-0.5">
-                        {specIcons[spec.keyEn] || <Award className="w-5 h-5" />}
+                        {specIcons[spec.keyEn] || <Scale className="w-5 h-5" />}
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 mb-1">
@@ -310,7 +298,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               </h3>
               <p className="text-gray-600 text-sm mb-3">
                 {isZh
-                  ? '我们提供全面的OEM/ODM服务，支持-logo定制、包装定制、功能定制等。'
+                  ? '我们提供全面的OEM/ODM服务，支持Logo定制、包装定制、功能定制等。'
                   : 'We provide full OEM/ODM services including logo customization, packaging design, and feature modifications.'}
               </p>
               <Link href="/oem-odm" className="text-primary text-sm font-medium hover:underline">
@@ -318,7 +306,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               </Link>
             </div>
 
-            {/* Core Selling Points - NEW */}
+            {/* Core Selling Points */}
             {(product as any).coreSellingPointsEn || (product as any).coreSellingPointsZh ? (
               <ProductBulletPoints
                 pointsEn={(product as any).coreSellingPointsEn || ''}
@@ -326,7 +314,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               />
             ) : null}
 
-            {/* Application Scenarios - NEW */}
+            {/* Application Scenarios */}
             {(product as any).applicationScenariosEn || (product as any).applicationScenariosZh ? (
               <ProductApplicationScenarios
                 scenariosEn={(product as any).applicationScenariosEn || ''}
@@ -335,7 +323,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               />
             ) : null}
 
-            {/* Trade Info - NEW */}
+            {/* Trade Info */}
             <ProductTradeInfo
               hsCode={(product as any).hsCode}
               paymentTerms={(product as any).paymentTerms}
@@ -369,29 +357,127 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               </p>
             </div>
 
-            {/* Certifications - NEW */}
+            {/* Certifications */}
             {(product as any).certifications ? (
               <ProductCertifications certifications={(product as any).certifications} />
             ) : null}
 
-            {/* Factory Showcase - NEW */}
+            {/* Factory Showcase */}
             <ProductFactoryShowcase
               manufacturerName={(product as any).manufacturerName}
               factoryLocation={(product as any).factoryLocation}
               productionCapacity={(product as any).productionCapacity}
             />
 
-            {/* Packaging Info - NEW */}
+            {/* Packaging Info */}
             <ProductPackagingInfo
               packagingInfoEn={(product as any).packagingInfoEn}
               packagingInfoZh={(product as any).packagingInfoZh}
             />
 
-            {/* FAQ - NEW */}
+            {/* FAQ */}
             <ProductFAQ
               faqEn={(product as any).faqEn}
               faqZh={(product as any).faqZh}
             />
+
+            {/* Related Products */}
+            {relatedProducts && relatedProducts.length > 0 && (
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <h2 className="text-lg font-bold text-primary mb-4">
+                  {isZh ? '其他产品推荐' : 'You May Also Like'}
+                </h2>
+                <div className="grid grid-cols-4 gap-2">
+                  {relatedProducts.map((related) => {
+                    const relatedName = isZh ? (related.nameZh || related.nameEn || '') : (related.nameEn || related.nameZh || '');
+                    const relatedMainImage = related.images?.find((img: any) => img.isMain)?.imageUrl || related.mainImage || '';
+                    const relatedPriceMin = related.priceMin ?? 0;
+                    const relatedPriceMax = related.priceMax ?? 0;
+                    const relatedPriceDisplay = relatedPriceMax > relatedPriceMin
+                      ? `$${relatedPriceMin}-$${relatedPriceMax}`
+                      : `$${relatedPriceMin}`;
+
+                    return (
+                      <Link
+                        key={related.id}
+                        href={`/products/${related.slug}`}
+                        className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                      >
+                        <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+                          {relatedMainImage ? (
+                            <Image
+                              src={relatedMainImage}
+                              alt={relatedName}
+                              fill
+                              sizes="150px"
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                              No Image
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-1.5">
+                          <h3 className="font-medium text-[10px] text-primary line-clamp-2 leading-tight">
+                            {relatedName}
+                          </h3>
+                          <p className="text-[10px] font-bold text-primary mt-0.5">
+                            {relatedPriceDisplay}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - Sticky Product Info */}
+          <div className="hidden xl:block w-[380px] xl:sticky xl:top-20 xl:self-start xl:space-y-6">
+            {/* Product Header */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6">
+              <div className="text-sm text-gray-500 mb-2">
+                {product.category?.name || (isZh ? '产品分类' : 'Product')}
+              </div>
+              <h1 className="text-2xl font-bold text-primary mb-2">
+                {name}
+              </h1>
+              <div className="flex items-center gap-4 text-sm text-gray-500">
+                <span>SKU: {product.sku}</span>
+                {product.isFeatured && (
+                  <span className="bg-primary text-white px-2 py-0.5 rounded text-xs">
+                    {isZh ? '精选' : 'Featured'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Price Info */}
+            <div className="bg-primary text-white rounded-xl p-6">
+              <div className="text-sm mb-2 opacity-80">{isZh ? 'FOB 价格' : 'FOB Price'}</div>
+              <div className="text-3xl font-bold mb-1">{priceDisplay}</div>
+              <div className="text-sm opacity-80">/ {isZh ? '件 (USD)' : 'pc (USD)'}</div>
+              <div className="mt-3 pt-3 border-t border-white/20">
+                <div className="flex justify-between text-sm">
+                  <span>{isZh ? '最小起订量' : 'MOQ'}:</span>
+                  <span className="font-semibold">{product.moq} {isZh ? '件' : 'pcs'}</span>
+                </div>
+                <div className="flex justify-between text-sm mt-1">
+                  <span>{isZh ? '交期' : 'Lead Time'}:</span>
+                  <span className="font-semibold">{product.leadTime}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Core Selling Points */}
+            {(product as any).coreSellingPointsEn || (product as any).coreSellingPointsZh ? (
+              <ProductBulletPoints
+                pointsEn={(product as any).coreSellingPointsEn || ''}
+                pointsZh={(product as any).coreSellingPointsZh || ''}
+              />
+            ) : null}
 
             {/* Action Buttons */}
             <div className="space-y-3">
@@ -452,7 +538,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   { icon: Shield, text: isZh ? '品质保证' : 'Quality Assured' },
                   { icon: Clock, text: isZh ? '快速响应' : 'Fast Response' },
                   { icon: DollarSign, text: isZh ? '支持定制' : 'Customizable' },
-                  { icon: Award, text: isZh ? '出口认证' : 'Export Ready' },
+                  { icon: Settings, text: isZh ? '出口认证' : 'Export Ready' },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-sm text-gray-600">
                     <CheckCircle className="w-4 h-4 text-green-500" />
@@ -465,7 +551,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             {/* Contact */}
             <div className="bg-primary rounded-xl p-4 text-white">
               <div className="text-sm mb-3 opacity-80">{isZh ? '有问题想咨询？' : 'Have questions?'}</div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-2">
                 <a href="mailto:sales@ccscale.com" className="flex items-center gap-2 hover:text-warm-silver transition-colors">
                   <Mail className="w-5 h-5" />
                   <span className="text-sm">sales@ccscale.com</span>
@@ -478,58 +564,6 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             </div>
           </div>
         </div>
-
-        {/* Related Products */}
-        {relatedProducts && relatedProducts.length > 0 && (
-          <div className="mt-12 pt-8 border-t border-gray-200">
-            <h2 className="text-lg font-bold text-primary mb-4">
-              {isZh ? '其他产品推荐' : 'You May Also Like'}
-            </h2>
-            <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-2">
-              {relatedProducts.map((related) => {
-                const relatedName = isZh ? (related.nameZh || related.nameEn || '') : (related.nameEn || related.nameZh || '');
-                const relatedMainImage = related.images?.find((img: any) => img.isMain)?.imageUrl || related.mainImage || '';
-                const relatedPriceMin = related.priceMin ?? 0;
-                const relatedPriceMax = related.priceMax ?? 0;
-                const relatedPriceDisplay = relatedPriceMax > relatedPriceMin
-                  ? `$${relatedPriceMin}-$${relatedPriceMax}`
-                  : `$${relatedPriceMin}`;
-
-                return (
-                  <Link
-                    key={related.id}
-                    href={`/products/${related.slug}`}
-                    className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                  >
-                    <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                      {relatedMainImage ? (
-                        <Image
-                          src={relatedMainImage}
-                          alt={relatedName}
-                          fill
-                          sizes="150px"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                          No Image
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-1.5">
-                      <h3 className="font-medium text-[10px] text-primary line-clamp-2 leading-tight">
-                        {relatedName}
-                      </h3>
-                      <p className="text-[10px] font-bold text-primary mt-0.5">
-                        {relatedPriceDisplay}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Video Modal */}
@@ -555,40 +589,38 @@ export function ProductDetailContent({ slug }: { slug: string }) {
         </div>
       )}
 
-      {/* Sticky Inquiry Bar */}
-      {showStickyBar && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
-          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Image
-                src={mainImageUrl}
-                alt={name}
-                width={50}
-                height={50}
-                className="rounded-lg object-cover"
-              />
-              <div>
-                <div className="font-bold text-primary">{name}</div>
-                <div className="text-sm text-gray-500">{priceDisplay} / {isZh ? '件' : 'pc'}</div>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <QuickInquiryButton
-                product={{
-                  id: product.id,
-                  nameEn: product.nameEn || '',
-                  nameZh: product.nameZh || '',
-                  sku: product.sku || '',
-                  mainImage: mainImageUrl || '',
-                  priceMin: product.priceMin || 0,
-                  priceMax: product.priceMax || 0,
-                }}
-                className="px-6"
-              />
+      {/* Mobile Fixed Inquiry Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 xl:hidden">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Image
+              src={mainImageUrl}
+              alt={name}
+              width={50}
+              height={50}
+              className="rounded-lg object-cover"
+            />
+            <div>
+              <div className="font-bold text-primary">{name}</div>
+              <div className="text-sm text-gray-500">{priceDisplay} / {isZh ? '件' : 'pc'}</div>
             </div>
           </div>
+          <div className="flex gap-3">
+            <QuickInquiryButton
+              product={{
+                id: product.id,
+                nameEn: product.nameEn || '',
+                nameZh: product.nameZh || '',
+                sku: product.sku || '',
+                mainImage: mainImageUrl || '',
+                priceMin: product.priceMin || 0,
+                priceMax: product.priceMax || 0,
+              }}
+              className="px-6"
+            />
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

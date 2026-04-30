@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Video, FileUp, Compress } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Video, FileUp, Loader } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import {
   compressImage,
@@ -24,6 +24,8 @@ interface UploadedFile {
   type: 'image' | 'video';
   isMain?: boolean;
   compression?: CompressionResult;
+  isServerUrl?: boolean;
+  uploadedUrl?: string;
 }
 
 interface FileUploadProps {
@@ -81,6 +83,7 @@ export function FileUpload({
   const [isDragging, setIsDragging] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<string[]>([]);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const compressAndProcessFile = useCallback(async (file: File): Promise<UploadedFile> => {
@@ -200,7 +203,10 @@ export function FileUpload({
   const removeFile = useCallback((id: string) => {
     const fileToRemove = files.find(f => f.id === id);
     if (fileToRemove) {
-      URL.revokeObjectURL(fileToRemove.preview);
+      // Only revoke blob URLs, not server URLs
+      if (!fileToRemove.isServerUrl) {
+        URL.revokeObjectURL(fileToRemove.preview);
+      }
     }
     onChange(files.filter(f => f.id !== id));
   }, [files, onChange]);
@@ -251,7 +257,7 @@ export function FileUpload({
           />
           <div className="mx-auto w-14 h-14 bg-warm-sand rounded-full flex items-center justify-center mb-4">
             {isCompressing ? (
-              <Compress className="h-7 w-7 text-terracotta animate-pulse" />
+              <Loader className="h-7 w-7 text-terracotta animate-pulse" />
             ) : type === 'image' ? (
               <ImageIcon className="h-7 w-7 text-olive-gray" />
             ) : type === 'video' ? (
@@ -287,10 +293,13 @@ export function FileUpload({
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {files.map((file) => (
             <div key={file.id} className="relative group">
-              <div className={cn(
-                'aspect-square rounded-xl overflow-hidden border-2 transition-all',
-                file.isMain ? 'border-terracotta shadow-ring-terracotta' : 'border-border-warm'
-              )}>
+              <div
+                className={cn(
+                  'relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer',
+                  file.isMain ? 'border-terracotta shadow-ring-terracotta' : 'border-border-warm'
+                )}
+                onClick={() => setPreviewFile(file)}
+              >
                 {file.type === 'image' ? (
                   <img
                     src={file.preview}
@@ -302,6 +311,12 @@ export function FileUpload({
                     src={file.preview}
                     className="w-full h-full object-cover"
                   />
+                )}
+                {/* Play icon overlay for videos */}
+                {file.type === 'video' && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <Video className="h-12 w-12 text-white" />
+                  </div>
                 )}
               </div>
               <button
@@ -328,7 +343,7 @@ export function FileUpload({
               {/* Compression info */}
               {file.compression && file.compression.compressionRatio > 0.05 && (
                 <div className="absolute top-2 left-2 bg-dark-surface/90 text-ivory text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Compress className="h-3 w-3" />
+                  <Loader className="h-3 w-3" />
                   <span>-{Math.round(file.compression.compressionRatio * 100)}%</span>
                 </div>
               )}
@@ -345,6 +360,41 @@ export function FileUpload({
               </p>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      {previewFile && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setPreviewFile(null)}
+        >
+          <button
+            className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+            onClick={() => setPreviewFile(null)}
+          >
+            <X className="h-6 w-6 text-white" />
+          </button>
+          <div className="relative max-w-4xl max-h-[90vh] w-full" onClick={(e) => e.stopPropagation()}>
+            {previewFile.type === 'image' ? (
+              <img
+                src={previewFile.preview}
+                alt={previewFile.file.name}
+                className="max-w-full max-h-[85vh] mx-auto object-contain"
+              />
+            ) : (
+              <video
+                src={previewFile.preview}
+                controls
+                autoPlay
+                className="max-w-full max-h-[85vh] mx-auto"
+              />
+            )}
+            <div className="text-center mt-4 text-white">
+              <p className="font-medium">{previewFile.file.name}</p>
+              <p className="text-sm text-white/70">{formatFileSize(previewFile.file.size)}</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
