@@ -96,6 +96,16 @@ model Product {
   manufacturerName String?
   factoryLocation String?
   productionCapacity String?
+  productionCapacityUnit String?
+  // B2B 贸易扩展信息
+  fobPort String?
+  tradeKeywords String?  // JSON数组字符串
+  targetMarkets String?  // JSON数组字符串
+  exportExperience String?
+  // B2B 工厂实力（用于详情页展示，不在表单中编辑）
+  factoryYears Int?
+  factoryCountries Int?
+  factoryCapacity String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 

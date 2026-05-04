@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, Plus, X } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
@@ -91,6 +91,10 @@ interface ProductFormData {
   manufacturerName: string;
   factoryLocation: string;
   productionCapacity: string;
+  // New B2B fields
+  tradeKeywords: string[];
+  targetMarkets: string[];
+  exportExperience: string;
 }
 
 const initialFormData: ProductFormData = {
@@ -128,6 +132,10 @@ const initialFormData: ProductFormData = {
   manufacturerName: '',
   factoryLocation: '',
   productionCapacity: '',
+  // New B2B fields
+  tradeKeywords: [],
+  targetMarkets: [],
+  exportExperience: '',
 };
 
 export default function NewProductPage() {
@@ -145,12 +153,17 @@ export default function NewProductPage() {
     paymentTerms: '',
     shippingTerms: '',
     warrantyInfo: '',
+    fobPort: '',
+    leadTime: '',
   });
   const [factoryInfo, setFactoryInfo] = useState({
     manufacturerName: '',
     factoryLocation: '',
     productionCapacity: '',
+    productionCapacityUnit: 'pcs/month',
   });
+  const [tradeKeywords, setTradeKeywords] = useState<string[]>([]);
+  const [targetMarkets, setTargetMarkets] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
@@ -273,7 +286,6 @@ export default function NewProductPage() {
         priceMin: formData.priceMin ? parseFloat(formData.priceMin) : undefined,
         priceMax: formData.priceMax ? parseFloat(formData.priceMax) : undefined,
         moq: formData.moq ? parseInt(formData.moq) : undefined,
-        leadTime: formData.leadTime.trim() || undefined,
         seoTitleEn: formData.seoTitleEn.trim(),
         seoTitleZh: formData.seoTitleZh.trim(),
         seoDescEn: formData.seoDescEn.trim(),
@@ -301,15 +313,20 @@ export default function NewProductPage() {
         faqEn: faqs.length > 0 ? JSON.stringify(faqs.map(f => ({ q: f.questionEn, a: f.answerEn }))) : undefined,
         faqZh: faqs.length > 0 ? JSON.stringify(faqs.map(f => ({ q: f.questionZh, a: f.answerZh }))) : undefined,
         certifications: certifications.length > 0 ? JSON.stringify(certifications) : undefined,
-        hsCode: formData.hsCode.trim() || undefined,
-        paymentTerms: formData.paymentTerms.trim() || undefined,
-        shippingTerms: formData.shippingTerms.trim() || undefined,
-        warrantyInfo: formData.warrantyInfo.trim() || undefined,
+        hsCode: tradeInfo.hsCode.trim() || undefined,
+        fobPort: tradeInfo.fobPort.trim() || undefined,
+        paymentTerms: tradeInfo.paymentTerms.trim() || undefined,
+        shippingTerms: tradeInfo.shippingTerms.trim() || undefined,
+        warrantyInfo: tradeInfo.warrantyInfo.trim() || undefined,
+        leadTime: tradeInfo.leadTime.trim() || undefined,
         packagingInfoEn: formData.packagingInfoEn.trim() || undefined,
         packagingInfoZh: formData.packagingInfoZh.trim() || undefined,
-        manufacturerName: formData.manufacturerName.trim() || undefined,
-        factoryLocation: formData.factoryLocation.trim() || undefined,
-        productionCapacity: formData.productionCapacity.trim() || undefined,
+        manufacturerName: factoryInfo.manufacturerName.trim() || undefined,
+        factoryLocation: factoryInfo.factoryLocation.trim() || undefined,
+        productionCapacity: factoryInfo.productionCapacity.trim() ? `${factoryInfo.productionCapacity.trim()} ${factoryInfo.productionCapacityUnit || 'pcs/month'}` : undefined,
+        tradeKeywords: tradeKeywords.length > 0 ? JSON.stringify(tradeKeywords) : undefined,
+        targetMarkets: targetMarkets.length > 0 ? JSON.stringify(targetMarkets) : undefined,
+        exportExperience: formData.exportExperience || undefined,
       };
 
       // Submit to API
@@ -568,6 +585,110 @@ export default function NewProductPage() {
                 </CardHeader>
                 <CardContent>
                   <ProductCoreSellingPoints points={sellingPoints} onChange={setSellingPoints} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 贸易关键词</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-stone-gray">Add keywords to improve B2B search visibility (press Enter to add)</p>
+                  <div className="flex flex-wrap gap-2 min-h-[44px] p-3 border border-border-warm rounded-lg bg-warm-sand/20">
+                    {tradeKeywords.map((keyword, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1 px-3 py-1.5 bg-terracotta/10 text-terracotta rounded-full text-sm">
+                        {keyword}
+                        <button
+                          type="button"
+                          onClick={() => setTradeKeywords(prev => prev.filter((_, i) => i !== idx))}
+                          className="hover:text-terracotta/70"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      placeholder="Add keyword..."
+                      className="flex-1 min-w-[120px] bg-transparent outline-none text-sm placeholder:text-stone-gray"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          e.preventDefault();
+                          const val = e.currentTarget.value.trim();
+                          if (!tradeKeywords.includes(val)) {
+                            setTradeKeywords(prev => [...prev, val]);
+                          }
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 目标市场</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-stone-gray">Select countries where the product is popular</p>
+                  <div className="flex flex-wrap gap-2 min-h-[44px] p-3 border border-border-warm rounded-lg bg-warm-sand/20">
+                    {targetMarkets.map((market, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1 px-3 py-1.5 bg-olive-gray/10 text-olive-gray rounded-full text-sm">
+                        {market}
+                        <button
+                          type="button"
+                          onClick={() => setTargetMarkets(prev => prev.filter((_, i) => i !== idx))}
+                          className="hover:text-olive-gray/70"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      placeholder="Add market..."
+                      className="flex-1 min-w-[120px] bg-transparent outline-none text-sm placeholder:text-stone-gray"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          e.preventDefault();
+                          const val = e.currentTarget.value.trim();
+                          if (!targetMarkets.includes(val)) {
+                            setTargetMarkets(prev => [...prev, val]);
+                          }
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 出口经验</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-charcoal-warm mb-2">
+                        Export Years (出口年限)
+                      </label>
+                      <select
+                        name="exportExperience"
+                        className="h-10 w-full px-3 border border-border-warm rounded-md text-sm bg-white focus:border-olive-gray focus:ring-1 focus:ring-olive-gray"
+                        value={formData.exportExperience}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select years</option>
+                        <option value="0-1 years">0-1 years</option>
+                        <option value="1-3 years">1-3 years</option>
+                        <option value="3-5 years">3-5 years</option>
+                        <option value="5-10 years">5-10 years</option>
+                        <option value="10+ years">10+ years</option>
+                      </select>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 

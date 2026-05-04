@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Plus, X } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
@@ -80,12 +80,17 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     paymentTerms: '',
     shippingTerms: '',
     warrantyInfo: '',
+    fobPort: '',
+    leadTime: '',
   });
   const [factoryInfo, setFactoryInfo] = useState({
     manufacturerName: '',
     factoryLocation: '',
     productionCapacity: '',
+    productionCapacityUnit: 'pcs/month',
   });
+  const [tradeKeywords, setTradeKeywords] = useState<string[]>([]);
+  const [targetMarkets, setTargetMarkets] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
     sku: '',
@@ -115,7 +120,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     applicationScenariosZh: '',
     packagingInfoEn: '',
     packagingInfoZh: '',
+    exportExperience: '',
   });
+
+  const [product, setProduct] = useState<any>({});
 
   useEffect(() => {
     document.title = 'CC Scale 管理后台 - 编辑产品';
@@ -174,6 +182,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           applicationScenariosZh: product.applicationScenariosZh || '',
           packagingInfoEn: product.packagingInfoEn || '',
           packagingInfoZh: product.packagingInfoZh || '',
+          exportExperience: product.exportExperience || '',
         });
 
         // Load B2B certifications
@@ -222,14 +231,35 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           paymentTerms: product.paymentTerms || '',
           shippingTerms: product.shippingTerms || '',
           warrantyInfo: product.warrantyInfo || '',
+          fobPort: product.fobPort || '',
+          leadTime: product.leadTime || '',
         });
 
         // Load B2B factory info
         setFactoryInfo({
           manufacturerName: product.manufacturerName || '',
           factoryLocation: product.factoryLocation || '',
-          productionCapacity: product.productionCapacity || '',
+          productionCapacity: product.productionCapacity ? product.productionCapacity.split(' ')[0] || product.productionCapacity : '',
+          productionCapacityUnit: product.productionCapacity ? product.productionCapacity.split(' ').slice(1).join(' ') || 'pcs/month' : 'pcs/month',
         });
+
+        // Load trade keywords
+        if (product.tradeKeywords) {
+          try {
+            setTradeKeywords(JSON.parse(product.tradeKeywords));
+          } catch {
+            setTradeKeywords([]);
+          }
+        }
+
+        // Load target markets
+        if (product.targetMarkets) {
+          try {
+            setTargetMarkets(JSON.parse(product.targetMarkets));
+          } catch {
+            setTargetMarkets([]);
+          }
+        }
 
         // Load existing images - separate main image from detail images
         const mainImgs: UploadedFile[] = [];
@@ -379,7 +409,6 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         priceMin: formData.priceMin ? parseFloat(formData.priceMin) : undefined,
         priceMax: formData.priceMax ? parseFloat(formData.priceMax) : undefined,
         moq: formData.moq ? parseInt(formData.moq) : undefined,
-        leadTime: formData.leadTime.trim() || undefined,
         seoTitleEn: formData.seoTitleEn.trim(),
         seoTitleZh: formData.seoTitleZh.trim(),
         seoDescEn: formData.seoDescEn.trim(),
@@ -408,14 +437,19 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         faqZh: faqs.length > 0 ? JSON.stringify(faqs.map(f => ({ q: f.questionZh, a: f.answerZh }))) : undefined,
         certifications: certifications.length > 0 ? JSON.stringify(certifications) : undefined,
         hsCode: tradeInfo.hsCode.trim() || undefined,
+        fobPort: tradeInfo.fobPort.trim() || undefined,
         paymentTerms: tradeInfo.paymentTerms.trim() || undefined,
         shippingTerms: tradeInfo.shippingTerms.trim() || undefined,
         warrantyInfo: tradeInfo.warrantyInfo.trim() || undefined,
+        leadTime: tradeInfo.leadTime.trim() || undefined,
         packagingInfoEn: formData.packagingInfoEn.trim() || undefined,
         packagingInfoZh: formData.packagingInfoZh.trim() || undefined,
         manufacturerName: factoryInfo.manufacturerName.trim() || undefined,
         factoryLocation: factoryInfo.factoryLocation.trim() || undefined,
-        productionCapacity: factoryInfo.productionCapacity.trim() || undefined,
+        productionCapacity: factoryInfo.productionCapacity.trim() ? `${factoryInfo.productionCapacity.trim()} ${factoryInfo.productionCapacityUnit || 'pcs/month'}` : undefined,
+        tradeKeywords: tradeKeywords.length > 0 ? JSON.stringify(tradeKeywords) : undefined,
+        targetMarkets: targetMarkets.length > 0 ? JSON.stringify(targetMarkets) : undefined,
+        exportExperience: product.exportExperience || undefined,
       };
 
       const response = await api.put(`/products/${productId}`, productData);
@@ -698,6 +732,113 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 </CardHeader>
                 <CardContent>
                   <ProductCoreSellingPoints points={sellingPoints} onChange={setSellingPoints} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 贸易关键词</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-stone-gray">Add keywords to improve B2B search visibility (press Enter to add)</p>
+                  <div className="flex flex-wrap gap-2 min-h-[44px] p-3 border border-border-warm rounded-lg bg-warm-sand/20">
+                    {tradeKeywords.map((keyword, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1 px-3 py-1.5 bg-terracotta/10 text-terracotta rounded-full text-sm">
+                        {keyword}
+                        <button
+                          type="button"
+                          onClick={() => setTradeKeywords(prev => prev.filter((_, i) => i !== idx))}
+                          className="hover:text-terracotta/70"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      placeholder="Add keyword..."
+                      className="flex-1 min-w-[120px] bg-transparent outline-none text-sm placeholder:text-stone-gray"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          e.preventDefault();
+                          const val = e.currentTarget.value.trim();
+                          if (!tradeKeywords.includes(val)) {
+                            setTradeKeywords(prev => [...prev, val]);
+                          }
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 目标市场</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-stone-gray">Select countries where the product is popular</p>
+                  <div className="flex flex-wrap gap-2 min-h-[44px] p-3 border border-border-warm rounded-lg bg-warm-sand/20">
+                    {targetMarkets.map((market, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1 px-3 py-1.5 bg-olive-gray/10 text-olive-gray rounded-full text-sm">
+                        {market}
+                        <button
+                          type="button"
+                          onClick={() => setTargetMarkets(prev => prev.filter((_, i) => i !== idx))}
+                          className="hover:text-olive-gray/70"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      placeholder="Add market..."
+                      className="flex-1 min-w-[120px] bg-transparent outline-none text-sm placeholder:text-stone-gray"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          e.preventDefault();
+                          const val = e.currentTarget.value.trim();
+                          if (!targetMarkets.includes(val)) {
+                            setTargetMarkets(prev => [...prev, val]);
+                          }
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>B2B 出口经验</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-charcoal-warm mb-2">
+                        Export Years (出口年限)
+                      </label>
+                      <select
+                        name="exportExperience"
+                        className="h-10 w-full px-3 border border-border-warm rounded-md text-sm bg-white focus:border-olive-gray focus:ring-1 focus:ring-olive-gray"
+                        value={product.exportExperience || ''}
+                        onChange={(e) => {
+                          const newExp = e.target.value;
+                          setProduct((prev: any) => ({ ...prev, exportExperience: newExp }));
+                        }}
+                      >
+                        <option value="">Select years</option>
+                        <option value="0-1 years">0-1 years</option>
+                        <option value="1-3 years">1-3 years</option>
+                        <option value="3-5 years">3-5 years</option>
+                        <option value="5-10 years">5-10 years</option>
+                        <option value="10+ years">10+ years</option>
+                      </select>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 

@@ -83,6 +83,11 @@ interface ProductSchemaProps {
   brand?: string;
   category?: string;
   mpn?: string;
+  aggregateRating?: {
+    ratingValue: string;
+    reviewCount: string;
+    bestRating?: string;
+  };
   offers?: {
     price?: string;
     priceCurrency?: string;
@@ -105,6 +110,7 @@ export function ProductSchema({
   brand = 'CC Scale',
   category,
   mpn,
+  aggregateRating,
   offers,
   additionalProperty,
 }: ProductSchemaProps) {
@@ -129,6 +135,16 @@ export function ProductSchema({
   if (mpn) schema.mpn = mpn;
   if (category) schema.category = category;
   if (additionalProperty) schema.additionalProperty = additionalProperty;
+
+  // Add aggregate rating for trust signals
+  if (aggregateRating) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: aggregateRating.ratingValue,
+      reviewCount: aggregateRating.reviewCount,
+      bestRating: aggregateRating.bestRating || '5',
+    };
+  }
 
   if (offers) {
     schema.offers = {

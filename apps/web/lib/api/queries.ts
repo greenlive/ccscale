@@ -47,7 +47,7 @@ export interface Product {
   applicationScenariosZh?: string;
   faqEn?: string;
   faqZh?: string;
-  certifications?: string;
+  certifications?: string; // JSON array string e.g. '["CE","FCC"]'
   hsCode?: string;
   paymentTerms?: string;
   shippingTerms?: string;
@@ -57,6 +57,17 @@ export interface Product {
   manufacturerName?: string;
   factoryLocation?: string;
   productionCapacity?: string;
+  // B2B trade extension
+  fobPort?: string;
+  tradeKeywords?: string; // JSON array string
+  targetMarkets?: string; // JSON array string
+  exportExperience?: string;
+  productionCapacityUnit?: string;
+  // Factory showcase (from site settings or product)
+  factoryYears?: number;
+  factoryCountries?: number;
+  factoryCapacity?: string;
+  factoryDescription?: string;
 }
 
 export interface ProductCategory {
