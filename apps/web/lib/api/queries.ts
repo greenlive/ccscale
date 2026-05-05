@@ -21,6 +21,10 @@ export interface Product {
   shortDescEn?: string;
   shortDescZh?: string;
   mainImage?: string;
+  // New JSON array string fields for enhanced product display
+  mainImages?: string; // JSON array string e.g. '["url1","url2"]'
+  detailImages?: string; // JSON array string e.g. '["url1","url2"]'
+  videos?: string; // JSON array string e.g. '["url1","url2"]'
   categoryId?: number;
   category?: ProductCategory;
   images?: ProductImage[];
