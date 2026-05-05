@@ -59,7 +59,10 @@ model Product {
   shortDescEn    String?
   shortDescZh    String?
   mainImage      String?
+  mainImages     String?  // JSON数组存储产品主图URLs (1-6张)
+  detailImages   String?  // JSON数组存储详情图URLs (0-8张)
   videoUrl       String?
+  videos         String?  // JSON数组存储视频URLs (0-3个)
   priceMin       Decimal?
   priceMax       Decimal?
   moq            Int?
