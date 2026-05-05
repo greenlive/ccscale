@@ -43,8 +43,11 @@ interface Product {
   shortDescEn?: string;
   shortDescZh?: string;
   mainImage?: string;
-  images?: ProductImage[];
+  mainImages?: string; // JSON string array
+  detailImages?: string; // JSON string array
+  videos?: string; // JSON string array
   videoUrl?: string;
+  images?: ProductImage[];
   priceMin?: number;
   priceMax?: number;
   moq?: number;
@@ -61,6 +64,17 @@ interface Product {
   seoKeywordsZh?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+// Helper to parse JSON string arrays
+function parseJsonArray(value?: string): string[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 export default function ProductDetailPage() {
@@ -332,80 +346,164 @@ export default function ProductDetailPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Images */}
+            {/* Main Images */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ImageIcon className="h-4 w-4" />
-                  产品图库 (Gallery)
+                  产品主图 ({parseJsonArray(product.mainImages).length || (product.mainImage ? 1 : 0)}张)
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-stone-gray mb-3">封面图用于产品列表展示，其他图片可在详情页图库中浏览</p>
-                {product.mainImage ? (
-                  <div className="space-y-3">
-                    <div
-                      className="relative aspect-square rounded-lg overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() => setPreviewImage(product.mainImage || null)}
-                    >
-                      <img
-                        src={product.mainImage}
-                        alt={product.nameEn}
-                        className="w-full h-full object-cover"
-                      />
-                      <span className="absolute top-2 left-2 bg-accent text-white text-xs px-2 py-1 rounded">
-                        主图
-                      </span>
+                {(() => {
+                  const mainImages = parseJsonArray(product.mainImages);
+                  const hasMainImage = mainImages.length > 0 || product.mainImage;
+                  if (!hasMainImage) {
+                    return <p className="text-stone-gray text-center py-4">暂无主图</p>;
+                  }
+                  return (
+                    <div className="grid grid-cols-3 gap-2">
+                      {product.mainImage && (
+                        <div
+                          className="relative aspect-square rounded-lg overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setPreviewImage(product.mainImage || null)}
+                        >
+                          <img
+                            src={product.mainImage}
+                            alt={product.nameEn}
+                            className="w-full h-full object-cover"
+                          />
+                          <span className="absolute top-1 left-1 bg-accent text-white text-[10px] px-1.5 py-0.5 rounded">
+                            主图
+                          </span>
+                        </div>
+                      )}
+                      {mainImages.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="relative aspect-square rounded-lg overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setPreviewImage(img)}
+                        >
+                          <img
+                            src={img}
+                            alt={`主图 ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
                     </div>
-                    {product.images && product.images.length > 0 && (
-                      <div className="grid grid-cols-4 gap-2">
-                        {product.images
-                          .filter((img) => !img.isMain)
-                          .map((img) => (
-                            <div
-                              key={img.id}
-                              className="aspect-square rounded overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
-                              onClick={() => setPreviewImage(img.imageUrl)}
-                            >
-                              <img
-                                src={img.imageUrl}
-                                alt={img.altEn || ''}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-stone-gray text-center py-4">暂无图片</p>
-                )}
+                  );
+                })()}
               </CardContent>
             </Card>
 
-            {/* Video */}
+            {/* Detail Images */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  详情图 ({parseJsonArray(product.detailImages).length}张)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const detailImages = parseJsonArray(product.detailImages);
+                  if (detailImages.length === 0) {
+                    return <p className="text-stone-gray text-center py-4">暂无详情图</p>;
+                  }
+                  return (
+                    <div className="grid grid-cols-3 gap-2">
+                      {detailImages.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="relative aspect-square rounded-lg overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setPreviewImage(img)}
+                        >
+                          <img
+                            src={img}
+                            alt={`详情图 ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+
+            {/* Videos */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Video className="h-4 w-4" />
-                  产品视频
+                  产品视频 ({parseJsonArray(product.videos).length || (product.videoUrl ? 1 : 0)}个)
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {product.videoUrl ? (
-                  <div className="aspect-video rounded-lg overflow-hidden bg-warm-sand">
-                    <video
-                      src={product.videoUrl}
-                      controls
-                      className="w-full h-full"
-                      title="Product Video"
-                    />
-                  </div>
-                ) : (
-                  <p className="text-stone-gray text-center py-4">暂无视频</p>
-                )}
+                {(() => {
+                  const videos = parseJsonArray(product.videos);
+                  const hasVideo = videos.length > 0 || product.videoUrl;
+                  if (!hasVideo) {
+                    return <p className="text-stone-gray text-center py-4">暂无视频</p>;
+                  }
+                  return (
+                    <div className="space-y-4">
+                      {product.videoUrl && (
+                        <div className="aspect-video rounded-lg overflow-hidden bg-warm-sand">
+                          <video
+                            src={product.videoUrl}
+                            controls
+                            className="w-full h-full"
+                            title="Product Video"
+                          />
+                        </div>
+                      )}
+                      {videos.map((video, idx) => (
+                        <div key={idx} className="aspect-video rounded-lg overflow-hidden bg-warm-sand">
+                          <video
+                            src={video}
+                            controls
+                            className="w-full h-full"
+                            title={`视频 ${idx + 1}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
+
+            {/* Legacy Gallery */}
+            {product.images && product.images.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4" />
+                    产品图库 (Gallery) [{product.images.length}张]
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-stone-gray mb-3">额外的图库图片</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {product.images.map((img) => (
+                      <div
+                        key={img.id}
+                        className="aspect-square rounded overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => setPreviewImage(img.imageUrl)}
+                      >
+                        <img
+                          src={img.imageUrl}
+                          alt={img.altEn || ''}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Metadata */}
             <Card>
