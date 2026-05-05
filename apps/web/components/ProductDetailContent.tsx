@@ -17,6 +17,8 @@ import { ProductPackagingInfo } from '@/components/product/ProductPackagingInfo'
 import { ProductFAQ } from '@/components/product/ProductFAQ';
 import { ProductTradeInfo } from '@/components/product/ProductTradeInfo';
 import { ProductSchema } from '@/components/SchemaOrg';
+import { ProductDetailImages } from '@/components/product/ProductDetailImages';
+import { ProductAttributes } from '@/components/product/ProductAttributes';
 
 interface DisplaySpec {
   keyEn: string;
@@ -91,7 +93,11 @@ export function ProductDetailContent({ slug }: { slug: string }) {
   const productImages = product.images || [];
   const mainImage = productImages.find((img) => img.isMain) || productImages[0];
   const mainImageUrl = mainImage?.imageUrl || product.mainImage || '';
-  const galleryImages = productImages.map((img) => img.imageUrl);
+
+  // Parse new image fields
+  const mainImagesList = product.mainImages ? JSON.parse(product.mainImages) : (product.mainImage ? [product.mainImage] : []);
+  const detailImagesList = product.detailImages ? JSON.parse(product.detailImages) : [];
+  const videosList = product.videos ? JSON.parse(product.videos) : (product.videoUrl ? [product.videoUrl] : []);
 
   const displaySpecs: DisplaySpec[] = (product.specs || []).map((spec: ProductSpec) => ({
     keyEn: spec.labelEn,
@@ -142,6 +148,10 @@ export function ProductDetailContent({ slug }: { slug: string }) {
           availability: 'https://schema.org/InStock',
           url: `https://www.ccscale.com/${locale}/products/${product.slug}`,
         }}
+        additionalProperty={displaySpecs.map(spec => ({
+          name: spec.keyEn,
+          value: spec.valueEn,
+        }))}
       />
 
       {/* Breadcrumb */}
@@ -166,41 +176,24 @@ export function ProductDetailContent({ slug }: { slug: string }) {
         <div className="flex flex-col xl:flex-row gap-8 xl:gap-12">
           {/* Left Column - Scrollable Content */}
           <div className="flex-1 space-y-6">
-            {/* Main Gallery */}
+            {/* Main Gallery - Product Showcase with main images and videos */}
             <div className="relative">
               <ProductGallery
+                mainImages={mainImagesList.length > 0 ? mainImagesList : undefined}
                 mainImage={mainImageUrl}
+                videos={videosList.length > 0 ? videosList : undefined}
                 name={name}
                 videoUrl={product.videoUrl}
                 onVideoClick={() => setShowVideo(true)}
               />
             </div>
 
-            {/* Detail Images - Stacked Full-Width */}
-            {galleryImages.filter((img) => img !== mainImageUrl).length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-gray-500">
-                  {isZh ? '详情图片' : 'Product Details'}
-                </h3>
-                {galleryImages.filter((img) => img !== mainImageUrl).map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="relative aspect-video rounded-lg overflow-hidden bg-gray-100 cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => {
-                      const win = window.open(img, '_blank');
-                      win?.focus();
-                    }}
-                  >
-                    <Image
-                      src={img}
-                      alt={`${name} detail ${idx + 1}`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 60vw"
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
+            {/* Product Detail Images - Detailed product images for buyers */}
+            {detailImagesList.length > 0 && (
+              <ProductDetailImages
+                images={detailImagesList}
+                productName={name}
+              />
             )}
 
             {/* Quick Specs Strip */}
@@ -366,29 +359,13 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               );
             })()}
 
-            {/* Specifications Table */}
+            {/* Specifications - Semantic dl/dt/dd for SEO and AI */}
             {displaySpecs.length > 0 && (
-              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                <div className="bg-primary text-white px-4 py-3 font-semibold">
-                  {isZh ? '技术规格' : 'Specifications'}
-                </div>
-                <div className="p-4 overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <tbody className="divide-y divide-gray-100">
-                      {displaySpecs.map((spec, idx) => (
-                        <tr key={idx}>
-                          <th className="text-left py-3 px-4 text-gray-500 font-medium whitespace-nowrap">
-                            {isZh ? spec.keyZh : spec.keyEn}
-                          </th>
-                          <td className="py-3 px-4 text-primary font-medium">
-                            {isZh ? spec.valueZh : spec.valueEn}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <ProductAttributes
+                specs={displaySpecs}
+                titleEn="Specifications"
+                titleZh="规格参数"
+              />
             )}
 
             {/* Product Description */}
