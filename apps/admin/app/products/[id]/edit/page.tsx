@@ -261,52 +261,55 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           }
         }
 
-        // Load existing images - separate main image from detail images
-        const mainImgs: UploadedFile[] = [];
-        const detailImgs: UploadedFile[] = [];
-
-        // First, add mainImage as the main image
-        if (product.mainImage) {
-          mainImgs.push({
-            id: `main-${Date.now()}`,
-            file: new File([], product.mainImage, { type: 'image/jpeg' }),
-            preview: product.mainImage,
-            type: 'image',
-            isMain: true,
-            uploadedUrl: product.mainImage,
-            isServerUrl: true,
-          });
+        // Load main images from JSON string format
+        if (product.mainImages) {
+          try {
+            const imgs = JSON.parse(product.mainImages);
+            setMainImages(imgs.map((url: string, idx: number) => ({
+              id: `main-${idx}`,
+              file: new File([], url, { type: 'image/jpeg' }) as any,
+              preview: url,
+              type: 'image' as const,
+              uploadedUrl: url,
+              isServerUrl: true,
+            })));
+          } catch {
+            setMainImages([]);
+          }
         }
 
-        // Then add images from the images array (excluding the mainImage URL)
-        if (product.images && Array.isArray(product.images)) {
-          product.images.forEach((img: any, idx: number) => {
-            if (img.imageUrl && img.imageUrl !== product.mainImage) {
-              detailImgs.push({
-                id: `detail-${Date.now()}-${idx}`,
-                file: new File([], img.imageUrl, { type: 'image/jpeg' }),
-                preview: img.imageUrl,
-                type: 'image',
-                isMain: false,
-                uploadedUrl: img.imageUrl,
-                isServerUrl: true,
-              });
-            }
-          });
+        // Load detail images from JSON string format
+        if (product.detailImages) {
+          try {
+            const imgs = JSON.parse(product.detailImages);
+            setDetailImages(imgs.map((url: string, idx: number) => ({
+              id: `detail-${idx}`,
+              file: new File([], url, { type: 'image/jpeg' }) as any,
+              preview: url,
+              type: 'image' as const,
+              uploadedUrl: url,
+              isServerUrl: true,
+            })));
+          } catch {
+            setDetailImages([]);
+          }
         }
 
-        setMainImages(mainImgs);
-        setDetailImages(detailImgs);
-
-        // Load existing videos
-        if (product.videoUrl) {
-          setVideos([{
-            id: 'video-0',
-            file: new File([], product.videoUrl, { type: 'video/mp4' }),
-            preview: product.videoUrl,
-            type: 'video' as const,
-            uploadedUrl: product.videoUrl,
-          }]);
+        // Load videos from JSON string format
+        if (product.videos) {
+          try {
+            const vids = JSON.parse(product.videos);
+            setVideos(vids.map((url: string, idx: number) => ({
+              id: `video-${idx}`,
+              file: new File([], url, { type: 'video/mp4' }) as any,
+              preview: url,
+              type: 'video' as const,
+              uploadedUrl: url,
+              isServerUrl: true,
+            })));
+          } catch {
+            setVideos([]);
+          }
         }
 
         // Load specs
@@ -376,26 +379,12 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         throw new Error('请填写必填项');
       }
 
-      // Upload files
+      // Upload files (only new files, server URLs pass through)
       const uploadedMainImageUrls = await uploadFiles(mainImages);
       const uploadedDetailImageUrls = await uploadFiles(detailImages);
       const uploadedVideoUrls = await uploadFiles(videos);
 
-      // Combine images (without type field to avoid enum validation issues)
-      const allImages = [
-        ...uploadedMainImageUrls.map((url, idx) => ({
-          imageUrl: url,
-          order: idx,
-          isMain: idx === 0,
-        })),
-        ...uploadedDetailImageUrls.map((url, idx) => ({
-          imageUrl: url,
-          order: idx,
-          isMain: false,
-        })),
-      ];
-
-      // Product data
+      // Product data with separate image/video arrays as JSON strings
       const productData = {
         sku: formData.sku.trim(),
         categoryId: parseInt(formData.categoryId),
@@ -418,9 +407,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         isActive: formData.isActive,
         isFeatured: formData.isFeatured,
         order: parseInt(formData.order) || 0,
-        mainImage: uploadedMainImageUrls[0],
-        videoUrl: uploadedVideoUrls[0],
-        images: allImages,
+        // Separate image/video arrays as JSON strings
+        mainImages: uploadedMainImageUrls.length > 0 ? JSON.stringify(uploadedMainImageUrls) : undefined,
+        detailImages: uploadedDetailImageUrls.length > 0 ? JSON.stringify(uploadedDetailImageUrls) : undefined,
+        videos: uploadedVideoUrls.length > 0 ? JSON.stringify(uploadedVideoUrls) : undefined,
         specs: specs.map((spec, index) => ({
           keyEn: spec.keyEn,
           keyZh: spec.keyZh,
