@@ -253,25 +253,6 @@ export default function NewProductPage() {
         throw new Error('请选择产品分类');
       }
 
-      // Upload images and videos first
-      const uploadedMainImageUrls = await uploadFiles(mainImages);
-      const uploadedDetailImageUrls = await uploadFiles(detailImages);
-      const uploadedVideoUrls = await uploadFiles(videos);
-
-      // Combine all images (without type field to avoid enum validation issues)
-      const allImages = [
-        ...uploadedMainImageUrls.map((url, idx) => ({
-          imageUrl: url,
-          order: idx,
-          isMain: idx === 0,
-        })),
-        ...uploadedDetailImageUrls.map((url, idx) => ({
-          imageUrl: url,
-          order: idx,
-          isMain: false,
-        })),
-      ];
-
       // Prepare product data
       const productData = {
         sku: formData.sku.trim(),
@@ -295,9 +276,10 @@ export default function NewProductPage() {
         isActive: formData.isActive,
         isFeatured: formData.isFeatured,
         order: parseInt(formData.order) || 0,
-        mainImage: uploadedMainImageUrls[0] || undefined,
-        videoUrl: uploadedVideoUrls[0] || undefined,
-        images: allImages,
+        // Upload fields as JSON strings
+        mainImages: JSON.stringify(mainImages.map(f => f.uploadedUrl || f.preview)),
+        detailImages: JSON.stringify(detailImages.map(f => f.uploadedUrl || f.preview)),
+        videos: JSON.stringify(videos.map(f => f.uploadedUrl || f.preview)),
         specs: specs.map((spec, index) => ({
           keyEn: spec.keyEn,
           keyZh: spec.keyZh,
@@ -873,14 +855,14 @@ export default function NewProductPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>产品图库 (1-5张) *</CardTitle>
+                  <CardTitle>产品主图 (1-6张) *</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <FileUpload
                     type="image"
                     accept="image/*"
                     multiple
-                    maxFiles={5}
+                    maxFiles={6}
                     files={mainImages}
                     onChange={setMainImages}
                     showMainImageToggle
@@ -975,7 +957,7 @@ export default function NewProductPage() {
                     type="video"
                     accept="video/*"
                     multiple
-                    maxFiles={1}
+                    maxFiles={3}
                     files={videos}
                     onChange={setVideos}
                     label="视频"
