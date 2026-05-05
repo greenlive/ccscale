@@ -113,6 +113,21 @@ export class CreateProductDto {
   videoUrl?: string;
 
   @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  mainImages?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  detailImages?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  videos?: string;
+
+  @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
   priceMin?: number;
