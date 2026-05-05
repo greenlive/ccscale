@@ -57,6 +57,59 @@ export class ProductsService {
     return product;
   }
 
+  async findRelated(productId: number, limit: number = 4) {
+    // Get the current product to find its category
+    const currentProduct = await prisma.product.findUnique({
+      where: { id: productId },
+      include: { category: true },
+    });
+
+    if (!currentProduct) {
+      throw new NotFoundException(`Product with ID ${productId} not found`);
+    }
+
+    // Try to find products in the same category first
+    const relatedFromCategory = await prisma.product.findMany({
+      where: {
+        categoryId: currentProduct.categoryId,
+        isActive: true,
+        id: { not: productId },
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+      take: limit,
+      orderBy: { order: 'asc' },
+    });
+
+    // If we don't have enough from same category, fill with random products
+    if (relatedFromCategory.length < limit) {
+      const additionalCount = limit - relatedFromCategory.length;
+      const existingIds = [
+        productId,
+        ...relatedFromCategory.map((p) => p.id),
+      ];
+
+      const additionalProducts = await prisma.product.findMany({
+        where: {
+          isActive: true,
+          id: { notIn: existingIds },
+        },
+        include: {
+          category: true,
+          images: true,
+        },
+        take: additionalCount,
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return [...relatedFromCategory, ...additionalProducts];
+    }
+
+    return relatedFromCategory;
+  }
+
   async findCategories(isActive: boolean = true) {
     return prisma.productCategory.findMany({
       where: { isActive },
@@ -70,7 +123,7 @@ export class ProductsService {
   }
 
   async create(createProductDto: CreateProductDto) {
-    const { specs, ...productData } = createProductDto;
+    const { specs, images, mainImages, detailImages, videos, ...productData } = createProductDto;
 
     return prisma.product.create({
       data: {
@@ -78,6 +131,11 @@ export class ProductsService {
         ...(specs && {
           specs: {
             create: specs,
+          },
+        }),
+        ...(images && images.length > 0 && {
+          images: {
+            create: images,
           },
         }),
       },
@@ -90,22 +148,48 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const { specs, ...productData } = updateProductDto;
+    const { specs, images, mainImages, detailImages, videos, ...data } = updateProductDto;
 
     // First check if product exists
     await this.findOne(id);
 
+    // Delete existing images first
+    if (images && images.length > 0) {
+      await prisma.productImage.deleteMany({ where: { productId: id } });
+    }
+
+    // Build update data
+    const data: any = { ...data };
+
+    if (specs && specs.length > 0) {
+      data.specs = {
+        deleteMany: {},
+        create: specs.map((spec, idx) => ({
+          keyEn: spec.keyEn,
+          keyZh: spec.keyZh,
+          valueEn: spec.valueEn,
+          valueZh: spec.valueZh,
+          order: spec.order ?? idx,
+        })),
+      };
+    }
+
+    if (images && images.length > 0) {
+      data.images = {
+        create: images.map(img => ({
+          imageUrl: img.imageUrl,
+          type: img.type || 'MAIN',
+          altEn: img.altEn,
+          altZh: img.altZh,
+          order: img.order ?? 0,
+          isMain: img.isMain ?? false,
+        })),
+      };
+    }
+
     return prisma.product.update({
       where: { id },
-      data: {
-        ...productData,
-        ...(specs && {
-          specs: {
-            deleteMany: {},
-            create: specs,
-          },
-        }),
-      },
+      data: data,
       include: {
         category: true,
         images: true,
