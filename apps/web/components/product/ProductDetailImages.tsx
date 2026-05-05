@@ -73,7 +73,7 @@ export function ProductDetailImages({
         {images.map((imageUrl, index) => (
           <div
             key={index}
-            className="relative w-full bg-gray-100 cursor-pointer overflow-hidden"
+            className="relative w-full bg-gray-100 cursor-pointer overflow-hidden min-h-[200px] max-h-[800px]"
             onClick={() => openLightbox(index)}
             role="button"
             tabIndex={0}
@@ -84,17 +84,14 @@ export function ProductDetailImages({
             }}
             aria-label={`View ${productName} detail image ${index + 1}`}
           >
-            {/* Aspect ratio container - maintain natural proportions */}
-            <div className="relative w-full" style={{ aspectRatio: 'auto' }}>
-              <Image
-                src={imageUrl}
-                alt={`${productName} detail image ${index + 1}`}
-                fill
-                sizes="100vw"
-                className="object-cover hover:opacity-95 transition-opacity"
-                loading="lazy"
-              />
-            </div>
+            <Image
+              src={imageUrl}
+              alt={`${productName} detail image ${index + 1}`}
+              fill
+              sizes="100vw"
+              className="object-contain hover:opacity-95 transition-opacity"
+              loading="lazy"
+            />
           </div>
         ))}
       </div>

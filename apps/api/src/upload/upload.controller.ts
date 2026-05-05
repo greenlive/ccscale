@@ -91,6 +91,7 @@ export class UploadController {
   @ApiResponse({ status: 201, description: 'File uploaded successfully' })
   @ApiResponse({ status: 400, description: 'Invalid file type or size' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @Param('uploadType') uploadType: string,
     @UploadedFile() file: Express.Multer.File,
@@ -136,6 +137,7 @@ export class UploadController {
   })
   @ApiResponse({ status: 201, description: 'Files uploaded successfully' })
   @ApiResponse({ status: 400, description: 'Invalid files' })
+  @UseInterceptors(FilesInterceptor('files', 20))
   async uploadMultipleFiles(
     @Param('uploadType') uploadType: string,
     @UploadedFiles() files: Express.Multer.File[],

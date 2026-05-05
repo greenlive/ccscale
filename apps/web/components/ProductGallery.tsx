@@ -276,22 +276,13 @@ export function ProductGallery(props: ProductGalleryProps) {
         >
           {/* Image or Video */}
           {isVideoSelected ? (
-            <div
-              className="w-full h-full flex items-center justify-center bg-black"
-              onClick={() => {
-                if (props.onVideoClick) {
-                  props.onVideoClick();
-                }
-                setIsVideoPlaying(true);
-              }}
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/30 transition-colors">
-                  <Play className="w-10 h-10 text-white ml-1" />
-                </div>
-                <span className="text-white/80 text-sm">Click to play video</span>
-              </div>
-            </div>
+            <video
+              src={videos[0]}
+              controls
+              autoPlay
+              className="w-full h-full object-contain"
+              playsInline
+            />
           ) : currentImage && !imageError[selectedIndex] ? (
             <Image
               src={currentImage}
@@ -305,6 +296,26 @@ export function ProductGallery(props: ProductGalleryProps) {
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-gray-400">No Image</span>
+            </div>
+          )}
+
+          {/* Alibaba-style Zoom Effect - Image moves opposite to mouse */}
+          {showZoom && !isVideoSelected && currentImage && (
+            <div
+              className="absolute inset-0 overflow-hidden pointer-events-none"
+              style={{
+                cursor: 'crosshair',
+              }}
+            >
+              <div
+                className="absolute w-full h-full"
+                style={{
+                  backgroundImage: `url(${currentImage})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '200%',
+                  backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                }}
+              />
             </div>
           )}
 
@@ -343,20 +354,6 @@ export function ProductGallery(props: ProductGalleryProps) {
             </div>
           )}
         </div>
-
-        {/* Zoom Panel - Shows on the right side when hovering */}
-        {showZoom && !isVideoSelected && currentImage && (
-          <div className="hidden lg:block w-[300px] h-[500px] rounded-xl overflow-hidden border border-gray-200 bg-white shadow-lg flex-shrink-0">
-            <div
-              className="w-full h-full bg-cover bg-no-repeat"
-              style={{
-                backgroundImage: `url(${currentImage})`,
-                backgroundSize: '400%',
-                backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              }}
-            />
-          </div>
-        )}
       </div>
 
       {/* Fullscreen Modal */}

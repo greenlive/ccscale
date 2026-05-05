@@ -475,36 +475,6 @@ export default function ProductDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Legacy Gallery */}
-            {product.images && product.images.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4" />
-                    产品图库 (Gallery) [{product.images.length}张]
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-stone-gray mb-3">额外的图库图片</p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {product.images.map((img) => (
-                      <div
-                        key={img.id}
-                        className="aspect-square rounded overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setPreviewImage(img.imageUrl)}
-                      >
-                        <img
-                          src={img.imageUrl}
-                          alt={img.altEn || ''}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Metadata */}
             <Card>
               <CardHeader>

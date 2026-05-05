@@ -35,6 +35,12 @@ const mockProduct = {
   nameZh: '数字体重秤 BS-200',
   category: { slug: 'body-scales', name: 'Body Scales' },
   mainImage: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
+  mainImages: JSON.stringify(['https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800']),
+  detailImages: JSON.stringify([
+    'https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800',
+    'https://images.unsplash.com/photo-1609347561607-6f26a7c3d1e4?w=800'
+  ]),
+  videos: '[]',
   images: [
     { id: 1, imageUrl: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800', order: 0, isMain: true },
     { id: 2, imageUrl: 'https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800', order: 1, isMain: false },

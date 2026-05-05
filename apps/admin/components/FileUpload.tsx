@@ -305,10 +305,16 @@ export function FileUpload({
                     src={file.preview}
                     alt={file.file.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // If image fails to load and it's a server URL, try with full API URL
+                      if (file.isServerUrl && !e.currentTarget.src.includes('localhost:8000')) {
+                        e.currentTarget.src = `http://localhost:8000${file.preview}`;
+                      }
+                    }}
                   />
                 ) : (
                   <video
-                    src={file.preview}
+                    src={file.isServerUrl ? `http://localhost:8000${file.preview}` : file.preview}
                     className="w-full h-full object-cover"
                   />
                 )}
@@ -348,7 +354,7 @@ export function FileUpload({
                 </div>
               )}
               <p className="text-xs text-stone-gray mt-2 truncate" title={file.file.name}>
-                {file.file.name}
+                {file.isServerUrl ? file.file.name.split('/').pop() : file.file.name}
               </p>
               <p className="text-xs text-olive-gray">
                 {formatFileSize(file.file.size)}
@@ -378,13 +384,13 @@ export function FileUpload({
           <div className="relative max-w-4xl max-h-[90vh] w-full" onClick={(e) => e.stopPropagation()}>
             {previewFile.type === 'image' ? (
               <img
-                src={previewFile.preview}
+                src={previewFile.isServerUrl ? `http://localhost:8000${previewFile.preview}` : previewFile.preview}
                 alt={previewFile.file.name}
                 className="max-w-full max-h-[85vh] mx-auto object-contain"
               />
             ) : (
               <video
-                src={previewFile.preview}
+                src={previewFile.isServerUrl ? `http://localhost:8000${previewFile.preview}` : previewFile.preview}
                 controls
                 autoPlay
                 className="max-w-full max-h-[85vh] mx-auto"

@@ -277,6 +277,17 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             setMainImages([]);
           }
         }
+        // Also load legacy mainImage if exists
+        if (product.mainImage && !product.mainImages) {
+          setMainImages([{
+            id: 'main-legacy',
+            file: new File([], product.mainImage, { type: 'image/jpeg' }) as any,
+            preview: product.mainImage,
+            type: 'image' as const,
+            uploadedUrl: product.mainImage,
+            isServerUrl: true,
+          }]);
+        }
 
         // Load detail images from JSON string format
         if (product.detailImages) {
@@ -310,6 +321,17 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           } catch {
             setVideos([]);
           }
+        }
+        // Also load legacy videoUrl if exists
+        if (product.videoUrl && !product.videos) {
+          setVideos([{
+            id: 'video-legacy',
+            file: new File([], product.videoUrl, { type: 'video/mp4' }) as any,
+            preview: product.videoUrl,
+            type: 'video' as const,
+            uploadedUrl: product.videoUrl,
+            isServerUrl: true,
+          }]);
         }
 
         // Load specs
@@ -1115,7 +1137,8 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                     files={videos}
                     onChange={setVideos}
                     label="视频"
-                    hint="MP4, WebM up to 100MB each."
+                    hint="MP4, WebM up to 200MB each."
+                    uploadType="product-video"
                   />
                 </CardContent>
               </Card>
