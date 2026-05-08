@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Video, FileUp, Loader } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Video, FileUp, Loader, GripVertical } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import {
   compressImage,
@@ -26,6 +26,7 @@ interface UploadedFile {
   compression?: CompressionResult;
   isServerUrl?: boolean;
   uploadedUrl?: string;
+  order?: number;
 }
 
 interface FileUploadProps {
@@ -41,10 +42,13 @@ interface FileUploadProps {
   uploadType?: 'product-image' | 'product-video' | 'testimonial' | 'client-logo' | 'factory-image' | 'general';
 }
 
+// Re-export UploadedFile for use in pages
+export type { UploadedFile };
+
 const DEFAULT_HINTS: Record<string, { hint: string; maxSizeMB: number }> = {
   'product-image': {
-    hint: 'JPG/PNG, 800×800px, 白底, ≤5MB (自动压缩)',
-    maxSizeMB: 5,
+    hint: '宽750px，高≤2500px，JPG/WebP，≤3MB/张，第一张为封面',
+    maxSizeMB: 3,
   },
   'product-video': {
     hint: 'MP4, 1920×1080, ≤200MB, 时长30秒-1分钟',
@@ -86,6 +90,16 @@ export function FileUpload({
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Pre-upload confirmation modal state
+  const [pendingFiles, setPendingFiles] = useState<UploadedFile[]>([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmDragIndex, setConfirmDragIndex] = useState<number | null>(null);
+  const [confirmDropIndex, setConfirmDropIndex] = useState<number | null>(null);
+
+  // Drag reordering state for uploaded files
+  const [reorderDragIndex, setReorderDragIndex] = useState<number | null>(null);
+  const [reorderDropIndex, setReorderDropIndex] = useState<number | null>(null);
+
   const compressAndProcessFile = useCallback(async (file: File): Promise<UploadedFile> => {
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
@@ -121,11 +135,20 @@ export function FileUpload({
     const processed: UploadedFile[] = [];
     const errors: string[] = [];
     const maxSizeBytes = (DEFAULT_HINTS[uploadType]?.maxSizeMB || 10) * 1024 * 1024;
+    const remainingSlots = maxFiles - files.length;
+
+    // 调试日志：检查浏览器返回的文件顺序
+    console.log('【FileUpload】用户选择的文件顺序:', newFiles.map((f, i) => `${i}: ${f.name}`));
 
     setIsCompressing(true);
 
-    for (const file of newFiles) {
-      if (files.length + processed.length >= maxFiles) break;
+    // Check if selecting more files than allowed
+    if (newFiles.length > remainingSlots) {
+      errors.push(`最多只能选择 ${maxFiles} 个文件（当前已有 ${files.length} 个），已跳过多余的 ${newFiles.length - remainingSlots} 个文件`);
+    }
+
+    for (let i = 0; i < newFiles.length && processed.length < remainingSlots; i++) {
+      const file = newFiles[i];
 
       const isImage = file.type.startsWith('image/');
       const isVideo = file.type.startsWith('video/');
@@ -147,7 +170,30 @@ export function FileUpload({
       }
 
       try {
-        const uploadedFile = await compressAndProcessFile(file);
+        // For product-image (main images and detail images), don't compress - preserve original quality
+        const shouldCompress = uploadType !== 'product-image' && isImage;
+        let processedFile = file;
+        let compression: CompressionResult | undefined;
+
+        if (shouldCompress) {
+          const options = getCompressionOptionsForUploadType(uploadType);
+          compression = await compressImage(file, options);
+          processedFile = compression.compressedFile;
+        }
+
+        const preview = URL.createObjectURL(processedFile);
+        const uploadedFile: UploadedFile = {
+          id: Math.random().toString(36).substr(2, 9),
+          file: processedFile,
+          originalFile: shouldCompress ? file : undefined,
+          preview,
+          type: isImage ? 'image' : 'video',
+          isMain: false,
+          compression,
+          order: files.length + processed.length, // 选择顺序
+        };
+
+        // Set order based on position in selection
         uploadedFile.isMain = files.length === 0 && processed.length === 0;
         processed.push(uploadedFile);
       } catch (error) {
@@ -157,7 +203,7 @@ export function FileUpload({
 
     setIsCompressing(false);
     return { files: processed, errors };
-  }, [files.length, maxFiles, type, uploadType, compressAndProcessFile]);
+  }, [files.length, maxFiles, type, uploadType]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -185,15 +231,21 @@ export function FileUpload({
   }, [files, onChange, validateAndProcessFiles]);
 
   const handleFileInput = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 浏览器会按用户选择顺序返回文件，保持这个顺序
     const selectedFiles = Array.from(e.target.files || []);
     const { files: processed, errors } = await validateAndProcessFiles(selectedFiles);
-    if (processed.length > 0) {
-      onChange([...files, ...processed]);
-    }
+
     if (errors.length > 0) {
       setUploadErrors(errors);
       setTimeout(() => setUploadErrors([]), 5000);
     }
+
+    if (processed.length > 0) {
+      // 直接添加到文件列表，立即显示缩略图（保持选择顺序）
+      // processed 已经是按选择顺序排列的
+      onChange([...files, ...processed]);
+    }
+
     // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -210,6 +262,83 @@ export function FileUpload({
     }
     onChange(files.filter(f => f.id !== id));
   }, [files, onChange]);
+
+  // Pre-upload confirmation modal handlers
+  const confirmUpload = useCallback(() => {
+    onChange([...files, ...pendingFiles]);
+    setShowConfirmModal(false);
+    // Clean up preview URLs
+    pendingFiles.forEach(f => {
+      if (!f.isServerUrl) URL.revokeObjectURL(f.preview);
+    });
+    setPendingFiles([]);
+  }, [files, onChange, pendingFiles]);
+
+  const cancelUpload = useCallback(() => {
+    pendingFiles.forEach(f => {
+      if (!f.isServerUrl) URL.revokeObjectURL(f.preview);
+    });
+    setShowConfirmModal(false);
+    setPendingFiles([]);
+  }, [pendingFiles]);
+
+  const removePendingFile = useCallback((id: string) => {
+    const fileToRemove = pendingFiles.find(f => f.id === id);
+    if (fileToRemove && !fileToRemove.isServerUrl) {
+      URL.revokeObjectURL(fileToRemove.preview);
+    }
+    setPendingFiles(prev => prev.filter(f => f.id !== id));
+  }, [pendingFiles]);
+
+  // Drag reordering for confirmation modal
+  const handleConfirmDragStart = useCallback((idx: number) => {
+    setConfirmDragIndex(idx);
+  }, []);
+
+  const handleConfirmDrop = useCallback((targetIdx: number) => {
+    if (confirmDragIndex === null || confirmDragIndex === targetIdx) return;
+    const newFiles = [...pendingFiles];
+    const [moved] = newFiles.splice(confirmDragIndex, 1);
+    newFiles.splice(targetIdx, 0, moved);
+    setPendingFiles(newFiles);
+    setConfirmDragIndex(null);
+    setConfirmDropIndex(null);
+  }, [confirmDragIndex, pendingFiles]);
+
+  const handleConfirmDragEnd = useCallback(() => {
+    setConfirmDragIndex(null);
+    setConfirmDropIndex(null);
+  }, []);
+
+  // Drag reordering for uploaded files
+  const handleReorderStart = useCallback((idx: number) => {
+    setReorderDragIndex(idx);
+  }, []);
+
+  const handleReorderOver = useCallback((e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setReorderDropIndex(idx);
+  }, []);
+
+  const handleReorderDrop = useCallback((targetIdx: number) => {
+    if (reorderDragIndex === null || reorderDragIndex === targetIdx) {
+      setReorderDragIndex(null);
+      setReorderDropIndex(null);
+      return;
+    }
+    const newFiles = [...files];
+    const [moved] = newFiles.splice(reorderDragIndex, 1);
+    newFiles.splice(targetIdx, 0, moved);
+    onChange(newFiles);
+    setReorderDragIndex(null);
+    setReorderDropIndex(null);
+  }, [reorderDragIndex, files, onChange]);
+
+  const handleReorderEnd = useCallback(() => {
+    setReorderDragIndex(null);
+    setReorderDropIndex(null);
+  }, []);
 
   const setMainImage = useCallback((id: string) => {
     onChange(files.map(f => ({
@@ -240,7 +369,7 @@ export function FileUpload({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            'border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer',
+            'border-2 border-dashed rounded-xl p-4 text-center transition-all cursor-pointer',
             isDragging
               ? 'border-terracotta bg-terracotta/5'
               : 'border-border-warm hover:border-olive-gray hover:bg-warm-sand/30',
@@ -255,24 +384,24 @@ export function FileUpload({
             onChange={handleFileInput}
             className="hidden"
           />
-          <div className="mx-auto w-14 h-14 bg-warm-sand rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto w-10 h-10 bg-warm-sand rounded-full flex items-center justify-center mb-3">
             {isCompressing ? (
-              <Loader className="h-7 w-7 text-terracotta animate-pulse" />
+              <Loader className="h-5 w-5 text-terracotta animate-pulse" />
             ) : type === 'image' ? (
-              <ImageIcon className="h-7 w-7 text-olive-gray" />
+              <ImageIcon className="h-5 w-5 text-olive-gray" />
             ) : type === 'video' ? (
-              <Video className="h-7 w-7 text-olive-gray" />
+              <Video className="h-5 w-5 text-olive-gray" />
             ) : (
-              <FileUp className="h-7 w-7 text-olive-gray" />
+              <FileUp className="h-5 w-5 text-olive-gray" />
             )}
           </div>
-          <p className="text-charcoal-warm font-medium">
+          <p className="text-charcoal-warm font-medium text-sm">
             {isDragging ? '松开以上传' : isCompressing ? '正在优化图片...' : '拖拽文件到此处上传'}
           </p>
-          <p className="text-sm text-stone-gray mt-1">
+          <p className="text-xs text-stone-gray mt-1">
             或点击选择文件
           </p>
-          <p className="text-xs text-olive-gray mt-2">
+          <p className="text-xs text-olive-gray mt-1">
             {hint || DEFAULT_HINTS[uploadType]?.hint || DEFAULT_HINTS.general.hint}
           </p>
         </div>
@@ -290,31 +419,67 @@ export function FileUpload({
       )}
 
       {files.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {files.map((file) => (
-            <div key={file.id} className="relative group">
+        <>
+          {/* 调试信息 */}
+          <div className="text-xs text-stone-gray mb-2">共 {files.length} 个文件</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+          {files.map((file, idx) => (
+            <div
+              key={file.id}
+              draggable
+              onDragStart={() => handleReorderStart(idx)}
+              onDragOver={(e) => handleReorderOver(e, idx)}
+              onDragEnd={handleReorderEnd}
+              onDrop={() => handleReorderDrop(idx)}
+              className={cn(
+                'relative group transition-all',
+                reorderDragIndex === idx && 'opacity-50',
+                reorderDropIndex === idx && 'ring-2 ring-terracotta rounded-xl'
+              )}
+            >
               <div
                 className={cn(
-                  'relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer',
-                  file.isMain ? 'border-terracotta shadow-ring-terracotta' : 'border-border-warm'
+                  'relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer cursor-grab',
+                  file.isMain ? 'border-terracotta shadow-ring-terracotta' : 'border-border-warm hover:border-primary/50',
+                  reorderDragIndex === idx && 'border-dashed',
+                  reorderDropIndex === idx && 'border-terracotta'
                 )}
-                onClick={() => setPreviewFile(file)}
+                onClick={() => {
+                  // 点击设置为主图（仅图片，且需要showMainImageToggle）
+                  if (showMainImageToggle && file.type === 'image') {
+                    setMainImage(file.id);
+                  } else {
+                    setPreviewFile(file);
+                  }
+                }}
               >
+                {/* Drag handle */}
+                <div className="absolute top-1 left-1 z-10 bg-dark-surface/70 text-white p-1 rounded opacity-0 group-hover:opacity-100">
+                  <GripVertical className="h-4 w-4" />
+                </div>
+                {/* 主图标志 - 仅在有主图概念时显示 */}
+                {showMainImageToggle && file.isMain && (
+                  <div className="absolute top-1 right-1 z-10 bg-terracotta text-white text-xs px-2 py-0.5 rounded font-medium">
+                    主图
+                  </div>
+                )}
                 {file.type === 'image' ? (
                   <img
-                    src={file.preview}
+                    src={file.isServerUrl
+                      ? (file.preview.startsWith('http')
+                          ? file.preview
+                          : `/uploads/${file.preview.replace(/^\/?uploads\//, '')}`)
+                      : file.preview}
                     alt={file.file.name}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      // If image fails to load and it's a server URL, try with full API URL
-                      if (file.isServerUrl && !e.currentTarget.src.includes('localhost:8000')) {
-                        e.currentTarget.src = `http://localhost:8000${file.preview}`;
-                      }
-                    }}
                   />
                 ) : (
                   <video
-                    src={file.isServerUrl ? `http://localhost:8000${file.preview}` : file.preview}
+                    src={file.isServerUrl
+                      ? (file.preview.startsWith('http')
+                          ? file.preview
+                          : `/uploads/${file.preview.replace(/^\/?uploads\//, '')}`)
+                      : file.preview}
                     className="w-full h-full object-cover"
                   />
                 )}
@@ -332,20 +497,7 @@ export function FileUpload({
               >
                 <X className="h-4 w-4" />
               </button>
-              {showMainImageToggle && file.type === 'image' && (
-                <button
-                  type="button"
-                  onClick={() => setMainImage(file.id)}
-                  className={cn(
-                    'absolute bottom-2 left-2 right-2 text-xs py-1.5 rounded-lg transition-colors shadow-md',
-                    file.isMain
-                      ? 'bg-terracotta text-white'
-                      : 'bg-ivory/95 text-charcoal-warm hover:bg-warm-sand'
-                  )}
-                >
-                  {file.isMain ? '主图' : '设为主图'}
-                </button>
-              )}
+              {/* 移除了设为主图按钮，改用点击图片设置 */}
               {/* Compression info */}
               {file.compression && file.compression.compressionRatio > 0.05 && (
                 <div className="absolute top-2 left-2 bg-dark-surface/90 text-ivory text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -353,19 +505,110 @@ export function FileUpload({
                   <span>-{Math.round(file.compression.compressionRatio * 100)}%</span>
                 </div>
               )}
-              <p className="text-xs text-stone-gray mt-2 truncate" title={file.file.name}>
-                {file.isServerUrl ? file.file.name.split('/').pop() : file.file.name}
-              </p>
-              <p className="text-xs text-olive-gray">
-                {formatFileSize(file.file.size)}
-                {file.originalFile && file.file.size < file.originalFile.size && (
-                  <span className="text-terracotta ml-1">
-                    (原: {formatFileSize(file.originalFile.size)})
-                  </span>
-                )}
-              </p>
+              <div className="text-center">
+                <p className="text-xs text-stone-gray mt-2 truncate" title={file.file.name}>
+                  {file.isServerUrl ? file.file.name.split('/').pop() : file.file.name}
+                </p>
+                <p className="text-xs text-olive-gray">
+                  {formatFileSize(file.file.size)}
+                  {file.originalFile && file.file.size < file.originalFile.size && (
+                    <span className="text-terracotta ml-1">
+                      (原: {formatFileSize(file.originalFile.size)})
+                    </span>
+                  )}
+                </p>
+              </div>
             </div>
           ))}
+        </div>
+        </>
+      )}
+
+      {/* Pre-upload Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-charcoal-warm">
+                确认上传 ({pendingFiles.length}/{maxFiles})
+              </h3>
+              <button
+                onClick={cancelUpload}
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+              >
+                <X className="h-5 w-5 text-stone-gray" />
+              </button>
+            </div>
+
+            {/* Instructions */}
+            <div className="px-4 py-2 text-sm text-stone-gray bg-gray-50 border-b">
+              可拖拽排序调整顺序，点击 ✕ 移除不需要的文件，确认后点击「上传」
+            </div>
+
+            {/* File Grid */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                {pendingFiles.map((file, idx) => (
+                  <div
+                    key={file.id}
+                    draggable
+                    onDragStart={() => handleConfirmDragStart(idx)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setConfirmDropIndex(idx);
+                    }}
+                    onDragLeave={handleConfirmDragEnd}
+                    onDrop={() => handleConfirmDrop(idx)}
+                    onDragEnd={handleConfirmDragEnd}
+                    className={cn(
+                      'relative aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-grab',
+                      confirmDragIndex === idx && 'opacity-50',
+                      confirmDropIndex === idx && 'border-terracotta border-dashed'
+                    )}
+                  >
+                    <img
+                      src={file.preview}
+                      alt={file.file.name}
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Order number */}
+                    <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                      {idx + 1}
+                    </span>
+                    {/* Remove button */}
+                    <button
+                      onClick={() => removePendingFile(file.id)}
+                      className="absolute top-1 right-1 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                    {/* Drag handle indicator */}
+                    <div className="absolute top-1 left-1 bg-black/60 text-white p-0.5 rounded opacity-0 hover:opacity-100">
+                      <GripVertical className="h-3 w-3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="flex gap-3 p-4 border-t">
+              <button
+                onClick={cancelUpload}
+                className="flex-1 py-2.5 px-4 border border-border-warm rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                取消
+              </button>
+              <button
+                onClick={confirmUpload}
+                disabled={pendingFiles.length === 0}
+                className="flex-1 py-2.5 px-4 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              >
+                上传 ({pendingFiles.length})
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -384,13 +627,21 @@ export function FileUpload({
           <div className="relative max-w-4xl max-h-[90vh] w-full" onClick={(e) => e.stopPropagation()}>
             {previewFile.type === 'image' ? (
               <img
-                src={previewFile.isServerUrl ? `http://localhost:8000${previewFile.preview}` : previewFile.preview}
+                src={previewFile.isServerUrl
+                  ? (previewFile.preview.startsWith('http')
+                      ? previewFile.preview
+                      : `/uploads/${previewFile.preview.replace(/^\/?uploads\//, '')}`)
+                  : previewFile.preview}
                 alt={previewFile.file.name}
                 className="max-w-full max-h-[85vh] mx-auto object-contain"
               />
             ) : (
               <video
-                src={previewFile.isServerUrl ? `http://localhost:8000${previewFile.preview}` : previewFile.preview}
+                src={previewFile.isServerUrl
+                  ? (previewFile.preview.startsWith('http')
+                      ? previewFile.preview
+                      : `/uploads/${previewFile.preview.replace(/^\/?uploads\//, '')}`)
+                  : previewFile.preview}
                 controls
                 autoPlay
                 className="max-w-full max-h-[85vh] mx-auto"

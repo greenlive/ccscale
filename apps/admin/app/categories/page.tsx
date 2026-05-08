@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Folder } from 'lucide-react';
+import { Plus, Edit, Trash2, Folder, Image as ImageIcon, X, Upload } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
@@ -14,8 +14,6 @@ interface Category {
   nameZh: string;
   slug: string;
   imageUrl?: string;
-  descriptionEn?: string;
-  descriptionZh?: string;
   order: number;
   isActive: boolean;
   products?: { id: number }[];
@@ -28,17 +26,22 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     nameEn: '',
     nameZh: '',
     slug: '',
-    descriptionEn: '',
-    descriptionZh: '',
     imageUrl: '',
     order: 0,
   });
+
+  const toSlug = (name: string) =>
+    name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
 
   useEffect(() => {
     fetchCategories();
@@ -60,6 +63,40 @@ export default function CategoriesPage() {
     }
   };
 
+  const handleImageUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'category-image');
+
+      const response = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormData(prev => ({ ...prev, imageUrl: data.url }));
+        setImagePreview(data.url);
+      }
+    } catch (err) {
+      setError('图片上传失败');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingCategory
@@ -73,17 +110,29 @@ export default function CategoriesPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          nameEn: formData.nameEn,
+          nameZh: formData.nameZh,
+          slug: formData.slug,
+          imageUrl: formData.imageUrl,
+          order: formData.order,
+        }),
       });
 
       if (response.ok) {
         setShowAddModal(false);
         setEditingCategory(null);
         resetForm();
+        setSuccessMessage(editingCategory ? '分类更新成功' : '分类添加成功');
+        setTimeout(() => setSuccessMessage(''), 3000);
         fetchCategories();
+      } else {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || `保存失败 (${response.status})`);
       }
     } catch (err) {
-      setError('Failed to save category');
+      setError(err instanceof Error ? err.message : '保存失败，请重试');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -93,11 +142,11 @@ export default function CategoriesPage() {
       nameEn: category.nameEn,
       nameZh: category.nameZh,
       slug: category.slug,
-      descriptionEn: category.descriptionEn || '',
-      descriptionZh: category.descriptionZh || '',
       imageUrl: category.imageUrl || '',
       order: category.order,
     });
+    setImagePreview(category.imageUrl || null);
+    setSlugManuallyEdited(true);
     setShowAddModal(true);
   };
 
@@ -110,9 +159,12 @@ export default function CategoriesPage() {
           Authorization: `Bearer ${token}`,
         },
       });
+      setSuccessMessage('分类已删除');
+      setTimeout(() => setSuccessMessage(''), 3000);
       fetchCategories();
     } catch (err) {
-      setError('Failed to delete category');
+      setError('删除失败');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -121,17 +173,29 @@ export default function CategoriesPage() {
       nameEn: '',
       nameZh: '',
       slug: '',
-      descriptionEn: '',
-      descriptionZh: '',
       imageUrl: '',
       order: 0,
     });
+    setImagePreview(null);
+    setSlugManuallyEdited(false);
   };
 
   const openAddModal = () => {
     resetForm();
     setEditingCategory(null);
     setShowAddModal(true);
+  };
+
+  const handleNameEnChange = (value: string) => {
+    setFormData(prev => ({ ...prev, nameEn: value }));
+    if (!slugManuallyEdited) {
+      setFormData(prev => ({ ...prev, slug: toSlug(value) }));
+    }
+  };
+
+  const handleSlugChange = (value: string) => {
+    setFormData(prev => ({ ...prev, slug: value }));
+    setSlugManuallyEdited(true);
   };
 
   if (isLoading) {
@@ -161,6 +225,12 @@ export default function CategoriesPage() {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+            {successMessage}
           </div>
         )}
 
@@ -236,68 +306,90 @@ export default function CategoriesPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">名称 (英文)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">名称 (英文) *</label>
                       <Input
                         value={formData.nameEn}
-                        onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
+                        onChange={(e) => handleNameEnChange(e.target.value)}
                         required
                         placeholder="Body Scales"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">名称 (中文)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">名称 (中文) *</label>
                       <Input
                         value={formData.nameZh}
-                        onChange={(e) => setFormData({ ...formData, nameZh: e.target.value })}
+                        onChange={(e) => setFormData(prev => ({ ...prev, nameZh: e.target.value }))}
                         required
                         placeholder="体重秤"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Slug *</label>
                     <Input
                       value={formData.slug}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                      onChange={(e) => handleSlugChange(e.target.value)}
                       required
                       placeholder="body-scales"
                       pattern="[a-z0-9-]+"
                     />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">描述 (英文)</label>
-                      <Input
-                        value={formData.descriptionEn}
-                        onChange={(e) => setFormData({ ...formData, descriptionEn: e.target.value })}
-                        placeholder="Optional description"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">描述 (中文)</label>
-                      <Input
-                        value={formData.descriptionZh}
-                        onChange={(e) => setFormData({ ...formData, descriptionZh: e.target.value })}
-                        placeholder="可选描述"
-                      />
-                    </div>
+                    <p className="text-xs text-gray-400 mt-1">自动从英文名生成，可手动修改</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">图片 URL</label>
-                    <Input
-                      value={formData.imageUrl}
-                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                      placeholder="https://..."
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">分类图片</label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
+                      {imagePreview || formData.imageUrl ? (
+                        <div className="relative inline-block">
+                          <img
+                            src={imagePreview || formData.imageUrl}
+                            alt="Category"
+                            className="max-h-32 mx-auto rounded"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, imageUrl: '' }));
+                              setImagePreview(null);
+                            }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="hidden"
+                            id="category-image-upload"
+                            disabled={isUploading}
+                          />
+                          <label htmlFor="category-image-upload" className="cursor-pointer">
+                            {isUploading ? (
+                              <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto" />
+                            ) : (
+                              <>
+                                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                                <p className="text-sm text-gray-600">点击上传图片</p>
+                                <p className="text-xs text-gray-400 mt-1">PNG、JPG、WebP，最大 2MB</p>
+                              </>
+                            )}
+                          </label>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">排序</label>
                     <Input
                       type="number"
                       value={formData.order}
-                      onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
                       min={0}
                     />
+                    <p className="text-xs text-gray-400 mt-1">数字越小排序越靠前</p>
                   </div>
                   <div className="flex gap-3 pt-4">
                     <Button type="button" variant="outline" onClick={() => setShowAddModal(false)} className="flex-1">

@@ -29,8 +29,9 @@ export class UploadService {
 
   getFileUrl(filePath: string): string {
     // Convert filesystem path to URL path
+    // filePath already contains 'uploads/' so don't prepend baseUrl
     const relativePath = filePath.replace(/^\.\//, '');
-    return `${this.baseUrl}/${relativePath}`;
+    return `/${relativePath}`;
   }
 
   async fileExists(filename: string): Promise<boolean> {

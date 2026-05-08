@@ -15,7 +15,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto, RegisterDto, UpdatePasswordDto, AuthResponse } from './dto/auth.dto';
+import { LoginDto, RegisterDto, UpdatePasswordDto, ResetPasswordDto, AuthResponse } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
@@ -205,5 +205,21 @@ export class AuthController {
   @ApiResponse({ status: 204, description: 'User deleted' })
   async deleteUser(@Param('id') id: string) {
     await this.authService.deleteUser(parseInt(id));
+  }
+
+  @Post('users/:id/reset-password')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Reset user password (admin only)' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  async resetUserPassword(
+    @Param('id') id: string,
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ) {
+    await this.authService.resetUserPassword(parseInt(id), resetPasswordDto.newPassword);
+    return { message: 'Password reset successfully' };
   }
 }

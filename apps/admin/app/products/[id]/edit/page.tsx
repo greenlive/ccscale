@@ -8,7 +8,7 @@ import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Textarea } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
-import { FileUpload } from '@/components/FileUpload';
+import { FileUpload, type UploadedFile } from '@/components/FileUpload';
 import { ProductSpecs } from '@/components/ProductSpecs';
 import { ProductCertifications } from '@/components/ProductCertifications';
 import { ProductFAQ } from '@/components/ProductFAQ';
@@ -16,16 +16,6 @@ import { ProductCoreSellingPoints } from '@/components/ProductCoreSellingPoints'
 import { ProductTradeInfo } from '@/components/ProductTradeInfo';
 import { ProductFactoryInfo } from '@/components/ProductFactoryInfo';
 import { api } from '@/lib/apiClient';
-
-interface UploadedFile {
-  id: string;
-  file: File;
-  preview: string;
-  type: 'image' | 'video';
-  isMain?: boolean;
-  uploadedUrl?: string;
-  isServerUrl?: boolean;
-}
 
 interface SpecItem {
   id: string;
@@ -262,48 +252,59 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         }
 
         // Load main images from JSON string format
+        // Fallback to legacy images table if mainImages is empty
+        let mainImageUrls: string[] = [];
         if (product.mainImages) {
           try {
-            const imgs = JSON.parse(product.mainImages);
-            setMainImages(imgs.map((url: string, idx: number) => ({
-              id: `main-${idx}`,
-              file: new File([], url, { type: 'image/jpeg' }) as any,
-              preview: url,
-              type: 'image' as const,
-              uploadedUrl: url,
-              isServerUrl: true,
-            })));
+            mainImageUrls = JSON.parse(product.mainImages);
           } catch {
-            setMainImages([]);
+            mainImageUrls = [];
           }
         }
-        // Also load legacy mainImage if exists
-        if (product.mainImage && !product.mainImages) {
-          setMainImages([{
-            id: 'main-legacy',
-            file: new File([], product.mainImage, { type: 'image/jpeg' }) as any,
-            preview: product.mainImage,
+        // Also include legacy images with type MAIN or isMain
+        const legacyMainImages = product.images
+          ?.filter((img: any) => img.type === 'MAIN' || img.isMain)
+          .map((img: any) => img.imageUrl) || [];
+        if (mainImageUrls.length === 0 && legacyMainImages.length > 0) {
+          mainImageUrls = legacyMainImages;
+        }
+        if (mainImageUrls.length > 0) {
+          console.log('【编辑页】加载主图 URLs:', mainImageUrls);
+          setMainImages(mainImageUrls.map((url: string, idx: number) => ({
+            id: `main-${idx}`,
+            file: new File([], url, { type: 'image/jpeg' }) as any,
+            preview: url,
             type: 'image' as const,
-            uploadedUrl: product.mainImage,
+            uploadedUrl: url,
             isServerUrl: true,
-          }]);
+          })));
         }
 
         // Load detail images from JSON string format
+        let detailImageUrls: string[] = [];
         if (product.detailImages) {
           try {
-            const imgs = JSON.parse(product.detailImages);
-            setDetailImages(imgs.map((url: string, idx: number) => ({
-              id: `detail-${idx}`,
-              file: new File([], url, { type: 'image/jpeg' }) as any,
-              preview: url,
-              type: 'image' as const,
-              uploadedUrl: url,
-              isServerUrl: true,
-            })));
+            detailImageUrls = JSON.parse(product.detailImages);
           } catch {
-            setDetailImages([]);
+            detailImageUrls = [];
           }
+        }
+        // Also include legacy images with type DETAIL
+        const legacyDetailImages = product.images
+          ?.filter((img: any) => img.type === 'DETAIL')
+          .map((img: any) => img.imageUrl) || [];
+        if (detailImageUrls.length === 0 && legacyDetailImages.length > 0) {
+          detailImageUrls = legacyDetailImages;
+        }
+        if (detailImageUrls.length > 0) {
+          setDetailImages(detailImageUrls.map((url: string, idx: number) => ({
+            id: `detail-${idx}`,
+            file: new File([], url, { type: 'image/jpeg' }) as any,
+            preview: url,
+            type: 'image' as const,
+            uploadedUrl: url,
+            isServerUrl: true,
+          })));
         }
 
         // Load videos from JSON string format
@@ -321,17 +322,6 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           } catch {
             setVideos([]);
           }
-        }
-        // Also load legacy videoUrl if exists
-        if (product.videoUrl && !product.videos) {
-          setVideos([{
-            id: 'video-legacy',
-            file: new File([], product.videoUrl, { type: 'video/mp4' }) as any,
-            preview: product.videoUrl,
-            type: 'video' as const,
-            uploadedUrl: product.videoUrl,
-            isServerUrl: true,
-          }]);
         }
 
         // Load specs
@@ -365,8 +355,23 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   const uploadFiles = async (files: UploadedFile[]): Promise<string[]> => {
     const uploadedUrls: string[] = [];
 
-    for (const file of files) {
-      if (file.uploadedUrl) {
+    // 按选择顺序排序后串行上传
+    const sortedFiles = [...files].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    // 调试日志
+    console.log('【上传调试】原始顺序:', files.map((f, i) => `${i}: order=${f.order}, name=${f.file.name}`));
+    console.log('【上传调试】排序后顺序:', sortedFiles.map((f, i) => `${i}: order=${f.order}, name=${f.file.name}`));
+
+    for (const file of sortedFiles) {
+      // Check if it's a server URL (existing image from database)
+      if (file.isServerUrl) {
+        // Use preview (which contains the path) and prepend API base URL
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const fullUrl = file.preview.startsWith('http')
+          ? file.preview
+          : `${baseUrl}${file.preview}`;
+        uploadedUrls.push(fullUrl);
+      } else if (file.uploadedUrl) {
         uploadedUrls.push(file.uploadedUrl);
       } else if (file.file && file.file.size > 0) {
         const uploadType = file.type === 'image' ? 'product-image' : 'product-video';
@@ -430,9 +435,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         isFeatured: formData.isFeatured,
         order: parseInt(formData.order) || 0,
         // Separate image/video arrays as JSON strings
-        mainImages: uploadedMainImageUrls.length > 0 ? JSON.stringify(uploadedMainImageUrls) : undefined,
-        detailImages: uploadedDetailImageUrls.length > 0 ? JSON.stringify(uploadedDetailImageUrls) : undefined,
-        videos: uploadedVideoUrls.length > 0 ? JSON.stringify(uploadedVideoUrls) : undefined,
+        mainImages: uploadedMainImageUrls.length > 0 ? JSON.stringify(uploadedMainImageUrls) : '',
+        detailImages: uploadedDetailImageUrls.length > 0 ? JSON.stringify(uploadedDetailImageUrls) : '',
+        videos: uploadedVideoUrls.length > 0 ? JSON.stringify(uploadedVideoUrls) : '',
         specs: specs.map((spec, index) => ({
           keyEn: spec.keyEn,
           keyZh: spec.keyZh,
@@ -1043,7 +1048,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                     onChange={setMainImages}
                     showMainImageToggle
                     label="主图"
-                    hint="白色背景正面图，1200×1200px，JPG/WebP，≤500KB/张，第一张为封面"
+                    hint="宽750px，高≤2500px，JPG/WebP，≤3MB/张，第一张为封面"
                     uploadType="product-image"
                   />
                 </CardContent>
@@ -1062,7 +1067,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                     files={detailImages}
                     onChange={setDetailImages}
                     label="详情图"
-                    hint="产品详情页图库图片，场景图/细节图，1600×1200px，JPG/WebP，≤800KB/张"
+                    hint="宽750px，高≤2500px，JPG/WebP，≤3MB/张"
                     uploadType="product-image"
                   />
                 </CardContent>

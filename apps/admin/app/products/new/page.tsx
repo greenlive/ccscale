@@ -8,7 +8,7 @@ import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Textarea } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
-import { FileUpload } from '@/components/FileUpload';
+import { FileUpload, type UploadedFile } from '@/components/FileUpload';
 import { ProductSpecs } from '@/components/ProductSpecs';
 import { ProductCertifications } from '@/components/ProductCertifications';
 import { ProductFAQ } from '@/components/ProductFAQ';
@@ -16,15 +16,6 @@ import { ProductCoreSellingPoints } from '@/components/ProductCoreSellingPoints'
 import { ProductTradeInfo } from '@/components/ProductTradeInfo';
 import { ProductFactoryInfo } from '@/components/ProductFactoryInfo';
 import { api } from '@/lib/apiClient';
-
-interface UploadedFile {
-  id: string;
-  file: File;
-  preview: string;
-  type: 'image' | 'video';
-  isMain?: boolean;
-  uploadedUrl?: string;
-}
 
 interface SpecItem {
   id: string;
@@ -253,6 +244,11 @@ export default function NewProductPage() {
         throw new Error('请选择产品分类');
       }
 
+      // 先上传所有文件到服务器，获取真实URL
+      const uploadedMainImageUrls = await uploadFiles(mainImages);
+      const uploadedDetailImageUrls = await uploadFiles(detailImages);
+      const uploadedVideoUrls = await uploadFiles(videos);
+
       // Prepare product data
       const productData = {
         sku: formData.sku.trim(),
@@ -276,10 +272,10 @@ export default function NewProductPage() {
         isActive: formData.isActive,
         isFeatured: formData.isFeatured,
         order: parseInt(formData.order) || 0,
-        // Upload fields as JSON strings
-        mainImages: JSON.stringify(mainImages.map(f => f.uploadedUrl || f.preview)),
-        detailImages: JSON.stringify(detailImages.map(f => f.uploadedUrl || f.preview)),
-        videos: JSON.stringify(videos.map(f => f.uploadedUrl || f.preview)),
+        // Upload fields as JSON strings (使用服务器返回的真实URL)
+        mainImages: JSON.stringify(uploadedMainImageUrls),
+        detailImages: JSON.stringify(uploadedDetailImageUrls),
+        videos: JSON.stringify(uploadedVideoUrls),
         specs: specs.map((spec, index) => ({
           keyEn: spec.keyEn,
           keyZh: spec.keyZh,
@@ -867,7 +863,7 @@ export default function NewProductPage() {
                     onChange={setMainImages}
                     showMainImageToggle
                     label="主图"
-                    hint="白色背景正面图，1200×1200px，JPG/WebP，≤500KB/张，第一张为封面"
+                    hint="宽750px，高≤2500px，JPG/WebP，≤3MB/张，第一张为封面"
                     uploadType="product-image"
                   />
                 </CardContent>
@@ -886,7 +882,7 @@ export default function NewProductPage() {
                     files={detailImages}
                     onChange={setDetailImages}
                     label="详情图"
-                    hint="产品详情页图库图片，场景图/细节图，1600×1200px，JPG/WebP，≤800KB/张"
+                    hint="宽750px，高≤2500px，JPG/WebP，≤3MB/张"
                     uploadType="product-image"
                   />
                 </CardContent>
@@ -961,7 +957,7 @@ export default function NewProductPage() {
                     files={videos}
                     onChange={setVideos}
                     label="视频"
-                    hint="MP4格式，最大100MB，时长30-60秒"
+                    hint="MP4格式，最大200MB，时长30-60秒"
                     uploadType="product-video"
                   />
                 </CardContent>

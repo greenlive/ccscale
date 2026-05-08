@@ -18,14 +18,21 @@ import {
   Users,
   FolderOpen,
   Download,
+  User,
 } from 'lucide-react';
 import { cn } from '@cc-scale/ui';
+import { getStoredUser } from '@/lib/auth';
 
 const menuItems = [
   {
     href: '/dashboard',
     icon: LayoutDashboard,
     label: '仪表板',
+  },
+  {
+    href: '/profile',
+    icon: User,
+    label: '个人设置',
   },
   {
     href: '/products',
@@ -78,6 +85,8 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const currentUser = getStoredUser();
+  const userInitial = currentUser?.name?.charAt(0).toUpperCase() || 'U';
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-dark-surface">
@@ -122,11 +131,11 @@ export default function Sidebar() {
       <div className="p-4 border-t border-border-dark">
         <div className="flex items-center">
           <div className="w-10 h-10 bg-terracotta/20 rounded-full flex items-center justify-center">
-            <span className="text-terracotta font-medium">AD</span>
+            <span className="text-terracotta font-medium">{userInitial}</span>
           </div>
           <div className="ml-3 flex-1">
-            <p className="text-sm font-medium text-ivory">Admin User</p>
-            <p className="text-xs text-warm-silver">admin@ccscale.com</p>
+            <p className="text-sm font-medium text-ivory">{currentUser?.name || '用户'}</p>
+            <p className="text-xs text-warm-silver">{currentUser?.email || ''}</p>
           </div>
           <button className="text-warm-silver hover:text-ivory">
             <LogOut className="h-5 w-5" />

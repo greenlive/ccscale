@@ -95,6 +95,7 @@ export default function InquiriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sourceFilter, setSourceFilter] = useState('ALL');
+  const [timeRange, setTimeRange] = useState('30d');
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<number | null>(null);
@@ -122,6 +123,38 @@ export default function InquiriesPage() {
     }
   };
 
+  // 获取时间范围筛选
+  const getDateRange = () => {
+    const end = new Date();
+    const start = new Date();
+    if (timeRange === '7d') start.setDate(end.getDate() - 6);
+    else if (timeRange === '30d') start.setDate(end.getDate() - 29);
+    else if (timeRange === '90d') start.setDate(end.getDate() - 89);
+    else if (timeRange === '1y') start.setFullYear(end.getFullYear() - 1);
+    else start.setFullYear(end.getFullYear() - 10);
+    return { start, end };
+  };
+
+  // 今日统计
+  const getTodayStats = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayInquiries = inquiries.filter(i => new Date(i.createdAt) >= today);
+    return {
+      total: todayInquiries.length,
+      new: todayInquiries.filter(i => i.status === 'NEW').length,
+      replied: todayInquiries.filter(i => i.status === 'REPLIED' && i.repliedAt && new Date(i.repliedAt) >= today).length,
+    };
+  };
+
+  // 响应时间（小时）
+  const getResponseTime = (inquiry: Inquiry) => {
+    if (!inquiry.repliedAt) return null;
+    const created = new Date(inquiry.createdAt);
+    const replied = new Date(inquiry.repliedAt);
+    return ((replied.getTime() - created.getTime()) / (1000 * 60 * 60)).toFixed(1);
+  };
+
   useEffect(() => {
     if (token) {
       fetchInquiries();
@@ -131,8 +164,11 @@ export default function InquiriesPage() {
   useEffect(() => { document.title = 'CC Scale 管理后台 - 询盘管理'; }, []);
 
   const filteredInquiries = useMemo(
-    () =>
-      inquiries.filter((inquiry) => {
+    () => {
+      const { start, end } = getDateRange();
+      return inquiries.filter((inquiry) => {
+        const inquiryDate = new Date(inquiry.createdAt);
+        const matchesDate = inquiryDate >= start && inquiryDate <= end;
         const matchesSearch =
           inquiry.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
           inquiry.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -143,10 +179,13 @@ export default function InquiriesPage() {
           inquiry.source === sourceFilter ||
           (sourceFilter === '其他' && !inquiry.source) ||
           (sourceFilter === 'Google 搜索' && inquiry.source === 'Google');
-        return matchesSearch && matchesStatus && matchesSource;
-      }),
-    [inquiries, searchQuery, statusFilter, sourceFilter],
+        return matchesDate && matchesSearch && matchesStatus && matchesSource;
+      });
+    },
+    [inquiries, searchQuery, statusFilter, sourceFilter, timeRange],
   );
+
+  const todayStats = getTodayStats();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-CN', {
@@ -221,10 +260,10 @@ export default function InquiriesPage() {
 
   // 统计数据
   const stats = {
-    total: inquiries.length,
-    new: inquiries.filter(i => i.status === 'NEW').length,
-    inProgress: inquiries.filter(i => i.status === 'IN_PROGRESS').length,
-    replied: inquiries.filter(i => i.status === 'REPLIED').length,
+    total: filteredInquiries.length,
+    new: filteredInquiries.filter(i => i.status === 'NEW').length,
+    inProgress: filteredInquiries.filter(i => i.status === 'IN_PROGRESS').length,
+    replied: filteredInquiries.filter(i => i.status === 'REPLIED').length,
   };
 
   // 获取渠道来源的图标和样式
@@ -272,6 +311,14 @@ export default function InquiriesPage() {
             <p className="text-stone-gray">管理客户询盘和报价</p>
           </div>
           <div className="flex items-center gap-2">
+            <span className="text-sm text-stone-gray">今日新:</span>
+            <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-sm font-medium">
+              {todayStats.new}
+            </span>
+            <span className="text-sm text-stone-gray">今日回复:</span>
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+              {todayStats.replied}
+            </span>
             <span className="text-sm text-stone-gray">待处理:</span>
             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
               {stats.new}
@@ -370,6 +417,17 @@ export default function InquiriesPage() {
                   {ALL_SOURCES.filter(s => s !== 'ALL').map((source) => (
                     <option key={source} value={source}>{source}</option>
                   ))}
+                </select>
+                <select
+                  value={timeRange}
+                  onChange={(e) => setTimeRange(e.target.value)}
+                  className="h-10 px-3 border border-border-warm bg-background rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-terracotta"
+                >
+                  <option value="7d">最近7天</option>
+                  <option value="30d">最近30天</option>
+                  <option value="90d">最近90天</option>
+                  <option value="1y">最近一年</option>
+                  <option value="all">全部时间</option>
                 </select>
               </div>
             </div>
@@ -484,13 +542,27 @@ export default function InquiriesPage() {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex flex-col gap-1">
-                            <p className={`text-sm ${overdue ? 'text-destructive font-medium' : 'text-stone-gray'}`}>
-                              {getRelativeTime(inquiry.createdAt)}
-                            </p>
-                            {overdue && (
-                              <p className="text-xs text-destructive">
-                                已超时 {getOverdueHours(inquiry.createdAt) - 24}h
-                              </p>
+                            {/* 已回复询盘显示响应时间 */}
+                            {inquiry.repliedAt ? (
+                              <>
+                                <p className="text-sm text-green-600 font-medium">
+                                  {getResponseTime(inquiry)}小时响应
+                                </p>
+                                <p className="text-xs text-stone-gray">
+                                  {getRelativeTime(inquiry.createdAt)}
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <p className={`text-sm ${overdue ? 'text-destructive font-medium' : 'text-stone-gray'}`}>
+                                  {getRelativeTime(inquiry.createdAt)}
+                                </p>
+                                {overdue && (
+                                  <p className="text-xs text-destructive">
+                                    已超时 {getOverdueHours(inquiry.createdAt) - 24}h
+                                  </p>
+                                )}
+                              </>
                             )}
                           </div>
                         </td>

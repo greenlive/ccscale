@@ -351,33 +351,17 @@ export default function ProductDetailPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ImageIcon className="h-4 w-4" />
-                  产品主图 ({parseJsonArray(product.mainImages).length || (product.mainImage ? 1 : 0)}张)
+                  产品主图 ({parseJsonArray(product.mainImages).length}张)
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {(() => {
                   const mainImages = parseJsonArray(product.mainImages);
-                  const hasMainImage = mainImages.length > 0 || product.mainImage;
-                  if (!hasMainImage) {
+                  if (mainImages.length === 0) {
                     return <p className="text-stone-gray text-center py-4">暂无主图</p>;
                   }
                   return (
                     <div className="grid grid-cols-3 gap-2">
-                      {product.mainImage && (
-                        <div
-                          className="relative aspect-square rounded-lg overflow-hidden bg-warm-sand cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => setPreviewImage(product.mainImage || null)}
-                        >
-                          <img
-                            src={product.mainImage}
-                            alt={product.nameEn}
-                            className="w-full h-full object-cover"
-                          />
-                          <span className="absolute top-1 left-1 bg-accent text-white text-[10px] px-1.5 py-0.5 rounded">
-                            主图
-                          </span>
-                        </div>
-                      )}
                       {mainImages.map((img, idx) => (
                         <div
                           key={idx}
@@ -437,28 +421,17 @@ export default function ProductDetailPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Video className="h-4 w-4" />
-                  产品视频 ({parseJsonArray(product.videos).length || (product.videoUrl ? 1 : 0)}个)
+                  产品视频 ({parseJsonArray(product.videos).length}个)
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {(() => {
                   const videos = parseJsonArray(product.videos);
-                  const hasVideo = videos.length > 0 || product.videoUrl;
-                  if (!hasVideo) {
+                  if (videos.length === 0) {
                     return <p className="text-stone-gray text-center py-4">暂无视频</p>;
                   }
                   return (
                     <div className="space-y-4">
-                      {product.videoUrl && (
-                        <div className="aspect-video rounded-lg overflow-hidden bg-warm-sand">
-                          <video
-                            src={product.videoUrl}
-                            controls
-                            className="w-full h-full"
-                            title="Product Video"
-                          />
-                        </div>
-                      )}
                       {videos.map((video, idx) => (
                         <div key={idx} className="aspect-video rounded-lg overflow-hidden bg-warm-sand">
                           <video

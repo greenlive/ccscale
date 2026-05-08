@@ -7,9 +7,22 @@ interface ProductFactoryInfoProps {
     manufacturerName: string;
     factoryLocation: string;
     productionCapacity: string;
+    productionCapacityUnit: string;
   };
   onChange: (data: ProductFactoryInfoProps['formData']) => void;
 }
+
+const COMMON_CAPACITY_UNITS = [
+  'pcs/month',
+  'pcs/year',
+  'units/month',
+  'units/year',
+  'sets/month',
+  'sets/year',
+  'tons/month',
+  'tons/year',
+  'containers/month',
+];
 
 export function ProductFactoryInfo({ formData, onChange }: ProductFactoryInfoProps) {
   const handleChange = (field: keyof ProductFactoryInfoProps['formData'], value: string) => {
@@ -19,7 +32,7 @@ export function ProductFactoryInfo({ formData, onChange }: ProductFactoryInfoPro
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-charcoal-warm mb-2">
           Manufacturer Name
         </label>
         <Input
@@ -30,7 +43,7 @@ export function ProductFactoryInfo({ formData, onChange }: ProductFactoryInfoPro
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-charcoal-warm mb-2">
           Factory Location
         </label>
         <Input
@@ -41,14 +54,29 @@ export function ProductFactoryInfo({ formData, onChange }: ProductFactoryInfoPro
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Production Capacity
+        <label className="block text-sm font-medium text-charcoal-warm mb-2">
+          Production Capacity (产量)
         </label>
-        <Input
-          value={formData.productionCapacity}
-          onChange={(e) => handleChange('productionCapacity', e.target.value)}
-          placeholder="e.g. 50,000 pcs/month"
-        />
+        <div className="flex gap-2">
+          <Input
+            value={formData.productionCapacity}
+            onChange={(e) => handleChange('productionCapacity', e.target.value)}
+            placeholder="e.g. 50,000"
+            className="flex-1"
+          />
+          <select
+            value={formData.productionCapacityUnit || 'pcs/month'}
+            onChange={(e) => handleChange('productionCapacityUnit', e.target.value)}
+            className="h-10 px-3 border border-border-warm rounded-md text-sm bg-white focus:border-olive-gray focus:ring-1 focus:ring-olive-gray w-36"
+          >
+            {COMMON_CAPACITY_UNITS.map(unit => (
+              <option key={unit} value={unit}>{unit}</option>
+            ))}
+          </select>
+        </div>
+        <p className="text-xs text-stone-gray mt-1.5">
+          Select unit or enter custom capacity above
+        </p>
       </div>
     </div>
   );

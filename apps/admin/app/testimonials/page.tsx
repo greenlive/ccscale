@@ -6,7 +6,7 @@ import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
-import { FileUpload } from '@/components/FileUpload';
+import { FileUpload, type UploadedFile } from '@/components/FileUpload';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -25,14 +25,6 @@ interface Testimonial {
   order: number;
   isActive: boolean;
   createdAt: string;
-}
-
-interface UploadedFile {
-  id: string;
-  file: File;
-  preview: string;
-  type: 'image' | 'video';
-  isMain?: boolean;
 }
 
 export default function TestimonialsPage() {

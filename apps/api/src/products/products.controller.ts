@@ -49,6 +49,17 @@ export class ProductsController {
     return this.productsService.findBySlug(slug);
   }
 
+  @Get('related/:id')
+  @ApiOperation({ summary: 'Get related products' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Return related products' })
+  findRelated(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.productsService.findRelated(
+      parseInt(id),
+      limit ? parseInt(limit) : 4,
+    );
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get product by id' })
   @ApiResponse({ status: 200, description: 'Return the product' })

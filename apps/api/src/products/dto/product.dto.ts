@@ -105,16 +105,6 @@ export class CreateProductDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  mainImage?: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  videoUrl?: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
   mainImages?: string;
 
   @ApiPropertyOptional()

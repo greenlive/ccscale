@@ -82,7 +82,7 @@ const allProductSlugs = [
 
 async function getProductForSEO(slug: string): Promise<ProductSEOData | null> {
   try {
-    const res = await fetch(`${API_URL}/products/slug/${slug}`, {
+    const res = await fetch(`${API_URL}/api/products/slug/${slug}`, {
       cache: 'no-store',
     });
     if (!res.ok) return null;

@@ -102,10 +102,15 @@ async function apiRequest<T>(
     }
 
     if (!response.ok) {
+      // Handle NestJS validation error format where message can be an array
+      let errorMessage = data?.message || data?.error || 'Request failed';
+      if (Array.isArray(errorMessage)) {
+        errorMessage = errorMessage.join(', ');
+      }
       return {
         success: false,
         error: {
-          message: data?.message || data?.error || 'Request failed',
+          message: errorMessage,
           status: response.status,
           errors: data?.errors,
         },

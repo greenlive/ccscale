@@ -6,15 +6,7 @@ import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
-import { FileUpload } from '@/components/FileUpload';
-
-interface UploadedFile {
-  id: string;
-  file: File;
-  preview: string;
-  type: 'image' | 'video';
-  isMain?: boolean;
-}
+import { FileUpload, type UploadedFile } from '@/components/FileUpload';
 
 interface FactoryImage {
   id: number;

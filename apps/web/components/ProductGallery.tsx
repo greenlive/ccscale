@@ -193,11 +193,9 @@ export function ProductGallery(props: ProductGalleryProps) {
           }`}
           onClick={() => handleThumbnailClick(idx)}
         >
-          <Image
+          <img
             src={src}
             alt={`${props.name} - ${idx + 1}`}
-            width={80}
-            height={80}
             className="w-full h-full object-cover"
             onError={() => setImageError((prev) => ({ ...prev, [idx]: true }))}
           />
@@ -217,8 +215,20 @@ export function ProductGallery(props: ProductGalleryProps) {
           }`}
           onClick={() => handleThumbnailClick(images.length)}
         >
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-            <Play className="w-6 h-6 text-primary" />
+          {/* Video thumbnail with play overlay */}
+          <div className="relative w-full h-full bg-gray-800 flex items-center justify-center">
+            <video
+              src={videos[0]}
+              className="w-full h-full object-cover opacity-50"
+              muted
+              playsInline
+              preload="metadata"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center">
+                <Play className="w-5 h-5 text-white fill-white" />
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -284,18 +294,22 @@ export function ProductGallery(props: ProductGalleryProps) {
               playsInline
             />
           ) : currentImage && !imageError[selectedIndex] ? (
-            <Image
+            <img
               src={currentImage}
               alt={props.name}
-              fill
-              sizes="(max-width: 1024px) 100vw, 70vw"
-              className="object-contain"
-              priority
+              className="w-full h-full object-contain"
               onError={() => setImageError((prev) => ({ ...prev, [selectedIndex]: true }))}
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-gray-400">No Image</span>
+            /* Default placeholder when no main image */
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+              <svg className="w-20 h-20 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-gray-400 text-sm font-medium">No Main Image</span>
+              {hasVideo && (
+                <span className="text-gray-400 text-xs mt-1">Video available</span>
+              )}
             </div>
           )}
 

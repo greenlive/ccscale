@@ -128,6 +128,9 @@ export class ProductsService {
     return prisma.product.create({
       data: {
         ...productData,
+        mainImages: mainImages ?? null,
+        detailImages: detailImages ?? null,
+        videos: videos ?? null,
         ...(specs && {
           specs: {
             create: specs,
@@ -148,18 +151,23 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const { specs, images, mainImages, detailImages, videos, ...data } = updateProductDto;
+    const { specs, images, mainImages, detailImages, videos, ...restData } = updateProductDto;
 
     // First check if product exists
     await this.findOne(id);
 
-    // Delete existing images first
-    if (images && images.length > 0) {
+    // Build update data
+    const data: any = {
+      ...restData,
+      ...(mainImages !== undefined && { mainImages: mainImages || null }),
+      ...(detailImages !== undefined && { detailImages: detailImages || null }),
+      ...(videos !== undefined && { videos: videos || null }),
+    };
+
+    // Clear old productImage table when updating with new image fields
+    if (mainImages !== undefined || detailImages !== undefined) {
       await prisma.productImage.deleteMany({ where: { productId: id } });
     }
-
-    // Build update data
-    const data: any = { ...data };
 
     if (specs && specs.length > 0) {
       data.specs = {

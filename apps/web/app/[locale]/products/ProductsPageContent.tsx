@@ -141,18 +141,35 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
   });
 
   // Use mock data if API data not available
-  const products = apiProducts.length > 0 ? apiProducts.map(p => ({
-    id: p.id,
-    slug: p.slug,
-    sku: p.sku,
-    name: { en: p.nameEn, zh: p.nameZh },
-    category: p.category?.slug || 'all',
-    image: p.mainImage || 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=400',
-    priceMin: p.priceMin || 0,
-    priceMax: p.priceMax || 0,
-    moq: p.moq || 100,
-    isFeatured: p.isFeatured || false,
-  })) : mockProducts;
+  const products = apiProducts.length > 0 ? apiProducts.map(p => {
+    // Parse mainImages - could be JSON array string or array
+    let imageUrl = 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=400';
+    if (p.mainImages) {
+      try {
+        const images = typeof p.mainImages === 'string' ? JSON.parse(p.mainImages) : p.mainImages;
+        if (Array.isArray(images) && images.length > 0) {
+          imageUrl = images[0];
+        }
+      } catch (e) {
+        // If JSON parse fails, use fallback
+      }
+    } else if (p.mainImage) {
+      imageUrl = p.mainImage;
+    }
+
+    return {
+      id: p.id,
+      slug: p.slug,
+      sku: p.sku,
+      name: { en: p.nameEn, zh: p.nameZh },
+      category: p.category?.slug || 'all',
+      image: imageUrl,
+      priceMin: p.priceMin || 0,
+      priceMax: p.priceMax || 0,
+      moq: p.moq || 100,
+      isFeatured: p.isFeatured || false,
+    };
+  }) : mockProducts;
 
   // Update URL when filters change (debounced for search)
   const updateURL = useCallback((category: string, search: string) => {

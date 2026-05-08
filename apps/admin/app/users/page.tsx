@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Users as UsersIcon } from 'lucide-react';
+import { Plus, Trash2, Users as UsersIcon, KeyRound } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
@@ -21,6 +21,13 @@ export default function UsersPage() {
   const [error, setError] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newUser, setNewUser] = useState({ email: '', password: '', name: '', role: 'VIEWER' });
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetUserId, setResetUserId] = useState<number | null>(null);
+  const [resetUserName, setResetUserName] = useState('');
+  const [resetPassword, setResetPassword] = useState('');
+  const [resetConfirmPassword, setResetConfirmPassword] = useState('');
+  const [resetError, setResetError] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -66,6 +73,47 @@ export default function UsersPage() {
       setError(result.error?.message || 'Failed to update role');
     }
     fetchUsers();
+  };
+
+  const handleResetPassword = (userId: number, userName: string) => {
+    setResetUserId(userId);
+    setResetUserName(userName);
+    setResetPassword('');
+    setResetConfirmPassword('');
+    setResetError('');
+    setShowResetModal(true);
+  };
+
+  const handleSubmitResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError('');
+
+    if (resetPassword.length < 6) {
+      setResetError('密码长度至少6位');
+      return;
+    }
+
+    if (resetPassword !== resetConfirmPassword) {
+      setResetError('两次输入的密码不一致');
+      return;
+    }
+
+    if (!resetUserId) return;
+
+    setResetLoading(true);
+    const result = await api.post(`/auth/users/${resetUserId}/reset-password`, {
+      newPassword: resetPassword,
+    });
+
+    if (result.success) {
+      setShowResetModal(false);
+      setResetUserId(null);
+      setResetUserName('');
+      fetchUsers();
+    } else {
+      setResetError(result.error?.message || '重置密码失败');
+    }
+    setResetLoading(false);
   };
 
   if (isLoading) {
@@ -135,14 +183,25 @@ export default function UsersPage() {
                         </select>
                       </td>
                       <td className="py-4 px-4">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleResetPassword(user.id, user.name)}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            title="重置密码"
+                          >
+                            <KeyRound className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -212,6 +271,59 @@ export default function UsersPage() {
                     </Button>
                     <Button type="submit" className="flex-1 bg-accent hover:bg-accent/90">
                       添加
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Reset Password Modal */}
+        {showResetModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <KeyRound className="h-5 w-5" />
+                  重置密码 - {resetUserName}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmitResetPassword} className="space-y-4">
+                  {resetError && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+                      {resetError}
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">新密码</label>
+                    <Input
+                      type="password"
+                      value={resetPassword}
+                      onChange={(e) => setResetPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      placeholder="输入新密码（至少6位）"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">确认密码</label>
+                    <Input
+                      type="password"
+                      value={resetConfirmPassword}
+                      onChange={(e) => setResetConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      placeholder="再次输入新密码"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setShowResetModal(false)} className="flex-1">
+                      取消
+                    </Button>
+                    <Button type="submit" disabled={resetLoading} className="flex-1 bg-accent hover:bg-accent/90">
+                      {resetLoading ? '重置中...' : '确认重置'}
                     </Button>
                   </div>
                 </form>

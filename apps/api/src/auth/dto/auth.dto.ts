@@ -45,6 +45,13 @@ export class UpdatePasswordDto {
   newPassword: string;
 }
 
+export class ResetPasswordDto {
+  @ApiProperty()
+  @IsString()
+  @MinLength(6)
+  newPassword: string;
+}
+
 export class AuthResponse {
   @ApiProperty()
   id: number;
