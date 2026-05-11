@@ -30,6 +30,10 @@ export class ProductsService {
         category: true,
         images: true,
         specs: true,
+        customerCases: {
+          where: { isActive: true },
+          orderBy: { order: 'asc' },
+        },
       },
     });
 
@@ -47,6 +51,10 @@ export class ProductsService {
         category: true,
         images: true,
         specs: true,
+        customerCases: {
+          where: { isActive: true },
+          orderBy: { order: 'asc' },
+        },
       },
     });
 

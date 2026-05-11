@@ -107,13 +107,31 @@ model Product {
   factoryYears Int?
   factoryCountries Int?
   factoryCapacity String?
+  factoryDescription String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
   category       ProductCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   images         ProductImage[]
   specs          ProductSpec[]
+  customerCases  CustomerCase[]
   inquiryItems   InquiryItem[]
+}
+
+model CustomerCase {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  companyName  String
+  logoUrl      String?
+  quote        String?
+  productName  String?
+  region       String?
+  order        Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductImage {

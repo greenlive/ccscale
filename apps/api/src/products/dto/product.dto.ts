@@ -269,6 +269,53 @@ export class CreateProductDto {
   @IsOptional()
   productionCapacity?: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  productionCapacityUnit?: string;
+
+  // B2B 贸易扩展信息
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  fobPort?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  tradeKeywords?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  targetMarkets?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  exportExperience?: string;
+
+  // B2B 工厂实力统计
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  factoryYears?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  factoryCountries?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  factoryCapacity?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  factoryDescription?: string;
+
   @ApiPropertyOptional({ type: [ProductSpecDto] })
   @IsArray()
   @ValidateNested({ each: true })

@@ -12,13 +12,13 @@ import Image from 'next/image';
 import { ProductBulletPoints } from '@/components/product/ProductBulletPoints';
 import { ProductApplicationScenarios } from '@/components/product/ProductApplicationScenarios';
 import { ProductCertifications } from '@/components/product/ProductCertifications';
-import { ProductFactoryShowcase } from '@/components/product/ProductFactoryShowcase';
 import { ProductPackagingInfo } from '@/components/product/ProductPackagingInfo';
 import { ProductFAQ } from '@/components/product/ProductFAQ';
 import { ProductTradeInfo } from '@/components/product/ProductTradeInfo';
 import { ProductSchema } from '@/components/SchemaOrg';
 import { ProductDetailImages } from '@/components/product/ProductDetailImages';
 import { ProductAttributes } from '@/components/product/ProductAttributes';
+import { ProductCustomerCases } from '@/components/product/ProductCustomerCases';
 
 interface DisplaySpec {
   keyEn: string;
@@ -202,133 +202,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               />
             )}
 
-            {/* Quick Specs Strip */}
-            <div className="bg-gray-50 rounded-xl p-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-xs text-gray-500 mb-1">{isZh ? '价格区间' : 'Price Range'}</div>
-                  <div className="font-bold text-primary text-lg">{priceDisplay}</div>
-                  <div className="text-xs text-gray-400">/ {isZh ? '件' : 'pc'}</div>
-                </div>
-                <div className="text-center border-l border-gray-200">
-                  <div className="text-xs text-gray-500 mb-1">{isZh ? '最小起订量' : 'MOQ'}</div>
-                  <div className="font-bold text-primary text-lg">{product.moq}</div>
-                  <div className="text-xs text-gray-400">{isZh ? '件' : 'pcs'}</div>
-                </div>
-                <div className="text-center border-l border-gray-200">
-                  <div className="text-xs text-gray-500 mb-1">{isZh ? '交期' : 'Lead Time'}</div>
-                  <div className="font-bold text-primary text-lg">{product.leadTime}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Trust Badges Section */}
-            <div className="bg-gradient-to-r from-primary/5 via-white to-primary/5 border border-gray-200 rounded-xl p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <ShieldCheck className="w-5 h-5 text-primary" />
-                <h3 className="font-bold text-primary">{isZh ? '认证与合规' : 'Certifications & Compliance'}</h3>
-              </div>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                {(typeof product.certifications === 'string' ? JSON.parse(product.certifications) : (product.certifications || [])).map((cert: string) => (
-                  <div key={cert} className="flex flex-col items-center gap-1.5 p-3 bg-white rounded-lg border border-gray-100 hover:border-primary/30 hover:shadow-sm transition-all">
-                    <div className="w-10 h-10 bg-primary/5 rounded-full flex items-center justify-center">
-                      <ShieldCheck className="w-5 h-5 text-primary" />
-                    </div>
-                    <span className="text-xs font-semibold text-gray-700">{cert}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* MOQ Prominent Display */}
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                    <Package className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm text-amber-800 font-medium">{isZh ? '最小起订量 (MOQ)' : 'Minimum Order Quantity (MOQ)'}</div>
-                    <div className="text-2xl font-bold text-amber-700">{product.moq} <span className="text-sm font-normal">{isZh ? '件' : 'pcs'}</span></div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-amber-600">{isZh ? '支持小批量试单' : 'Small batch trial orders welcome'}</div>
-                  <div className="text-xs text-amber-600">{isZh ? '样品可提供服务' : 'Sample service available'}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Why Choose Us Section */}
-            <div className="bg-gradient-to-r from-green-50 via-white to-green-50 border border-green-200 rounded-xl p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Award className="w-5 h-5 text-green-600" />
-                <h3 className="font-bold text-green-700">{isZh ? '为什么选择我们' : 'Why Choose Us'}</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { icon: Factory, title: isZh ? '源头工厂' : 'Manufacturer', desc: product.factoryYears ? `${product.factoryYears}+ ${isZh ? '年' : 'Years'} ${isZh ? '专业生产经验' : 'Professional Experience'}` : '15 Years Professional Experience' },
-                  { icon: Globe, title: isZh ? '全球出口' : 'Global Export', desc: product.factoryCountries ? `${isZh ? '出口到' : 'Export to '}${product.factoryCountries}+ ${isZh ? '国家' : 'Countries'}` : 'Export to 50+ Countries' },
-                  { icon: Leaf, title: isZh ? '环保认证' : 'Eco Certified', desc: isZh ? 'RoHS/REACH合规' : 'RoHS/REACH Compliant' },
-                  { icon: Users, title: isZh ? 'OEM/ODM' : 'OEM/ODM Service', desc: isZh ? '支持定制生产' : 'Custom Production Support' },
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-800 text-sm">{item.title}</div>
-                      <div className="text-xs text-gray-500">{item.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Factory Info Section */}
-            <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 border border-blue-200 rounded-xl p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Factory className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-blue-700">{isZh ? '工厂实力' : 'Factory Capabilities'}</h3>
-              </div>
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{product.factoryYears || 15}+</div>
-                  <div className="text-xs text-gray-500">{isZh ? '年行业经验' : 'Years Experience'}</div>
-                </div>
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{product.factoryCapacity || '50K+'}</div>
-                  <div className="text-xs text-gray-500">{isZh ? '年产能(台)' : 'Annual Capacity'}</div>
-                </div>
-                <div className="text-center p-3 bg-white rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{product.factoryCountries || 50}+</div>
-                  <div className="text-xs text-gray-500">{isZh ? '出口国家' : 'Export Countries'}</div>
-                </div>
-              </div>
-              <div className="text-sm text-gray-600">
-                <p>{product.factoryDescription || (isZh ? '专业衡器制造商，拥有完整的研发、生产、销售体系。产品远销欧洲、北美、东南亚等地区。' : 'Professional weighing equipment manufacturer with complete R&D, production, and sales system. Products exported to Europe, North America, Southeast Asia, and more.')}</p>
-              </div>
-            </div>
-
-            {/* Trade Keywords Section */}
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Globe className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold text-primary text-sm">{isZh ? '热门搜索词' : 'Trade Keywords'}</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {(product.seoKeywordsEn ? product.seoKeywordsEn.split(',').map(k => k.trim()) : ['Digital Scale', 'Body Scale', 'Bathroom Scale', 'Weighing Scale', 'Health Scale', 'Precision Scale', 'Electronic Scale', 'Smart Scale']).map((keyword) => (
-                  <a
-                    key={keyword}
-                    href={`/products?keyword=${encodeURIComponent(keyword)}`}
-                    className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:border-primary hover:text-primary transition-colors"
-                  >
-                    {keyword}
-                  </a>
-                ))}
-              </div>
-            </div>
-
+            {/* === FEATURE: 产品展示 === */}
             {/* Key Specifications Cards */}
             {(() => {
               const keySpecKeys = ['Capacity', 'Division', 'Platform Size', 'Power'];
@@ -374,6 +248,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               />
             )}
 
+            {/* === ADVANTAGE: 产品优势 === */}
             {/* Product Description */}
             <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
               <div className="bg-primary text-white px-4 py-3 font-semibold">
@@ -383,6 +258,41 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                 <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
                   {description || (isZh ? '暂无详细描述' : 'No description available')}
                 </p>
+              </div>
+            </div>
+
+            {/* Application Scenarios */}
+            {(product as any).applicationScenariosEn || (product as any).applicationScenariosZh ? (
+              <ProductApplicationScenarios
+                scenariosEn={(product as any).applicationScenariosEn || ''}
+                scenariosZh={(product as any).applicationScenariosZh || ''}
+                mainImage={mainImageUrl}
+              />
+            ) : null}
+
+            {/* Why Choose Us Section */}
+            <div className="bg-gradient-to-r from-green-50 via-white to-green-50 border border-green-200 rounded-xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Award className="w-5 h-5 text-green-600" />
+                <h3 className="font-bold text-green-700">{isZh ? '为什么选择我们' : 'Why Choose Us'}</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { icon: Factory, title: isZh ? '源头工厂' : 'Manufacturer', desc: product.factoryYears ? `${product.factoryYears}+ ${isZh ? '年' : 'Years'} ${isZh ? '专业生产经验' : 'Professional Experience'}` : '15 Years Professional Experience' },
+                  { icon: Globe, title: isZh ? '全球出口' : 'Global Export', desc: product.factoryCountries ? `${isZh ? '出口到' : 'Export to '}${product.factoryCountries}+ ${isZh ? '国家' : 'Countries'}` : 'Export to 50+ Countries' },
+                  { icon: Leaf, title: isZh ? '环保认证' : 'Eco Certified', desc: isZh ? 'RoHS/REACH合规' : 'RoHS/REACH Compliant' },
+                  { icon: Users, title: isZh ? 'OEM/ODM' : 'OEM/ODM Service', desc: isZh ? '支持定制生产' : 'Custom Production Support' },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-white rounded-lg">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800 text-sm">{item.title}</div>
+                      <div className="text-xs text-gray-500">{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -402,23 +312,43 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               </Link>
             </div>
 
-            {/* Core Selling Points */}
-            {(product as any).coreSellingPointsEn || (product as any).coreSellingPointsZh ? (
-              <ProductBulletPoints
-                pointsEn={(product as any).coreSellingPointsEn || ''}
-                pointsZh={(product as any).coreSellingPointsZh || ''}
-              />
+            {/* === TRUST: 信任背书 === */}
+            {/* Certifications */}
+            {(product as any).certifications ? (
+              <ProductCertifications certifications={(product as any).certifications} />
             ) : null}
 
-            {/* Application Scenarios */}
-            {(product as any).applicationScenariosEn || (product as any).applicationScenariosZh ? (
-              <ProductApplicationScenarios
-                scenariosEn={(product as any).applicationScenariosEn || ''}
-                scenariosZh={(product as any).applicationScenariosZh || ''}
-                mainImage={mainImageUrl}
-              />
-            ) : null}
+            {/* Factory Info Section */}
+            <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 border border-blue-200 rounded-xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Factory className="w-5 h-5 text-blue-600" />
+                <h3 className="font-bold text-blue-700">{isZh ? '工厂实力' : 'Factory Capabilities'}</h3>
+              </div>
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="text-center p-3 bg-white rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">{product.factoryYears || 15}+</div>
+                  <div className="text-xs text-gray-500">{isZh ? '年行业经验' : 'Years Experience'}</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">{product.factoryCapacity || '50K+'}</div>
+                  <div className="text-xs text-gray-500">{isZh ? '年产能(台)' : 'Annual Capacity'}</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">{product.factoryCountries || 50}+</div>
+                  <div className="text-xs text-gray-500">{isZh ? '出口国家' : 'Export Countries'}</div>
+                </div>
+              </div>
+              <div className="text-sm text-gray-600">
+                <p>{product.factoryDescription || (isZh ? '专业衡器制造商，拥有完整的研发、生产、销售体系。产品远销欧洲、北美、东南亚等地区。' : 'Professional weighing equipment manufacturer with complete R&D, production, and sales system. Products exported to Europe, North America, Southeast Asia, and more.')}</p>
+              </div>
+            </div>
 
+            {/* Customer Cases */}
+            <ProductCustomerCases
+              cases={(product as any).customerCases}
+            />
+
+            {/* === TRANSACTION: 交易条件 === */}
             {/* Trade Info */}
             <ProductTradeInfo
               hsCode={(product as any).hsCode}
@@ -426,6 +356,25 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               shippingTerms={(product as any).shippingTerms}
               warrantyInfo={(product as any).warrantyInfo}
             />
+
+            {/* Trade Keywords Section */}
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Globe className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-primary text-sm">{isZh ? '热门搜索词' : 'Trade Keywords'}</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(product.seoKeywordsEn ? product.seoKeywordsEn.split(',').map(k => k.trim()) : ['Digital Scale', 'Body Scale', 'Bathroom Scale', 'Weighing Scale', 'Health Scale', 'Precision Scale', 'Electronic Scale', 'Smart Scale']).map((keyword) => (
+                  <a
+                    key={keyword}
+                    href={`/products?keyword=${encodeURIComponent(keyword)}`}
+                    className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:border-primary hover:text-primary transition-colors"
+                  >
+                    {keyword}
+                  </a>
+                ))}
+              </div>
+            </div>
 
             {/* Quality Control Section */}
             <div className="bg-gradient-to-r from-green-50 to-transparent border border-green-200 rounded-xl p-6">
@@ -452,18 +401,6 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   : 'Reinforced export packaging with multi-layer foam protection and reinforced cartons, suitable for long-distance sea and air freight.'}
               </p>
             </div>
-
-            {/* Certifications */}
-            {(product as any).certifications ? (
-              <ProductCertifications certifications={(product as any).certifications} />
-            ) : null}
-
-            {/* Factory Showcase */}
-            <ProductFactoryShowcase
-              manufacturerName={(product as any).manufacturerName}
-              factoryLocation={(product as any).factoryLocation}
-              productionCapacity={(product as any).productionCapacity}
-            />
 
             {/* Packaging Info */}
             <ProductPackagingInfo
@@ -619,6 +556,36 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   <MessageSquare className="w-4 h-4" />
                   <span className="text-sm">WhatsApp</span>
                 </a>
+              </div>
+            </div>
+
+            {/* Risk Reversal - Sample Policy & Warranty */}
+            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Package className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-800 text-sm">
+                    {isZh ? '样品服务' : 'Sample Service'}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    {isZh ? '支持样品订单，3-5个工作日发出' : 'Sample orders available, ships in 3-5 business days'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-4 h-4 text-green-600" />
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-800 text-sm">
+                    {isZh ? '质量保障' : 'Quality Assurance'}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    {isZh ? '12个月质保期，支持第三方验货' : '12-month warranty, third-party inspection supported'}
+                  </div>
+                </div>
               </div>
             </div>
 

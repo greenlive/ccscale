@@ -72,6 +72,17 @@ export interface Product {
   factoryCountries?: number;
   factoryCapacity?: string;
   factoryDescription?: string;
+  customerCases?: CustomerCaseData[];
+}
+
+export interface CustomerCaseData {
+  id: number;
+  companyName: string;
+  logoUrl?: string;
+  quote?: string;
+  productName?: string;
+  region?: string;
+  order: number;
 }
 
 export interface ProductCategory {
