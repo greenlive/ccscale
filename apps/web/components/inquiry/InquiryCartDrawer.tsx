@@ -322,7 +322,7 @@ function DrawerInquiryForm({ onSuccess }: { onSuccess: () => void }) {
         unitPrice: item.priceMin,
       }))
 
-      const trackingData = getStoredTrackingData();
+      const { landingPage: _landingPage, ...trackingData } = getStoredTrackingData();
 
       const inquiryData = {
         ...formData,
