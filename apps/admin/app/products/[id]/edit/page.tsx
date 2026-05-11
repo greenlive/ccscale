@@ -365,12 +365,12 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     for (const file of sortedFiles) {
       // Check if it's a server URL (existing image from database)
       if (file.isServerUrl) {
-        // Use preview (which contains the path) and prepend API base URL
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        const fullUrl = file.preview.startsWith('http')
-          ? file.preview
-          : `${baseUrl}${file.preview}`;
-        uploadedUrls.push(fullUrl);
+        // Store relative URL path only - Next.js rewrite handles proxy to API server
+        // Strip any existing base URL (e.g., http://localhost:8000) to keep path relative
+        const relativeUrl = file.preview.startsWith('http')
+          ? '/' + file.preview.replace(/^https?:\/\/[^\/]+(\/.*)$/, '$1').replace(/^\//, '')
+          : file.preview;
+        uploadedUrls.push(relativeUrl);
       } else if (file.uploadedUrl) {
         uploadedUrls.push(file.uploadedUrl);
       } else if (file.file && file.file.size > 0) {
