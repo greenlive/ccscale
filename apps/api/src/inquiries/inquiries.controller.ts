@@ -17,11 +17,9 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { InquiriesService } from './inquiries.service';
 import { CreateInquiryDto, UpdateInquiryDto, CreateActivityLogDto } from './dto/inquiry.dto';
-import { InquiryStatus } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@prisma/client';
 import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('inquiries')
@@ -31,15 +29,15 @@ export class InquiriesController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.EDITOR)
+  @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all inquiries (admin only)' })
-  @ApiQuery({ name: 'status', required: false, enum: InquiryStatus })
+  @ApiQuery({ name: 'status', required: false })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'pageSize', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Return all inquiries' })
   findAll(
-    @Query('status') status?: InquiryStatus,
+    @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
   ) {
@@ -52,7 +50,7 @@ export class InquiriesController {
 
   @Get('stats')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.EDITOR)
+  @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get inquiry statistics' })
   @ApiResponse({ status: 200, description: 'Return inquiry stats' })
@@ -62,7 +60,7 @@ export class InquiriesController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.EDITOR, Role.VIEWER)
+  @Roles('ADMIN', 'EDITOR', 'VIEWER')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get inquiry by id' })
   @ApiResponse({ status: 200, description: 'Return the inquiry' })
@@ -73,7 +71,7 @@ export class InquiriesController {
 
   @Get(':id/activities')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.EDITOR, Role.VIEWER)
+  @Roles('ADMIN', 'EDITOR', 'VIEWER')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get activity logs for an inquiry' })
   @ApiResponse({ status: 200, description: 'Return activity logs' })
@@ -97,7 +95,7 @@ export class InquiriesController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.EDITOR)
+  @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update an inquiry (admin/editor only)' })
   @ApiResponse({ status: 200, description: 'Inquiry updated' })
@@ -116,7 +114,7 @@ export class InquiriesController {
 
   @Post(':id/activities')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.EDITOR)
+  @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add activity log to an inquiry' })
   @ApiResponse({ status: 201, description: 'Activity log created' })
@@ -128,7 +126,7 @@ export class InquiriesController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an inquiry (admin only)' })
@@ -139,7 +137,7 @@ export class InquiriesController {
 
   @Post(':id/contact-attempt')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.EDITOR)
+  @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Record a contact attempt for an inquiry' })
   @ApiResponse({ status: 201, description: 'Contact attempt recorded' })

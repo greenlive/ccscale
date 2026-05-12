@@ -1,6 +1,7 @@
 import { IsEmail, IsString, MinLength, IsOptional, IsEnum } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+
+type Role = 'ADMIN' | 'EDITOR' | 'VIEWER';
 
 export class LoginDto {
   @ApiProperty({ example: 'admin@ccscale.com' })
@@ -27,10 +28,9 @@ export class RegisterDto {
   @IsString()
   name: string;
 
-  @ApiPropertyOptional({ enum: Role })
+  @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
+  role?: string;
 }
 
 export class UpdatePasswordDto {
@@ -62,8 +62,8 @@ export class AuthResponse {
   @ApiProperty()
   name: string;
 
-  @ApiProperty({ enum: Role })
-  role: Role;
+  @ApiProperty()
+  role: string;
 
   @ApiProperty()
   accessToken: string;

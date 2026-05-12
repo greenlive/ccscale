@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { PrismaClient, User, Role } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -36,7 +36,7 @@ export class AuthService {
     email: string,
     password: string,
     name: string,
-    role: Role = Role.VIEWER,
+    role: string = 'VIEWER',
   ): Promise<User> {
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -93,7 +93,7 @@ export class AuthService {
     });
   }
 
-  async updateUserRole(id: number, role: Role): Promise<Omit<User, 'password'>> {
+  async updateUserRole(id: number, role: string): Promise<Omit<User, 'password'>> {
     const user = await prisma.user.update({
       where: { id },
       data: { role },

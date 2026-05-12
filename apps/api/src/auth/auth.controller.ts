@@ -19,7 +19,6 @@ import { LoginDto, RegisterDto, UpdatePasswordDto, ResetPasswordDto, AuthRespons
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
-import { Role } from '@prisma/client';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -107,7 +106,7 @@ export class AuthController {
 
   @Post('register')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Register new user (admin only)' })
   @ApiResponse({ status: 201, description: 'User created', type: AuthResponse })
@@ -175,7 +174,7 @@ export class AuthController {
 
   @Get('users')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @SkipThrottle()
   @ApiOperation({ summary: 'Get all users (admin only)' })
@@ -186,18 +185,18 @@ export class AuthController {
 
   @Put('users/:id/role')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @SkipThrottle()
   @ApiOperation({ summary: 'Update user role (admin only)' })
   @ApiResponse({ status: 200, description: 'User role updated' })
-  async updateUserRole(@Param('id') id: string, @Body('role') role: Role) {
+  async updateUserRole(@Param('id') id: string, @Body('role') role: string) {
     return this.authService.updateUserRole(parseInt(id), role);
   }
 
   @Post('users/:id/delete')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @SkipThrottle()
@@ -209,7 +208,7 @@ export class AuthController {
 
   @Post('users/:id/reset-password')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @SkipThrottle()

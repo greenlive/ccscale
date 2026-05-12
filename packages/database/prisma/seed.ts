@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -15,7 +15,7 @@ async function main() {
       email: 'admin@ccscale.com',
       password: adminPassword,
       name: 'Admin User',
-      role: Role.ADMIN,
+      role: 'ADMIN',
     },
   });
   console.log('Created admin user:', admin.email);
@@ -29,7 +29,7 @@ async function main() {
       email: 'editor@ccscale.com',
       password: editorPassword,
       name: 'Editor User',
-      role: Role.EDITOR,
+      role: 'EDITOR',
     },
   });
   console.log('Created editor user:', editor.email);
@@ -110,7 +110,7 @@ async function main() {
       descriptionZh: '高精度数字体重秤，采用先进的称重技术。功能包括即踩即称、自动校准和大液晶显示屏。非常适合家庭和商业用途。',
       shortDescEn: 'Professional digital body scale for home and commercial use',
       shortDescZh: '适用于家庭和商业用途的专业数字体重秤',
-      mainImage: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
+      mainImages: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
       priceMin: 15,
       priceMax: 25,
       moq: 100,
@@ -136,7 +136,7 @@ async function main() {
       descriptionZh: '智能体脂秤，带蓝牙连接和身体成分分析。可与手机应用同步，追踪体重、BMI、体脂等数据。',
       shortDescEn: 'Smart scale with body composition analysis',
       shortDescZh: '带身体成分分析的智能秤',
-      mainImage: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
+      mainImages: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
       priceMin: 25,
       priceMax: 45,
       moq: 50,
@@ -160,7 +160,7 @@ async function main() {
       descriptionZh: '重型工业吊秤，专为商业和工业应用设计。非常适合在工厂、仓库和市场称量重物。',
       shortDescEn: 'Heavy-duty hanging scale for industrial use',
       shortDescZh: '工业用重型吊秤',
-      mainImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
+      mainImages: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
       priceMin: 45,
       priceMax: 85,
       moq: 50,
@@ -184,7 +184,7 @@ async function main() {
       descriptionZh: '专业精密厨房秤，用于精确食物测量。非常适合烹饪、烘焙和份量控制。',
       shortDescEn: 'Accurate digital kitchen scale',
       shortDescZh: '精确的数字厨房秤',
-      mainImage: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800',
+      mainImages: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800',
       priceMin: 12,
       priceMax: 20,
       moq: 200,
@@ -208,7 +208,7 @@ async function main() {
       descriptionZh: '安全精准的数字婴儿秤，配备高精度传感器。功能包括去皮功能、保持功能和易清洁托盘。',
       shortDescEn: 'Safe and accurate baby scale',
       shortDescZh: '安全精准的婴儿秤',
-      mainImage: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=800',
+      mainImages: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=800',
       priceMin: 35,
       priceMax: 55,
       moq: 50,

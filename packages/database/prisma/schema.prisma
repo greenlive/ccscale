@@ -15,19 +15,13 @@ model User {
   email     String   @unique
   password  String
   name      String
-  role      Role     @default(EDITOR)
+  role      String   @default("EDITOR") // ADMIN, EDITOR, VIEWER
   isActive  Boolean  @default(true)
   lastLogin DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   assignedInquiries Inquiry[] @relation("AssignedInquiries")
-}
-
-enum Role {
-  ADMIN
-  EDITOR
-  VIEWER
 }
 
 // ==================== 产品相关 ====================
@@ -61,8 +55,8 @@ model Product {
   mainImages     String?  // JSON数组存储产品主图URLs (1-6张)
   detailImages   String?  // JSON数组存储详情图URLs (0-8张)
   videos         String?  // JSON数组存储视频URLs (0-3个)
-  priceMin       Decimal?
-  priceMax       Decimal?
+  priceMin       Float?
+  priceMax       Float?
   moq            Int?
   leadTime       String?
   order          Int              @default(0)
@@ -135,22 +129,17 @@ model CustomerCase {
 }
 
 model ProductImage {
-  id        Int            @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   productId Int
   imageUrl  String
   altEn     String?
   altZh     String?
-  order     Int            @default(0)
-  type      ImageType      @default(MAIN)
-  isMain    Boolean        @default(false)
-  createdAt DateTime       @default(now())
+  order     Int      @default(0)
+  type      String   @default("MAIN") // MAIN, DETAIL
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-enum ImageType {
-  MAIN    // 主图/封面图 (1-5张)
-  DETAIL  // 详情图/场景图 (0-8张)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductSpec {
@@ -181,7 +170,7 @@ model OemStep {
 
 // ==================== 询盘系统 ====================
 model Inquiry {
-  id            Int           @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   fullName      String
   email         String
   phone         String?
@@ -192,7 +181,7 @@ model Inquiry {
   message       String
   // 来源追踪
   source        String?
-  trafficSource TrafficSource?
+  trafficSource String?  // DIRECT, ORGANIC_SEARCH, PAID_SEARCH, SOCIAL_ORGANIC, SOCIAL_PAID, REFERRAL, EMAIL, AI_SEARCH, DISPLAY, VIDEO, OTHER
   utmSource     String?
   utmMedium     String?
   utmCampaign   String?
@@ -201,52 +190,20 @@ model Inquiry {
   referrer      String?
   ipAddress     String?
   userAgent     String?
-  status        InquiryStatus @default(NEW)
+  status        String   @default("NEW") // NEW, READ, IN_PROGRESS, REPLIED, CLOSED, SPAM
   assignedToId  Int?
   notes         String?
   // 回复追踪
   repliedAt     DateTime?
   repliedBy     String?
-  replyMethod   ReplyMethod?
+  replyMethod   String?  // EMAIL, WHATSAPP, PHONE, ALIBABA, LINKEDIN, OTHER
   closedReason  String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   items         InquiryItem[]
   assignedTo    User?         @relation("AssignedInquiries", fields: [assignedToId], references: [id])
   activities    ActivityLog[]
-}
-
-enum InquiryStatus {
-  NEW
-  READ
-  IN_PROGRESS
-  REPLIED
-  CLOSED
-  SPAM
-}
-
-enum ReplyMethod {
-  EMAIL
-  WHATSAPP
-  PHONE
-  ALIBABA
-  LINKEDIN
-  OTHER
-}
-
-enum TrafficSource {
-  DIRECT
-  ORGANIC_SEARCH
-  PAID_SEARCH
-  SOCIAL_ORGANIC
-  SOCIAL_PAID
-  REFERRAL
-  EMAIL
-  AI_SEARCH
-  DISPLAY
-  VIDEO
-  OTHER
 }
 
 // 询盘操作日志
@@ -268,7 +225,7 @@ model InquiryItem {
   productNameEn String?
   productNameZh String?
   quantity     Int?
-  unitPrice    Decimal?
+  unitPrice    Float?
   notes        String?
   createdAt    DateTime  @default(now())
 
@@ -350,7 +307,7 @@ model UserSession {
   utmCampaign String?
   utmContent  String?
   utmTerm     String?
-  trafficSource TrafficSource @default(DIRECT)
+  trafficSource String @default("DIRECT")
   referrer    String?
   landingPage String?
   firstVisit  DateTime @default(now())

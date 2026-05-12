@@ -3,8 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AnalyticsService } from './analytics.service';
 import { GeoService } from './geo.service';
-import { parseTrafficSource } from '../utils/source-parser';
-import { TrafficSource } from '@prisma/client';
+import { parseTrafficSource, TrafficSource } from '../utils/source-parser';
 
 @ApiTags('analytics')
 @Controller('analytics')

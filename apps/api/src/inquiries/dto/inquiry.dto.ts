@@ -1,6 +1,9 @@
 import { IsString, IsOptional, IsEmail, IsArray, IsNumber, IsEnum } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { InquiryStatus, TrafficSource, ReplyMethod } from '@prisma/client';
+
+type InquiryStatus = 'NEW' | 'READ' | 'IN_PROGRESS' | 'REPLIED' | 'CLOSED' | 'SPAM';
+type TrafficSource = 'DIRECT' | 'ORGANIC_SEARCH' | 'PAID_SEARCH' | 'SOCIAL_ORGANIC' | 'SOCIAL_PAID' | 'REFERRAL' | 'EMAIL' | 'AI_SEARCH' | 'DISPLAY' | 'VIDEO' | 'OTHER';
+type ReplyMethod = 'EMAIL' | 'WHATSAPP' | 'PHONE' | 'ALIBABA' | 'LINKEDIN' | 'OTHER';
 
 export class CreateInquiryItemDto {
   @ApiPropertyOptional()
@@ -78,10 +81,9 @@ export class CreateInquiryDto {
   source?: string;
 
   // 来源追踪字段
-  @ApiPropertyOptional({ enum: TrafficSource })
-  @IsEnum(TrafficSource)
+  @ApiPropertyOptional()
   @IsOptional()
-  trafficSource?: TrafficSource;
+  trafficSource?: string;
 
   @ApiPropertyOptional()
   @IsString()
@@ -120,10 +122,9 @@ export class CreateInquiryDto {
 }
 
 export class UpdateInquiryDto {
-  @ApiPropertyOptional({ enum: InquiryStatus })
-  @IsEnum(InquiryStatus)
+  @ApiPropertyOptional()
   @IsOptional()
-  status?: InquiryStatus;
+  status?: string;
 
   @ApiPropertyOptional()
   @IsNumber()
@@ -146,10 +147,9 @@ export class UpdateInquiryDto {
   @IsOptional()
   repliedBy?: string;
 
-  @ApiPropertyOptional({ enum: ReplyMethod })
-  @IsEnum(ReplyMethod)
+  @ApiPropertyOptional()
   @IsOptional()
-  replyMethod?: ReplyMethod;
+  replyMethod?: string;
 
   @ApiPropertyOptional()
   @IsString()

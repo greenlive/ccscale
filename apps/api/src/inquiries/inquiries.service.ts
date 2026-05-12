@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, PrismaClient, InquiryStatus, ReplyMethod } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { CreateInquiryDto, UpdateInquiryDto, CreateActivityLogDto } from './dto/inquiry.dto';
 import { EmailService } from '../notifications/email.service';
 
@@ -11,7 +11,7 @@ const prisma = new PrismaClient({
 export class InquiriesService {
   constructor(private readonly emailService: EmailService) {}
 
-  async findAll(status?: InquiryStatus, page: number = 1, pageSize: number = 20) {
+  async findAll(status?: string, page: number = 1, pageSize: number = 20) {
     const skip = (page - 1) * pageSize;
 
     const [data, total] = await Promise.all([
@@ -84,7 +84,7 @@ export class InquiriesService {
     // Transform items to Prisma-compatible Decimal values
     const transformedItems = items?.map((item) => ({
       ...item,
-      unitPrice: item.unitPrice != null ? new Prisma.Decimal(item.unitPrice) : undefined,
+      unitPrice: item.unitPrice,
     }));
 
     const inquiry = await prisma.inquiry.create({
@@ -92,7 +92,7 @@ export class InquiriesService {
         ...inquiryData,
         ipAddress,
         userAgent,
-        status: InquiryStatus.NEW,
+        status: 'NEW',
         ...(transformedItems && {
           items: {
             create: transformedItems,
@@ -245,10 +245,10 @@ export class InquiriesService {
   async getStats() {
     const [total, newCount, inProgress, replied, closed] = await Promise.all([
       prisma.inquiry.count(),
-      prisma.inquiry.count({ where: { status: InquiryStatus.NEW } }),
-      prisma.inquiry.count({ where: { status: InquiryStatus.IN_PROGRESS } }),
-      prisma.inquiry.count({ where: { status: InquiryStatus.REPLIED } }),
-      prisma.inquiry.count({ where: { status: InquiryStatus.CLOSED } }),
+      prisma.inquiry.count({ where: { status: 'NEW' } }),
+      prisma.inquiry.count({ where: { status: 'IN_PROGRESS' } }),
+      prisma.inquiry.count({ where: { status: 'REPLIED' } }),
+      prisma.inquiry.count({ where: { status: 'CLOSED' } }),
     ]);
 
     return {
@@ -296,7 +296,7 @@ export class InquiriesService {
       await prisma.inquiry.update({
         where: { id: inquiryId },
         data: {
-          status: InquiryStatus.REPLIED,
+          status: 'REPLIED',
           repliedAt: new Date(),
           replyMethod: method as any,
         },

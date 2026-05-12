@@ -1,4 +1,16 @@
-import { TrafficSource } from '@prisma/client';
+export enum TrafficSource {
+  DIRECT = 'DIRECT',
+  ORGANIC_SEARCH = 'ORGANIC_SEARCH',
+  PAID_SEARCH = 'PAID_SEARCH',
+  SOCIAL_ORGANIC = 'SOCIAL_ORGANIC',
+  SOCIAL_PAID = 'SOCIAL_PAID',
+  REFERRAL = 'REFERRAL',
+  EMAIL = 'EMAIL',
+  AI_SEARCH = 'AI_SEARCH',
+  DISPLAY = 'DISPLAY',
+  VIDEO = 'VIDEO',
+  OTHER = 'OTHER',
+}
 
 export interface ParsedSource {
   trafficSource: TrafficSource;

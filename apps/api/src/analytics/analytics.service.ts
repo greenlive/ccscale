@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, TrafficSource } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { getTrafficSourceLabel, getSourceColor } from '../utils/source-parser';
+import type { TrafficSource } from '../utils/source-parser';
 
 const prisma = new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
@@ -239,10 +240,10 @@ export class AnalyticsService {
     const trafficSourceDistribution = trafficSourceGroups
       .filter(g => g.trafficSource !== null)
       .map((g) => ({
-        name: getTrafficSourceLabel(g.trafficSource!, 'en'),
-        nameZh: getTrafficSourceLabel(g.trafficSource!, 'zh'),
+        name: getTrafficSourceLabel(g.trafficSource as TrafficSource, 'en'),
+        nameZh: getTrafficSourceLabel(g.trafficSource as TrafficSource, 'zh'),
         value: g._count,
-        color: getSourceColor(g.trafficSource!),
+        color: getSourceColor(g.trafficSource as TrafficSource),
       }))
       .sort((a, b) => b.value - a.value);
 
@@ -295,10 +296,10 @@ export class AnalyticsService {
     const inquirySourceDistribution = inquirySourceGroups
       .filter(g => g.trafficSource !== null)
       .map((g) => ({
-        name: getTrafficSourceLabel(g.trafficSource!, 'en'),
-        nameZh: getTrafficSourceLabel(g.trafficSource!, 'zh'),
+        name: getTrafficSourceLabel(g.trafficSource as TrafficSource, 'en'),
+        nameZh: getTrafficSourceLabel(g.trafficSource as TrafficSource, 'zh'),
         value: g._count,
-        color: getSourceColor(g.trafficSource!),
+        color: getSourceColor(g.trafficSource as TrafficSource),
       }))
       .sort((a, b) => b.value - a.value);
 
@@ -516,7 +517,7 @@ function getChannelColor(source: string, medium: string): string {
 // 构建完整渠道列表
 function buildChannelList(
   sessions: Array<{
-    trafficSource?: TrafficSource | null;
+    trafficSource?: string | null;
     utmSource?: string | null;
     utmMedium?: string | null;
     utmCampaign?: string | null;
@@ -550,7 +551,7 @@ function buildChannelList(
         existing.sessions += 1;
       } else {
         channelMap.set(key, {
-          channel: getTrafficSourceLabel(key, 'en'),
+          channel: getTrafficSourceLabel(key as TrafficSource, 'en'),
           source: key,
           medium: 'organic',
           sessions: 1,
