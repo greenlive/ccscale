@@ -19,8 +19,6 @@ interface Category {
   products?: { id: number }[];
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 export default function CategoriesPage() {
   const { token } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -51,7 +49,7 @@ export default function CategoriesPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products/categories`);
+      const response = await fetch(`/api/products/categories`);
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -64,27 +62,44 @@ export default function CategoriesPage() {
   };
 
   const handleImageUpload = async (file: File) => {
+    if (!token) {
+      setError('请先登录后再上传图片');
+      setTimeout(() => setError(''), 5000);
+      return;
+    }
     setIsUploading(true);
+    setError('');
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('type', 'category-image');
+      const uploadForm = new FormData();
+      uploadForm.append('file', file);
 
-      const response = await fetch(`${API_URL}/api/upload`, {
+      // 后端路由为 POST /api/upload/:uploadType（multipart 字段名固定为 file）
+      const response = await fetch(`/api/upload/category-image`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: uploadForm,
       });
 
       if (response.ok) {
         const data = await response.json();
         setFormData(prev => ({ ...prev, imageUrl: data.url }));
         setImagePreview(data.url);
+      } else {
+        let message = `上传失败 (${response.status})`;
+        try {
+          const errBody = await response.json();
+          message = errBody.message || errBody.error || message;
+        } catch {
+          /* ignore */
+        }
+        setError(message);
+        setTimeout(() => setError(''), 8000);
       }
     } catch (err) {
-      setError('图片上传失败');
+      setError('图片上传失败，请检查网络或 API 是否运行');
+      setTimeout(() => setError(''), 8000);
     } finally {
       setIsUploading(false);
     }
@@ -100,8 +115,8 @@ export default function CategoriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingCategory
-      ? `${API_URL}/api/products/categories/${editingCategory.id}`
-      : `${API_URL}/api/products/categories`;
+      ? `/api/products/categories/${editingCategory.id}`
+      : `/api/products/categories`;
 
     try {
       const response = await fetch(url, {
@@ -153,7 +168,7 @@ export default function CategoriesPage() {
   const handleDelete = async (id: number) => {
     if (!confirm('确定要删除这个分类吗？')) return;
     try {
-      await fetch(`${API_URL}/api/products/categories/${id}`, {
+      await fetch(`/api/products/categories/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

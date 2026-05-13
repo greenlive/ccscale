@@ -6,8 +6,6 @@ import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Textarea } from '@cc-scale/ui';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 interface ContactFormProps {
   locale: 'en' | 'zh';
 }
@@ -41,7 +39,7 @@ export function ContactForm({ locale }: ContactFormProps) {
 
     setStatus('submitting');
     try {
-      const response = await fetch(`${API_URL}/api/inquiries`, {
+      const response = await fetch(`/api/inquiries`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, source: 'Contact Page' }),

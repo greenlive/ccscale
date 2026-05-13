@@ -7,6 +7,8 @@ export const config = {
   matcher: [
     '/',
     '/(zh|en)/:path*',
-    '/((?!_next|_vercel|.*\\..*).*)',
+    // Exclude API and static routes from locale middleware to avoid
+    // rewriting /api/* paths (Next.js rewrites proxy these to the backend)
+    '/((?!api|_next|_vercel|.*\\..*).*)',
   ],
 };

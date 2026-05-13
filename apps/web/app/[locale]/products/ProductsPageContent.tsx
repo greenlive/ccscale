@@ -9,7 +9,7 @@ import { Card, CardContent } from '@cc-scale/ui';
 import { Button, Input } from '@cc-scale/ui';
 import { QuickInquiryButton } from '@/components/inquiry/QuickInquiryButton';
 import { useProducts, useProductCategories, ProductCategory } from '@/lib/api/queries';
-import { GridSkeleton, ErrorBoundary } from '@/components/ErrorBoundary';
+import { GridSkeleton } from '@/components/ErrorBoundary';
 import CategorySidebar from '@/components/CategorySidebar';
 
 // Default categories for initial render (before API loads)
@@ -260,33 +260,7 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
     );
   }
 
-  // Error state
-  if (productsError) {
-    return (
-      <div>
-        <section className="bg-gradient-to-br from-dark-surface to-dark-warm text-ivory py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-serif font-medium mb-4">{tNav('products')}</h1>
-          </div>
-        </section>
-        <section className="py-20 bg-parchment">
-          <div className="container mx-auto px-4 text-center">
-            <ErrorBoundary>
-              <div className="text-center py-20">
-                <p className="text-stone-gray mb-4">
-                  {locale === 'en' ? 'Failed to load products' : '加载产品失败'}
-                </p>
-                <Button onClick={() => window.location.reload()} variant="accent">
-                  {locale === 'en' ? 'Try Again' : '重试'}
-                </Button>
-              </div>
-            </ErrorBoundary>
-          </div>
-        </section>
-      </div>
-    );
-  }
-
+  // Show fallback mock data when API fails (mobile/tablet compatibility)
   return (
     <div>
       {/* Hero - Warm parchment theme */}

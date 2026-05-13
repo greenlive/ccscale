@@ -5,8 +5,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 // Types
 export interface Product {
   id: number;
@@ -145,7 +143,7 @@ export interface SiteSetting {
 
 // API fetch functions
 async function fetchApi<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${API_URL}/api${endpoint}`);
+  const response = await fetch(`/api${endpoint}`);
   if (!response.ok) {
     throw new Error(`API Error: ${response.status}`);
   }
@@ -281,7 +279,7 @@ export function useSubmitInquiry() {
 
   return useMutation({
     mutationFn: (data: InquiryData) =>
-      fetch(`${API_URL}/api/inquiries`, {
+      fetch(`/api/inquiries`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -304,7 +302,7 @@ export function useSocialMediaSettings() {
   return useQuery({
     queryKey: queryKeys.social.all,
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/site-settings/social-media`);
+      const response = await fetch(`/api/site-settings/social-media`);
       if (!response.ok) {
         return { facebook: '', instagram: '', linkedin: '', twitter: '', youtube: '' };
       }

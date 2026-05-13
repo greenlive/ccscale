@@ -1,5 +1,3 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 export interface ProductCategory {
   id: number;
   nameEn: string;
@@ -60,7 +58,7 @@ export interface Product {
 
 export async function getCategories(): Promise<ProductCategory[]> {
   try {
-    const response = await fetch(`${API_URL}/api/products/categories`);
+    const response = await fetch(`/api/products/categories`);
     if (response.ok) {
       return response.json();
     }
@@ -73,8 +71,8 @@ export async function getCategories(): Promise<ProductCategory[]> {
 export async function getProducts(categoryId?: number): Promise<Product[]> {
   try {
     const url = categoryId
-      ? `${API_URL}/api/products?categoryId=${categoryId}`
-      : `${API_URL}/api/products`;
+      ? `/api/products?categoryId=${categoryId}`
+      : `/api/products`;
     const response = await fetch(url);
     if (response.ok) {
       return response.json();
@@ -87,7 +85,7 @@ export async function getProducts(categoryId?: number): Promise<Product[]> {
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const response = await fetch(`${API_URL}/api/products/slug/${slug}`);
+    const response = await fetch(`/api/products/slug/${slug}`);
     if (response.ok) {
       return response.json();
     }
@@ -99,7 +97,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 export async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const response = await fetch(`${API_URL}/api/products?isFeatured=true`);
+    const response = await fetch(`/api/products?isFeatured=true`);
     if (response.ok) {
       return response.json();
     }
@@ -137,7 +135,7 @@ export interface InquiryResponse {
 
 export async function submitInquiry(data: CreateInquiryRequest): Promise<InquiryResponse | null> {
   try {
-    const response = await fetch(`${API_URL}/api/inquiries`, {
+    const response = await fetch(`/api/inquiries`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -110,7 +110,8 @@ export default function ProductCategories({ locale }: { locale: string }) {
     );
   }
 
-  if (error || displayCategories.length === 0) {
+  // Show fallback categories on error to ensure mobile/tablet users still see content
+  if (displayCategories.length === 0) {
     return null;
   }
 

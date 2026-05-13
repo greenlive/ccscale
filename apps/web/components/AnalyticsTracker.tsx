@@ -4,8 +4,6 @@ import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { getSessionId, getStoredTrackingData, saveTrackingData } from '@/lib/utils/tracking';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 export function AnalyticsTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -27,7 +25,7 @@ export function AnalyticsTracker() {
       const trackingData = getStoredTrackingData();
 
       // Report new session with UTM data
-      fetch(`${API_URL}/api/analytics/session`, {
+      fetch(`/api/analytics/session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +54,7 @@ export function AnalyticsTracker() {
     if (!sessionId.current) return;
 
     // Report page view event on each route change
-    fetch(`${API_URL}/api/analytics/event`, {
+    fetch(`/api/analytics/event`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
