@@ -1,111 +1,95 @@
-import { notFound } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
-import { useTranslations, useLocale } from 'next-intl'
-import { Link } from '@/i18n/routing'
-import { ArrowLeft, Calendar, Clock, Share2, Tag } from 'lucide-react'
-import { Button } from '@cc-scale/ui'
-import Image from 'next/image'
-import type { Metadata } from 'next'
+'use client';
 
-const mockBlogPosts = [
-  {
-    id: 1,
-    slug: 'how-to-choose-body-scale',
-    titleEn: 'How to Choose the Right Body Scale for Your Business',
-    titleZh: '如何为您的企业选择合适的体重秤',
-    excerptEn: 'A comprehensive guide to selecting the perfect body scale for commercial and industrial use.',
-    excerptZh: '为商业和工业用途选择完美体重秤的综合指南。',
-    contentEn: `
-      <h2>Introduction</h2>
-      <p>Choosing the right body scale for your business is an important decision that can impact your operations and customer satisfaction.</p>
+import { notFound } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { useState, useEffect } from 'react';
+import { Link } from '@/i18n/routing';
+import { ArrowLeft, Calendar, Clock, Share2, Tag } from 'lucide-react';
+import { Button } from '@cc-scale/ui';
+import Image from 'next/image';
+import { getApiUrl } from '@/lib/config/api';
 
-      <h2>Key Factors to Consider</h2>
-      <ul>
-        <li>Capacity and accuracy requirements</li>
-        <li>Environment where the scale will be used</li>
-        <li>Connectivity and data management needs</li>
-        <li>Budget and total cost of ownership</li>
-      </ul>
-
-      <h2>Conclusion</h2>
-      <p>By carefully evaluating your needs and considering these factors, you can select the perfect scale for your business.</p>
-    `,
-    contentZh: `
-      <h2>介绍</h2>
-      <p>为您的企业选择合适的体重秤是一个重要的决定，会影响您的运营和客户满意度。</p>
-
-      <h2>需要考虑的关键因素</h2>
-      <ul>
-        <li>容量和精度要求</li>
-        <li>秤的使用环境</li>
-        <li>连接性和数据管理需求</li>
-        <li>预算和总体拥有成本</li>
-      </ul>
-
-      <h2>结论</h2>
-      <p>通过仔细评估您的需求并考虑这些因素，您可以为您的企业选择完美的秤。</p>
-    `,
-    coverImage: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
-    category: 'industry',
-    tags: ['body scale', 'buying guide', 'commercial'],
-    isFeatured: true,
-    isActive: true,
-    publishedAt: new Date('2024-03-15'),
-    createdAt: new Date('2024-03-10'),
-    updatedAt: new Date('2024-03-15'),
-  },
-]
-
-export async function generateMetadata({
-  params: { locale, slug },
-}: {
-  params: { locale: string; slug: string }
-}): Promise<Metadata> {
-  const post = mockBlogPosts.find(p => p.slug === slug)
-  if (!post) {
-    return { title: 'Post Not Found' }
-  }
-
-  const isZh = locale === 'zh'
-  const title = isZh ? post.titleZh : post.titleEn
-  const description = isZh ? post.excerptZh : post.excerptEn
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: post.coverImage ? [post.coverImage] : [],
-    },
-  }
+interface BlogPost {
+  id: number;
+  slug: string;
+  titleEn: string;
+  titleZh: string;
+  excerptEn?: string;
+  excerptZh?: string;
+  contentEn?: string;
+  contentZh?: string;
+  coverImage?: string;
+  category?: string;
+  tags: string[];
+  isFeatured: boolean;
+  publishedAt?: string;
+  createdAt: string;
 }
 
-export function generateStaticParams() {
-  const locales = ['en', 'zh']
-  const params: Array<{ locale: string; slug: string }> = []
+function BlogPostContent({ params }: { params: { slug: string; locale: string } }) {
+  const locale = useLocale() as 'en' | 'zh';
+  const isZh = locale === 'zh';
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFoundState, setNotFound] = useState(false);
 
-  locales.forEach((locale) => {
-    mockBlogPosts.forEach((post) => {
-      params.push({ locale, slug: post.slug })
-    })
-  })
+  useEffect(() => {
+    fetchPost();
+  }, [params.slug]);
 
-  return params
-}
+  const fetchPost = async () => {
+    try {
+      const response = await fetch(getApiUrl(`blog/slug/${params.slug}`));
+      if (response.ok) {
+        const data = await response.json();
+        setPost(data);
+      } else {
+        setNotFound(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch blog post:', error);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-function BlogPostContent({ post }: { post: typeof mockBlogPosts[0] }) {
-  const locale = useLocale() as 'en' | 'zh'
-  const isZh = locale === 'zh'
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <section className="bg-gray-50 py-8">
+          <div className="container mx-auto px-4">
+            <div className="h-4 bg-gray-200 rounded w-24 mb-6 animate-pulse" />
+          </div>
+        </section>
+        <section className="py-12">
+          <div className="container mx-auto px-4 max-w-4xl animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
+            <div className="h-4 bg-gray-200 rounded w-1/3 mb-8" />
+            <div className="aspect-[16/9] bg-gray-200 rounded mb-8" />
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-full" />
+              <div className="h-4 bg-gray-200 rounded w-full" />
+              <div className="h-4 bg-gray-200 rounded w-2/3" />
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
-  const title = isZh ? post.titleZh : post.titleEn
-  const content = isZh ? post.contentZh : post.contentEn
-  const date = post.publishedAt || post.createdAt
+  if (notFoundState || !post) {
+    notFound();
+  }
+
+  const title = isZh ? post.titleZh : post.titleEn;
+  const content = isZh ? post.contentZh : post.contentEn;
+  const date = post.publishedAt || post.createdAt;
   const formattedDate = new Date(date).toLocaleDateString(
     isZh ? 'zh-CN' : 'en-US',
     { year: 'numeric', month: 'long', day: 'numeric' }
-  )
-  const readingTime = Math.max(1, Math.ceil((content?.length || 0) / 500))
+  );
+  const readingTime = Math.max(1, Math.ceil((content?.length || 0) / 500));
 
   return (
     <article>
@@ -186,19 +170,13 @@ function BlogPostContent({ post }: { post: typeof mockBlogPosts[0] }) {
         </div>
       </section>
     </article>
-  )
+  );
 }
 
 export default function BlogPostPage({
-  params: { slug },
+  params,
 }: {
-  params: { slug: string }
+  params: { slug: string; locale: string }
 }) {
-  const post = mockBlogPosts.find(p => p.slug === slug)
-
-  if (!post) {
-    notFound()
-  }
-
-  return <BlogPostContent post={post} />
+  return <BlogPostContent params={params} />;
 }

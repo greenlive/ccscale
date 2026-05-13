@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { getTrafficSourceLabel, getSourceColor } from '../utils/source-parser';
 import type { TrafficSource } from '../utils/source-parser';
 
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
-
 @Injectable()
 export class AnalyticsService {
+  constructor(private prisma: PrismaService) {}
   async trackSession(sessionData: {
     sessionId: string;
     ipAddress?: string;
@@ -30,7 +27,7 @@ export class AnalyticsService {
   }) {
     const { sessionId, ...data } = sessionData;
 
-    return prisma.userSession.upsert({
+    return this.prisma.userSession.upsert({
       where: { sessionId },
       update: {
         lastVisit: new Date(),
@@ -55,7 +52,7 @@ export class AnalyticsService {
     // First ensure session exists
     await this.trackSession({ sessionId: eventData.sessionId });
 
-    return prisma.sessionEvent.create({
+    return this.prisma.sessionEvent.create({
       data: eventData,
     });
   }
@@ -93,7 +90,7 @@ export class AnalyticsService {
       // 响应时效数据
       repliedInquiriesWithTime,
     ] = await Promise.all([
-      prisma.userSession.findMany({
+      this.prisma.userSession.findMany({
         where: {
           ...(rangeFilter && { firstVisit: rangeFilter }),
         },
@@ -109,7 +106,7 @@ export class AnalyticsService {
           country: true,
         },
       }),
-      prisma.inquiry.findMany({
+      this.prisma.inquiry.findMany({
         where: {
           ...(rangeFilter && { createdAt: rangeFilter }),
         },
@@ -120,7 +117,7 @@ export class AnalyticsService {
           utmSource: true,
         },
       }),
-      prisma.inquiryItem.findMany({
+      this.prisma.inquiryItem.findMany({
         where: {
           inquiry: {
             ...(rangeFilter && { createdAt: rangeFilter }),
@@ -132,7 +129,7 @@ export class AnalyticsService {
         },
       }),
       // 按流量来源分组
-      prisma.userSession.groupBy({
+      this.prisma.userSession.groupBy({
         by: ['trafficSource'],
         where: {
           ...(rangeFilter && { firstVisit: rangeFilter }),
@@ -140,7 +137,7 @@ export class AnalyticsService {
         _count: true,
       }),
       // 按 UTM source 分组
-      prisma.userSession.groupBy({
+      this.prisma.userSession.groupBy({
         by: ['utmSource'],
         where: {
           ...(rangeFilter && { firstVisit: rangeFilter }),
@@ -151,7 +148,7 @@ export class AnalyticsService {
         take: 10,
       }),
       // 按 Referrer 域名分组
-      prisma.userSession.groupBy({
+      this.prisma.userSession.groupBy({
         by: ['referrer'],
         where: {
           ...(rangeFilter && { firstVisit: rangeFilter }),
@@ -161,7 +158,7 @@ export class AnalyticsService {
         orderBy: { _count: { referrer: 'desc' } },
         take: 10,
       }),
-      prisma.userSession.groupBy({
+      this.prisma.userSession.groupBy({
         by: ['country'],
         where: {
           ...(rangeFilter && { firstVisit: rangeFilter }),
@@ -169,7 +166,7 @@ export class AnalyticsService {
         _count: true,
       }),
       // 按回复方式分组（只统计已回复的）
-      prisma.inquiry.groupBy({
+      this.prisma.inquiry.groupBy({
         by: ['replyMethod'],
         where: {
           ...(rangeFilter && { createdAt: rangeFilter }),
@@ -179,32 +176,32 @@ export class AnalyticsService {
         orderBy: { _count: { replyMethod: 'desc' } },
       }),
       // 统计新询盘（未回复）数量
-      prisma.inquiry.count({
+      this.prisma.inquiry.count({
         where: {
           ...(rangeFilter && { createdAt: rangeFilter }),
           replyMethod: null,
         },
       }),
       // 今日新询盘数量
-      prisma.inquiry.count({
+      this.prisma.inquiry.count({
         where: {
           createdAt: { gte: todayStart, lte: todayEnd },
         },
       }),
       // 今日已回复询盘数量
-      prisma.inquiry.count({
+      this.prisma.inquiry.count({
         where: {
           createdAt: { gte: todayStart, lte: todayEnd },
           replyMethod: { not: null },
         },
       }),
       // 询盘转化漏斗 - 获取所有询盘状态
-      prisma.inquiry.groupBy({
+      this.prisma.inquiry.groupBy({
         by: ['status'],
         _count: true,
       }),
       // 响应时效 - 获取已回复询盘的创建时间和回复时间
-      prisma.inquiry.findMany({
+      this.prisma.inquiry.findMany({
         where: {
           ...(rangeFilter && { createdAt: rangeFilter }),
           repliedAt: { not: null },
@@ -285,7 +282,7 @@ export class AnalyticsService {
       .sort((a, b) => b.sessions - a.sessions);
 
     // 询盘来源分析
-    const inquirySourceGroups = await prisma.inquiry.groupBy({
+    const inquirySourceGroups = await this.prisma.inquiry.groupBy({
       by: ['trafficSource'],
       where: {
         ...(rangeFilter && { createdAt: rangeFilter }),
@@ -406,7 +403,7 @@ export class AnalyticsService {
       .sort((a, b) => b.sessions - a.sessions);
 
     // 按 medium 分组
-    const utmMediumGroups = await prisma.userSession.groupBy({
+    const utmMediumGroups = await this.prisma.userSession.groupBy({
       by: ['utmMedium'],
       where: {
         ...(rangeFilter && { firstVisit: rangeFilter }),
@@ -425,7 +422,7 @@ export class AnalyticsService {
       .sort((a, b) => b.sessions - a.sessions);
 
     // 询盘来源的UTM分析
-    const inquiryUtmGroups = await prisma.inquiry.groupBy({
+    const inquiryUtmGroups = await this.prisma.inquiry.groupBy({
       by: ['utmSource'],
       where: {
         ...(rangeFilter && { createdAt: rangeFilter }),

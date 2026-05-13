@@ -60,9 +60,9 @@ const mockProduct = {
   factoryDescription: 'Professional weighing equipment manufacturer with complete R&D, production, and sales system.',
   seoKeywordsEn: 'Digital Scale, Body Scale, Bathroom Scale, Weighing Scale, Health Scale, Precision Scale',
   specs: [
-    { id: 1, labelEn: 'Capacity', labelZh: '最大称重', valueEn: '180kg / 400lb', valueZh: '180公斤 / 400磅', order: 0 },
-    { id: 2, labelEn: 'Division', labelZh: '分度值', valueEn: '100g', valueZh: '100克', order: 1 },
-    { id: 3, labelEn: 'Display', labelZh: '显示', valueEn: 'LCD, 3.5"', valueZh: '液晶显示屏, 3.5英寸', order: 2 },
+    { id: 1, keyEn: 'Capacity', keyZh: '最大称重', valueEn: '180kg / 400lb', valueZh: '180公斤 / 400磅', order: 0 },
+    { id: 2, keyEn: 'Division', keyZh: '分度值', valueEn: '100g', valueZh: '100克', order: 1 },
+    { id: 3, keyEn: 'Display', keyZh: '显示', valueEn: 'LCD, 3.5"', valueZh: '液晶显示屏, 3.5英寸', order: 2 },
   ],
 };
 
@@ -106,8 +106,8 @@ export function ProductDetailContent({ slug }: { slug: string }) {
   const videosList = product.videos ? JSON.parse(product.videos) : (product.videoUrl ? [product.videoUrl] : []);
 
   const displaySpecs: DisplaySpec[] = (product.specs || []).map((spec: ProductSpec) => ({
-    keyEn: spec.labelEn,
-    keyZh: spec.labelZh,
+    keyEn: spec.keyEn,
+    keyZh: spec.keyZh,
     valueEn: spec.valueEn,
     valueZh: spec.valueZh,
   }));

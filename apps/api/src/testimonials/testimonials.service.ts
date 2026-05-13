@@ -1,15 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTestimonialDto, UpdateTestimonialDto } from './dto/testimonial.dto';
-
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
 
 @Injectable()
 export class TestimonialsService {
+  constructor(private prisma: PrismaService) {}
+
   async findAll(isActive?: boolean) {
-    return prisma.testimonial.findMany({
+    return this.prisma.testimonial.findMany({
       where: {
         ...(isActive !== undefined && { isActive }),
       },
@@ -21,7 +19,7 @@ export class TestimonialsService {
   }
 
   async findOne(id: number) {
-    const testimonial = await prisma.testimonial.findUnique({
+    const testimonial = await this.prisma.testimonial.findUnique({
       where: { id },
     });
 
@@ -33,7 +31,7 @@ export class TestimonialsService {
   }
 
   async create(createTestimonialDto: CreateTestimonialDto) {
-    return prisma.testimonial.create({
+    return this.prisma.testimonial.create({
       data: createTestimonialDto,
     });
   }
@@ -41,7 +39,7 @@ export class TestimonialsService {
   async update(id: number, updateTestimonialDto: UpdateTestimonialDto) {
     await this.findOne(id);
 
-    return prisma.testimonial.update({
+    return this.prisma.testimonial.update({
       where: { id },
       data: updateTestimonialDto,
     });
@@ -50,15 +48,15 @@ export class TestimonialsService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return prisma.testimonial.delete({
+    return this.prisma.testimonial.delete({
       where: { id },
     });
   }
 
   async getStats() {
     const [total, active] = await Promise.all([
-      prisma.testimonial.count(),
-      prisma.testimonial.count({ where: { isActive: true } }),
+      this.prisma.testimonial.count(),
+      this.prisma.testimonial.count({ where: { isActive: true } }),
     ]);
 
     return { total, active };

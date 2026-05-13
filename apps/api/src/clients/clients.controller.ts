@@ -8,10 +8,14 @@ import {
   Param,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { ClientsService } from './clients.service';
 import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('clients')
 @Controller('clients')
@@ -44,16 +48,24 @@ export class ClientsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'EDITOR')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new client' })
   @ApiResponse({ status: 201, description: 'Client created' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   create(@Body() createClientDto: CreateClientDto) {
     return this.clientsService.create(createClientDto);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'EDITOR')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a client' })
   @ApiResponse({ status: 200, description: 'Client updated' })
   @ApiResponse({ status: 404, description: 'Client not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateClientDto: UpdateClientDto,
@@ -62,9 +74,13 @@ export class ClientsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a client' })
   @ApiResponse({ status: 200, description: 'Client deleted' })
   @ApiResponse({ status: 404, description: 'Client not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.clientsService.remove(id);
   }

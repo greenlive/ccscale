@@ -1,21 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateInquiryDto, UpdateInquiryDto, CreateActivityLogDto } from './dto/inquiry.dto';
 import { EmailService } from '../notifications/email.service';
 
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
-
 @Injectable()
 export class InquiriesService {
-  constructor(private readonly emailService: EmailService) {}
+  constructor(
+    private readonly emailService: EmailService,
+    private prisma: PrismaService,
+  ) {}
 
   async findAll(status?: string, page: number = 1, pageSize: number = 20) {
     const skip = (page - 1) * pageSize;
 
     const [data, total] = await Promise.all([
-      prisma.inquiry.findMany({
+      this.prisma.inquiry.findMany({
         where: {
           ...(status && { status }),
         },
@@ -37,7 +36,7 @@ export class InquiriesService {
         skip,
         take: pageSize,
       }),
-      prisma.inquiry.count({
+      this.prisma.inquiry.count({
         where: {
           ...(status && { status }),
         },
@@ -54,7 +53,7 @@ export class InquiriesService {
   }
 
   async findOne(id: number) {
-    const inquiry = await prisma.inquiry.findUnique({
+    const inquiry = await this.prisma.inquiry.findUnique({
       where: { id },
       include: {
         items: true,
@@ -87,7 +86,7 @@ export class InquiriesService {
       unitPrice: item.unitPrice,
     }));
 
-    const inquiry = await prisma.inquiry.create({
+    const inquiry = await this.prisma.inquiry.create({
       data: {
         ...inquiryData,
         ipAddress,
@@ -149,7 +148,7 @@ export class InquiriesService {
 
   async update(id: number, updateInquiryDto: UpdateInquiryDto) {
     // First check if inquiry exists
-    const oldInquiry = await prisma.inquiry.findUnique({ where: { id } });
+    const oldInquiry = await this.prisma.inquiry.findUnique({ where: { id } });
     if (!oldInquiry) {
       throw new NotFoundException(`Inquiry with ID ${id} not found`);
     }
@@ -210,7 +209,7 @@ export class InquiriesService {
       });
     }
 
-    return prisma.inquiry.update({
+    return this.prisma.inquiry.update({
       where: { id },
       data: updateData,
       include: {
@@ -225,7 +224,7 @@ export class InquiriesService {
 
   // 活动日志相关方法
   async createActivityLog(dto: CreateActivityLogDto) {
-    return prisma.activityLog.create({
+    return this.prisma.activityLog.create({
       data: {
         inquiryId: dto.inquiryId,
         action: dto.action,
@@ -236,7 +235,7 @@ export class InquiriesService {
   }
 
   async getActivityLogs(inquiryId: number) {
-    return prisma.activityLog.findMany({
+    return this.prisma.activityLog.findMany({
       where: { inquiryId },
       orderBy: { createdAt: 'desc' },
     });
@@ -244,11 +243,11 @@ export class InquiriesService {
 
   async getStats() {
     const [total, newCount, inProgress, replied, closed] = await Promise.all([
-      prisma.inquiry.count(),
-      prisma.inquiry.count({ where: { status: 'NEW' } }),
-      prisma.inquiry.count({ where: { status: 'IN_PROGRESS' } }),
-      prisma.inquiry.count({ where: { status: 'REPLIED' } }),
-      prisma.inquiry.count({ where: { status: 'CLOSED' } }),
+      this.prisma.inquiry.count(),
+      this.prisma.inquiry.count({ where: { status: 'NEW' } }),
+      this.prisma.inquiry.count({ where: { status: 'IN_PROGRESS' } }),
+      this.prisma.inquiry.count({ where: { status: 'REPLIED' } }),
+      this.prisma.inquiry.count({ where: { status: 'CLOSED' } }),
     ]);
 
     return {
@@ -261,11 +260,11 @@ export class InquiriesService {
   }
 
   async delete(id: number) {
-    const inquiry = await prisma.inquiry.findUnique({ where: { id } });
+    const inquiry = await this.prisma.inquiry.findUnique({ where: { id } });
     if (!inquiry) {
       throw new NotFoundException(`Inquiry with ID ${id} not found`);
     }
-    return prisma.inquiry.delete({ where: { id } });
+    return this.prisma.inquiry.delete({ where: { id } });
   }
 
   // 添加联系尝试记录
@@ -282,7 +281,7 @@ export class InquiriesService {
     const resultText = success ? `✓ ${label}联系成功` : `✗ ${label}联系失败`;
 
     // 创建联系尝试活动记录
-    const activity = await prisma.activityLog.create({
+    const activity = await this.prisma.activityLog.create({
       data: {
         inquiryId,
         action: 'CONTACT_ATTEMPT',
@@ -293,7 +292,7 @@ export class InquiriesService {
 
     // 如果标记为成功，更新询盘状态为已回复
     if (success) {
-      await prisma.inquiry.update({
+      await this.prisma.inquiry.update({
         where: { id: inquiryId },
         data: {
           status: 'REPLIED',

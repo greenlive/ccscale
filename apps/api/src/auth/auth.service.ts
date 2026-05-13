@@ -1,15 +1,16 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-
-const prisma = new PrismaClient();
 
 @Injectable()
 export class AuthService {
+  constructor(private prisma: PrismaService) {}
+
   private readonly SALT_ROUNDS = 10;
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { email },
     });
 
@@ -24,7 +25,7 @@ export class AuthService {
     }
 
     // Update last login
-    await prisma.user.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: { lastLogin: new Date() },
     });
@@ -38,7 +39,7 @@ export class AuthService {
     name: string,
     role: string = 'VIEWER',
   ): Promise<User> {
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
 
@@ -48,7 +49,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, this.SALT_ROUNDS);
 
-    return prisma.user.create({
+    return this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
@@ -67,34 +68,34 @@ export class AuthService {
   }
 
   async getUserById(id: number): Promise<User | null> {
-    return prisma.user.findUnique({
+    return this.prisma.user.findUnique({
       where: { id },
     });
   }
 
   async updatePassword(userId: number, newPassword: string): Promise<void> {
     const hashedPassword = await bcrypt.hash(newPassword, this.SALT_ROUNDS);
-    await prisma.user.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },
     });
   }
 
   async getAllUsers(): Promise<Omit<User, 'password'>[]> {
-    const users = await prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
     });
     return users.map(({ password, ...user }) => user);
   }
 
   async deleteUser(id: number): Promise<void> {
-    await prisma.user.delete({
+    await this.prisma.user.delete({
       where: { id },
     });
   }
 
   async updateUserRole(id: number, role: string): Promise<Omit<User, 'password'>> {
-    const user = await prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: { role },
     });
@@ -104,7 +105,7 @@ export class AuthService {
 
   async resetUserPassword(id: number, newPassword: string): Promise<void> {
     const hashedPassword = await bcrypt.hash(newPassword, this.SALT_ROUNDS);
-    await prisma.user.update({
+    await this.prisma.user.update({
       where: { id },
       data: { password: hashedPassword },
     });

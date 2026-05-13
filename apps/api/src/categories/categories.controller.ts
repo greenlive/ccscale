@@ -6,9 +6,14 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductsService } from '../products/products.service';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('categories')
 @Controller('products/categories')
@@ -27,24 +32,36 @@ export class CategoriesController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'EDITOR')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a category' })
   @ApiResponse({ status: 201, description: 'Category created' })
-  create(@Body() createCategoryDto: any) {
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.productsService.createCategory(createCategoryDto);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'EDITOR')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a category' })
   @ApiResponse({ status: 200, description: 'Category updated' })
   @ApiResponse({ status: 404, description: 'Category not found' })
-  update(@Param('id') id: string, @Body() updateCategoryDto: any) {
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.productsService.updateCategory(parseInt(id), updateCategoryDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a category' })
   @ApiResponse({ status: 200, description: 'Category deleted' })
   @ApiResponse({ status: 404, description: 'Category not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   remove(@Param('id') id: string) {
     return this.productsService.deleteCategory(parseInt(id));
   }

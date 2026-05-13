@@ -54,6 +54,7 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: Function) => {
 
   const allowedByType: Record<string, string[]> = {
     'product-image': ['image/jpeg', 'image/png', 'image/webp'],
+    'category-image': ['image/jpeg', 'image/png', 'image/webp'],
     'product-video': ['video/mp4', 'video/webm'],
     'testimonial': ['image/jpeg', 'image/png'],
     'client-logo': ['image/png', 'image/svg+xml'],

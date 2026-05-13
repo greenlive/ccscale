@@ -1,15 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
-
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
 
 @Injectable()
 export class ClientsService {
+  constructor(private prisma: PrismaService) {}
+
   async findAll(isActive?: boolean) {
-    return prisma.client.findMany({
+    return this.prisma.client.findMany({
       where: {
         ...(isActive !== undefined && { isActive }),
       },
@@ -21,7 +19,7 @@ export class ClientsService {
   }
 
   async findOne(id: number) {
-    const client = await prisma.client.findUnique({
+    const client = await this.prisma.client.findUnique({
       where: { id },
     });
 
@@ -33,7 +31,7 @@ export class ClientsService {
   }
 
   async create(createClientDto: CreateClientDto) {
-    return prisma.client.create({
+    return this.prisma.client.create({
       data: createClientDto,
     });
   }
@@ -41,7 +39,7 @@ export class ClientsService {
   async update(id: number, updateClientDto: UpdateClientDto) {
     await this.findOne(id);
 
-    return prisma.client.update({
+    return this.prisma.client.update({
       where: { id },
       data: updateClientDto,
     });
@@ -50,15 +48,15 @@ export class ClientsService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return prisma.client.delete({
+    return this.prisma.client.delete({
       where: { id },
     });
   }
 
   async getStats() {
     const [total, active] = await Promise.all([
-      prisma.client.count(),
-      prisma.client.count({ where: { isActive: true } }),
+      this.prisma.client.count(),
+      this.prisma.client.count({ where: { isActive: true } }),
     ]);
 
     return { total, active };

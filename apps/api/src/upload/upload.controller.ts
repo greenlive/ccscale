@@ -15,56 +15,18 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { createReadStream, existsSync } from 'fs';
-import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { UploadService } from './upload.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-
-// Allowed MIME types per upload type
-const UPLOAD_TYPE_MIME_TYPES: Record<string, string[]> = {
-  'product-image': ['image/jpeg', 'image/png', 'image/webp'],
-  'product-video': ['video/mp4', 'video/webm'],
-  'testimonial': ['image/jpeg', 'image/png'],
-  'client-logo': ['image/png', 'image/svg+xml'],
-  'factory-image': ['image/jpeg', 'image/png'],
-  'general': ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
-};
 
 // Max sizes per upload type (in bytes)
 const UPLOAD_TYPE_MAX_SIZES: Record<string, number> = {
   'product-image': 10 * 1024 * 1024, // 10MB
+  'category-image': 5 * 1024 * 1024, // 5MB
   'product-video': 200 * 1024 * 1024, // 200MB
   'testimonial': 5 * 1024 * 1024, // 5MB
   'client-logo': 2 * 1024 * 1024, // 2MB
   'factory-image': 15 * 1024 * 1024, // 15MB
   'general': 10 * 1024 * 1024, // 10MB
-};
-
-// Dynamic storage for multer
-const createStorage = (uploadType: string) => ({
-  storage: {
-    destination: (req: any, file: Express.Multer.File, cb: Function) => {
-      cb(null, `./uploads/${uploadType}`);
-    },
-    filename: (req: any, file: Express.Multer.File, cb: Function) => {
-      const uniqueId = uuidv4();
-      const ext = file.originalname.split('.').pop();
-      cb(null, `${uniqueId}.${ext}`);
-    },
-  },
-});
-
-// File filter factory
-const createFileFilter = (uploadType: string) => {
-  return (req: any, file: Express.Multer.File, cb: Function) => {
-    const allowedTypes = UPLOAD_TYPE_MIME_TYPES[uploadType] || UPLOAD_TYPE_MIME_TYPES.general;
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new BadRequestException(`File type ${file.mimetype} is not allowed for ${uploadType}`), false);
-    }
-  };
 };
 
 @ApiTags('upload')

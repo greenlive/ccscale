@@ -107,8 +107,8 @@ export interface ProductImage {
 
 export interface ProductSpec {
   id: number;
-  labelEn: string;
-  labelZh: string;
+  keyEn: string;
+  keyZh: string;
   valueEn: string;
   valueZh: string;
   order: number;
@@ -116,21 +116,27 @@ export interface ProductSpec {
 
 export interface Testimonial {
   id: number;
-  clientName: string;
-  clientCompany: string;
-  clientTitle?: string;
+  nameEn: string;
+  nameZh: string;
+  companyEn?: string;
+  companyZh?: string;
+  countryEn?: string;
+  countryZh?: string;
   avatarUrl?: string;
-  content: string;
+  contentEn: string;
+  contentZh: string;
   rating: number;
-  isActive: boolean;
   order: number;
+  isActive: boolean;
 }
 
 export interface Client {
   id: number;
-  name: string;
+  nameEn: string;
+  nameZh: string;
   logoUrl: string;
   website?: string;
+  order: number;
   isActive: boolean;
 }
 
@@ -138,7 +144,6 @@ export interface SiteSetting {
   id: number;
   key: string;
   value: string;
-  type: 'string' | 'number' | 'boolean' | 'json';
 }
 
 // API fetch functions
@@ -207,6 +212,47 @@ export function useProductCategories() {
   });
 }
 
+// Product Search Hook
+export interface ProductSearchParams {
+  q?: string;
+  categoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export function useProductSearch(params: ProductSearchParams) {
+  const searchParams = new URLSearchParams();
+  if (params.q) searchParams.set('q', params.q);
+  if (params.categoryId) searchParams.set('categoryId', String(params.categoryId));
+  if (params.minPrice !== undefined) searchParams.set('minPrice', String(params.minPrice));
+  if (params.maxPrice !== undefined) searchParams.set('maxPrice', String(params.maxPrice));
+  if (params.sortBy) searchParams.set('sortBy', params.sortBy);
+  if (params.sortOrder) searchParams.set('sortOrder', params.sortOrder);
+  if (params.page) searchParams.set('page', String(params.page));
+  if (params.pageSize) searchParams.set('pageSize', String(params.pageSize));
+
+  const queryString = searchParams.toString();
+  const enabled = (params.q?.length ?? 0) > 0 || !!params.categoryId;
+
+  return useQuery({
+    queryKey: [...queryKeys.products.all, 'search', params],
+    queryFn: () => fetchApi<PaginatedResult<Product>>(`/products/search?${queryString}`),
+    enabled,
+  });
+}
+
 // Testimonials Hooks
 export function useTestimonials() {
   return useQuery({
@@ -227,7 +273,7 @@ export function useClients() {
 export function useSiteSettings() {
   return useQuery({
     queryKey: queryKeys.settings.all,
-    queryFn: () => fetchApi<SiteSetting[]>('/site-settings'),
+    queryFn: () => fetchApi<Record<string, string>>('/site-settings'),
     staleTime: 60 * 60 * 1000, // Settings rarely change
   });
 }
@@ -237,6 +283,64 @@ export function useSiteSetting(key: string) {
     queryKey: queryKeys.settings.byKey(key),
     queryFn: () => fetchApi<SiteSetting>(`/site-settings/${key}`),
     enabled: !!key,
+  });
+}
+
+// Blog Hooks
+export interface BlogPost {
+  id: number;
+  slug: string;
+  titleEn: string;
+  titleZh: string;
+  excerptEn?: string;
+  excerptZh?: string;
+  contentEn?: string;
+  contentZh?: string;
+  coverImage?: string;
+  category?: string;
+  tags: string[];
+  isFeatured: boolean;
+  isActive: boolean;
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useBlogPosts(page: number = 1, category?: string) {
+  const params = new URLSearchParams({ page: String(page), isActive: 'true' });
+  if (category) params.set('category', category);
+
+  return useQuery({
+    queryKey: ['blog', 'list', page, category],
+    queryFn: () => fetchApi<PaginatedResult<BlogPost>>(`/blog?${params}`),
+  });
+}
+
+export function useBlogPost(slug: string) {
+  return useQuery({
+    queryKey: ['blog', 'slug', slug],
+    queryFn: () => fetchApi<BlogPost>(`/blog/slug/${slug}`),
+    enabled: !!slug,
+  });
+}
+
+// Cases Hooks
+export interface CustomerCase {
+  id: number;
+  companyName: string;
+  logoUrl?: string;
+  quote?: string;
+  productName?: string;
+  region?: string;
+  order: number;
+  isActive: boolean;
+  product?: { id: number; nameEn: string; nameZh: string; slug: string };
+}
+
+export function useCases(page: number = 1) {
+  return useQuery({
+    queryKey: ['cases', 'list', page],
+    queryFn: () => fetchApi<PaginatedResult<CustomerCase>>(`/cases?isActive=true&page=${page}`),
   });
 }
 
@@ -270,7 +374,6 @@ export interface InquiryData {
 
 export interface InquiryResponse {
   id: number;
-  inquiryNumber: string;
   message: string;
 }
 
@@ -302,11 +405,18 @@ export function useSocialMediaSettings() {
   return useQuery({
     queryKey: queryKeys.social.all,
     queryFn: async () => {
-      const response = await fetch(`/api/site-settings/social-media`);
+      const response = await fetch(`/api/site-settings`);
       if (!response.ok) {
         return { facebook: '', instagram: '', linkedin: '', twitter: '', youtube: '' };
       }
-      return response.json();
+      const settings: Record<string, string> = await response.json();
+      return {
+        facebook: settings['social_facebook'] || '',
+        instagram: settings['social_instagram'] || '',
+        linkedin: settings['social_linkedin'] || '',
+        twitter: settings['social_twitter'] || '',
+        youtube: settings['social_youtube'] || '',
+      };
     },
     staleTime: 60 * 60 * 1000,
   });

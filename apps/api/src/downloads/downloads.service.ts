@@ -1,14 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class DownloadsService {
+  constructor(private prisma: PrismaService) {}
+
   async findAll(category?: string, isActive: boolean = true) {
-    return prisma.download.findMany({
+    return this.prisma.download.findMany({
       where: {
         ...(category && { category }),
         ...(isActive !== undefined && { isActive }),
@@ -21,7 +19,7 @@ export class DownloadsService {
   }
 
   async findOne(id: number) {
-    const download = await prisma.download.findUnique({
+    const download = await this.prisma.download.findUnique({
       where: { id },
     });
 
@@ -43,7 +41,7 @@ export class DownloadsService {
     category?: string;
     order?: number;
   }) {
-    return prisma.download.create({
+    return this.prisma.download.create({
       data: {
         titleEn: data.titleEn,
         titleZh: data.titleZh,
@@ -75,7 +73,7 @@ export class DownloadsService {
   ) {
     await this.findOne(id);
 
-    return prisma.download.update({
+    return this.prisma.download.update({
       where: { id },
       data,
     });
@@ -84,7 +82,7 @@ export class DownloadsService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return prisma.download.delete({
+    return this.prisma.download.delete({
       where: { id },
     });
   }
@@ -92,7 +90,7 @@ export class DownloadsService {
   async incrementDownloadCount(id: number) {
     await this.findOne(id);
 
-    return prisma.download.update({
+    return this.prisma.download.update({
       where: { id },
       data: {
         downloadCount: { increment: 1 },

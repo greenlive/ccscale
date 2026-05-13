@@ -1,15 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
-
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
 
 @Injectable()
 export class ProductsService {
+  constructor(private prisma: PrismaService) {}
+
   async findAll(categoryId?: number, isActive: boolean = true) {
-    return prisma.product.findMany({
+    return this.prisma.product.findMany({
       where: {
         ...(categoryId && { categoryId }),
         isActive,
@@ -24,7 +22,7 @@ export class ProductsService {
   }
 
   async findOne(id: number) {
-    const product = await prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { id },
       include: {
         category: true,
@@ -45,7 +43,7 @@ export class ProductsService {
   }
 
   async findBySlug(slug: string) {
-    const product = await prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { slug },
       include: {
         category: true,
@@ -67,7 +65,7 @@ export class ProductsService {
 
   async findRelated(productId: number, limit: number = 4) {
     // Get the current product to find its category
-    const currentProduct = await prisma.product.findUnique({
+    const currentProduct = await this.prisma.product.findUnique({
       where: { id: productId },
       include: { category: true },
     });
@@ -77,7 +75,7 @@ export class ProductsService {
     }
 
     // Try to find products in the same category first
-    const relatedFromCategory = await prisma.product.findMany({
+    const relatedFromCategory = await this.prisma.product.findMany({
       where: {
         categoryId: currentProduct.categoryId,
         isActive: true,
@@ -99,7 +97,7 @@ export class ProductsService {
         ...relatedFromCategory.map((p) => p.id),
       ];
 
-      const additionalProducts = await prisma.product.findMany({
+      const additionalProducts = await this.prisma.product.findMany({
         where: {
           isActive: true,
           id: { notIn: existingIds },
@@ -119,7 +117,7 @@ export class ProductsService {
   }
 
   async findCategories(isActive: boolean = true) {
-    return prisma.productCategory.findMany({
+    return this.prisma.productCategory.findMany({
       where: { isActive },
       include: {
         products: {
@@ -130,10 +128,73 @@ export class ProductsService {
     });
   }
 
+  async search(params: {
+    q?: string;
+    categoryId?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    page: number;
+    pageSize: number;
+  }) {
+    const { q, categoryId, minPrice, maxPrice, sortBy, sortOrder, page, pageSize } = params;
+    const skip = (page - 1) * pageSize;
+
+    const where: any = { isActive: true };
+
+    if (q) {
+      where.OR = [
+        { nameEn: { contains: q, mode: 'insensitive' } },
+        { nameZh: { contains: q, mode: 'insensitive' } },
+      ];
+    }
+
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      where.priceMin = {};
+      if (minPrice !== undefined) where.priceMin.gte = minPrice;
+      if (maxPrice !== undefined) where.priceMin.lte = maxPrice;
+    }
+
+    const orderBy: any = {};
+    if (sortBy && ['nameEn', 'nameZh', 'priceMin', 'priceMax', 'createdAt', 'order'].includes(sortBy)) {
+      orderBy[sortBy] = sortOrder || 'asc';
+    } else {
+      orderBy.order = 'asc';
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        include: {
+          category: true,
+          images: true,
+          specs: true,
+        },
+        orderBy,
+        skip,
+        take: pageSize,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
   async create(createProductDto: CreateProductDto) {
     const { specs, images, mainImages, detailImages, videos, ...productData } = createProductDto;
 
-    return prisma.product.create({
+    return this.prisma.product.create({
       data: {
         ...productData,
         mainImages: mainImages ?? null,
@@ -174,7 +235,7 @@ export class ProductsService {
 
     // Clear old productImage table when updating with new image fields
     if (mainImages !== undefined || detailImages !== undefined) {
-      await prisma.productImage.deleteMany({ where: { productId: id } });
+      await this.prisma.productImage.deleteMany({ where: { productId: id } });
     }
 
     if (specs && specs.length > 0) {
@@ -203,7 +264,7 @@ export class ProductsService {
       };
     }
 
-    return prisma.product.update({
+    return this.prisma.product.update({
       where: { id },
       data: data,
       include: {
@@ -216,12 +277,12 @@ export class ProductsService {
 
   async remove(id: number) {
     await this.findOne(id);
-    return prisma.product.delete({ where: { id } });
+    return this.prisma.product.delete({ where: { id } });
   }
 
   // Category methods
   async findCategoryById(id: number) {
-    const category = await prisma.productCategory.findUnique({
+    const category = await this.prisma.productCategory.findUnique({
       where: { id },
       include: {
         products: {
@@ -244,7 +305,7 @@ export class ProductsService {
     imageUrl?: string;
     order?: number;
   }) {
-    return prisma.productCategory.create({
+    return this.prisma.productCategory.create({
       data: {
         nameEn: data.nameEn,
         nameZh: data.nameZh,
@@ -271,7 +332,7 @@ export class ProductsService {
     },
   ) {
     await this.findCategoryById(id);
-    return prisma.productCategory.update({
+    return this.prisma.productCategory.update({
       where: { id },
       data,
     });
@@ -279,6 +340,6 @@ export class ProductsService {
 
   async deleteCategory(id: number) {
     await this.findCategoryById(id);
-    return prisma.productCategory.delete({ where: { id } });
+    return this.prisma.productCategory.delete({ where: { id } });
   }
 }

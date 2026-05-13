@@ -147,6 +147,10 @@ export default function Testimonials({ locale }: { locale: string }) {
     );
   }
 
+  const getPageClass = () => {
+    return 'animate-fadeIn';
+  };
+
   if (testimonials.length === 0) {
     return null;
   }
@@ -188,7 +192,7 @@ export default function Testimonials({ locale }: { locale: string }) {
           tabIndex={0}
           aria-label={locale === 'en' ? 'Testimonials carousel' : '客户评价轮播'}
         >
-          <div className={getGridClasses()}>
+          <div className={`${getGridClasses()} ${getPageClass()}`} key={currentPage}>
             {currentTestimonials.map((testimonial, index) => {
               const name = locale === 'en' ? testimonial.nameEn : testimonial.nameZh;
               const company = locale === 'en' ? testimonial.companyEn : testimonial.companyZh;

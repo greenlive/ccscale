@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import configuration from './config/configuration';
+import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
 import { InquiriesModule } from './inquiries/inquiries.module';
 import { AnalyticsModule } from './analytics/analytics.module';
@@ -16,6 +17,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DownloadsModule } from './downloads/downloads.module';
 import { UploadModule } from './upload/upload.module';
+import { BlogModule } from './blog/blog.module';
+import { CasesModule } from './cases/cases.module';
 
 @Module({
   imports: [
@@ -29,6 +32,7 @@ import { UploadModule } from './upload/upload.module';
       load: [configuration],
       envFilePath: ['.env.local', '.env'],
     }),
+    PrismaModule,
     // Rate limiting configuration
     ThrottlerModule.forRoot([
       {
@@ -53,6 +57,8 @@ import { UploadModule } from './upload/upload.module';
     CategoriesModule,
     DownloadsModule,
     UploadModule,
+    BlogModule,
+    CasesModule,
   ],
   providers: [
     // Global rate limiting guard

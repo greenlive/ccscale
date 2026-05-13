@@ -1,63 +1,44 @@
-import { getTranslations } from 'next-intl/server'
-import { useTranslations, useLocale } from 'next-intl'
-import { BlogCard } from '@/components/blog/BlogCard'
-import { BlogCategories } from '@/components/blog/BlogCategories'
-import type { Metadata } from 'next'
+'use client';
 
-const mockBlogPosts = [
-  {
-    id: 1,
-    slug: 'how-to-choose-body-scale',
-    titleEn: 'How to Choose the Right Body Scale for Your Business',
-    titleZh: '如何为您的企业选择合适的体重秤',
-    excerptEn: 'A comprehensive guide to selecting the perfect body scale for commercial and industrial use.',
-    excerptZh: '为商业和工业用途选择完美体重秤的综合指南。',
-    contentEn: 'Detailed content about choosing body scales...',
-    contentZh: '关于如何选择体重秤的详细内容...',
-    coverImage: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
-    category: 'industry',
-    tags: ['body scale', 'buying guide', 'commercial'],
-    isFeatured: true,
-    isActive: true,
-    publishedAt: new Date('2024-03-15'),
-    createdAt: new Date('2024-03-10'),
-    updatedAt: new Date('2024-03-15'),
-  },
-  {
-    id: 2,
-    slug: 'new-product-launch-bs-300',
-    titleEn: 'Introducing Our New Smart Body Scale BS-300',
-    titleZh: '介绍我们的新型智能体重秤 BS-300',
-    excerptEn: 'Discover the features of our latest smart body scale with advanced technology.',
-    excerptZh: '了解我们最新的智能体重秤的先进技术功能。',
-    contentEn: 'Product launch content...',
-    contentZh: '产品发布内容...',
-    coverImage: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
-    category: 'product',
-    tags: ['new product', 'smart scale', 'BS-300'],
-    isFeatured: true,
-    isActive: true,
-    publishedAt: new Date('2024-03-10'),
-    createdAt: new Date('2024-03-05'),
-    updatedAt: new Date('2024-03-10'),
-  },
-]
-
-export async function generateMetadata({
-  params: { locale },
-}: {
-  params: { locale: string }
-}): Promise<Metadata> {
-  const t = await getTranslations({ locale, namespace: 'blog' })
-  return {
-    title: t('title'),
-    description: t('description'),
-  }
-}
+import { useTranslations, useLocale } from 'next-intl';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { BlogCard } from '@/components/blog/BlogCard';
+import { BlogCategories } from '@/components/blog/BlogCategories';
+import { getApiUrl } from '@/lib/config/api';
+import { Suspense } from 'react';
+import type { BlogPost } from '@/types/blog';
 
 function BlogListContent() {
-  const locale = useLocale() as 'en' | 'zh'
-  const isZh = locale === 'zh'
+  const locale = useLocale() as 'en' | 'zh';
+  const isZh = locale === 'zh';
+  const t = useTranslations('blog');
+  const searchParams = useSearchParams();
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const activeCategory = searchParams.get('category');
+
+  useEffect(() => {
+    fetchPosts();
+  }, [activeCategory]);
+
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ isActive: 'true', pageSize: '50' });
+      if (activeCategory) params.set('category', activeCategory);
+      const response = await fetch(getApiUrl(`blog?${params}`));
+      if (response.ok) {
+        const result = await response.json();
+        setPosts(result.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch blog posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -77,20 +58,42 @@ function BlogListContent() {
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="mb-8">
-            <BlogCategories />
+            <BlogCategories currentCategory={activeCategory ?? undefined} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mockBlogPosts.map((post) => (
-              <BlogCard key={post.id} post={post} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded mb-4" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-gray-200 rounded w-full" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map((post) => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
+
+          {!loading && posts.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              {isZh ? '暂无博客文章' : 'No blog posts yet'}
+            </div>
+          )}
         </div>
       </section>
     </div>
-  )
+  );
 }
 
 export default function BlogPage() {
-  return <BlogListContent />
+  return (
+    <Suspense fallback={null}>
+      <BlogListContent />
+    </Suspense>
+  );
 }

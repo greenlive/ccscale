@@ -168,6 +168,27 @@ model OemStep {
   createdAt DateTime @default(now())
 }
 
+// ==================== 博客文章 ====================
+model BlogPost {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  titleEn     String
+  titleZh     String
+  excerptEn   String?
+  excerptZh   String?
+  contentEn   String?
+  contentZh   String?
+  coverImage  String?
+  authorId    Int?
+  category    String?   // industry, product, technical, export
+  tags        String?   // JSON array string e.g. '["tag1","tag2"]'
+  isFeatured  Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 // ==================== 询盘系统 ====================
 model Inquiry {
   id            Int      @id @default(autoincrement())

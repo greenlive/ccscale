@@ -1,15 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateSiteSettingDto, UpdateSiteSettingDto, BulkUpdateSiteSettingDto } from './dto/site-setting.dto';
-
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
 
 @Injectable()
 export class SiteSettingsService {
+  constructor(private prisma: PrismaService) {}
+
   async findAll() {
-    const settings = await prisma.siteSetting.findMany({
+    const settings = await this.prisma.siteSetting.findMany({
       orderBy: { key: 'asc' },
     });
 
@@ -23,7 +21,7 @@ export class SiteSettingsService {
   }
 
   async findOne(key: string) {
-    const setting = await prisma.siteSetting.findUnique({
+    const setting = await this.prisma.siteSetting.findUnique({
       where: { key },
     });
 
@@ -35,7 +33,7 @@ export class SiteSettingsService {
   }
 
   async upsert(createSettingDto: CreateSiteSettingDto) {
-    return prisma.siteSetting.upsert({
+    return this.prisma.siteSetting.upsert({
       where: { key: createSettingDto.key },
       update: { value: createSettingDto.value },
       create: createSettingDto,
@@ -45,7 +43,7 @@ export class SiteSettingsService {
   async update(key: string, updateSettingDto: UpdateSiteSettingDto) {
     await this.findOne(key);
 
-    return prisma.siteSetting.update({
+    return this.prisma.siteSetting.update({
       where: { key },
       data: updateSettingDto,
     });
@@ -54,7 +52,7 @@ export class SiteSettingsService {
   async bulkUpdate(settings: BulkUpdateSiteSettingDto[]) {
     const results = await Promise.all(
       settings.map((setting) =>
-        prisma.siteSetting.upsert({
+        this.prisma.siteSetting.upsert({
           where: { key: setting.key },
           update: { value: setting.value },
           create: { key: setting.key, value: setting.value },
@@ -68,14 +66,14 @@ export class SiteSettingsService {
   async remove(key: string) {
     await this.findOne(key);
 
-    return prisma.siteSetting.delete({
+    return this.prisma.siteSetting.delete({
       where: { key },
     });
   }
 
   // Get specific settings by keys
   async getByKeys(keys: string[]) {
-    const settings = await prisma.siteSetting.findMany({
+    const settings = await this.prisma.siteSetting.findMany({
       where: { key: { in: keys } },
     });
 
