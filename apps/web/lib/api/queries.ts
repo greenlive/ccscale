@@ -87,12 +87,15 @@ export interface CustomerCaseData {
 
 export interface ProductCategory {
   id: number;
-  name: string;
+  nameEn: string;
+  nameZh: string;
   slug: string;
-  description?: string;
   imageUrl?: string;
+  descriptionEn?: string;
+  descriptionZh?: string;
+  order: number;
   isActive: boolean;
-  productCount?: number;
+  products?: Product[];
 }
 
 export interface ProductImage {

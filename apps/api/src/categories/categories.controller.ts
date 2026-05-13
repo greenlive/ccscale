@@ -15,12 +15,8 @@ import { ProductsService } from '../products/products.service';
 export class CategoriesController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Get all product categories' })
-  @ApiResponse({ status: 200, description: 'Return all categories' })
-  findAll() {
-    return this.productsService.findCategories();
-  }
+  // findAll() is handled by ProductsController @Get('categories')
+  // CRUD operations below only use :id, :slug, POST, PUT, DELETE
 
   @Get(':id')
   @ApiOperation({ summary: 'Get category by id' })

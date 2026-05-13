@@ -70,18 +70,6 @@ export async function getCategories(): Promise<ProductCategory[]> {
   return [];
 }
 
-export async function getCategoryBySlug(slug: string): Promise<ProductCategory | null> {
-  try {
-    const response = await fetch(`${API_URL}/api/products/categories/${slug}`);
-    if (response.ok) {
-      return response.json();
-    }
-  } catch (error) {
-    console.error('Failed to fetch category:', error);
-  }
-  return null;
-}
-
 export async function getProducts(categoryId?: number): Promise<Product[]> {
   try {
     const url = categoryId

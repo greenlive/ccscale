@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { Search, Filter, ArrowRight, ShoppingCart, X } from 'lucide-react';
+import { Search, ArrowRight, X } from 'lucide-react';
 import { Card, CardContent } from '@cc-scale/ui';
 import { Button, Input } from '@cc-scale/ui';
 import { QuickInquiryButton } from '@/components/inquiry/QuickInquiryButton';
-import { useProducts, useProductCategories } from '@/lib/api/queries';
+import { useProducts, useProductCategories, ProductCategory } from '@/lib/api/queries';
 import { GridSkeleton, ErrorBoundary } from '@/components/ErrorBoundary';
+import CategorySidebar from '@/components/CategorySidebar';
 
 // Default categories for initial render (before API loads)
 const defaultCategories = [
@@ -18,12 +19,12 @@ const defaultCategories = [
 
 // Extended fallback categories (used when API returns empty)
 const fallbackCategories = [
-  { id: 'all', nameEn: 'All Products', nameZh: '全部产品' },
-  { id: 'body-scales', nameEn: 'Body Scales', nameZh: '体重秤' },
-  { id: 'hanging-scales', nameEn: 'Hanging Scales', nameZh: '吊秤' },
-  { id: 'kitchen-scales', nameEn: 'Kitchen Scales', nameZh: '厨房秤' },
-  { id: 'baby-scales', nameEn: 'Baby Scales', nameZh: '婴儿秤' },
-  { id: 'dial-scales', nameEn: 'Dial Scales', nameZh: '度盘秤' },
+  { id: 'all', nameEn: 'All Products', nameZh: '全部产品', productCount: 6 },
+  { id: 'body-scales', nameEn: 'Body Scales', nameZh: '体重秤', productCount: 2 },
+  { id: 'hanging-scales', nameEn: 'Hanging Scales', nameZh: '吊秤', productCount: 2 },
+  { id: 'kitchen-scales', nameEn: 'Kitchen Scales', nameZh: '厨房秤', productCount: 2 },
+  { id: 'baby-scales', nameEn: 'Baby Scales', nameZh: '婴儿秤', productCount: 0 },
+  { id: 'dial-scales', nameEn: 'Dial Scales', nameZh: '度盘秤', productCount: 0 },
 ];
 
 // Mock products data for now (will be replaced by API)
@@ -119,12 +120,13 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
   const categories = useMemo(() => {
     if (apiCategories.length > 0) {
       return [
-        { id: 'all', nameEn: 'All Products', nameZh: '全部产品', slug: 'all' },
-        ...apiCategories.map((cat: any) => ({
+        { id: 'all', nameEn: 'All Products', nameZh: '全部产品', slug: 'all', productCount: apiProducts.length || 0 },
+        ...apiCategories.map((cat: ProductCategory) => ({
           id: cat.slug || String(cat.id),
-          nameEn: cat.nameEn || cat.name || '',
-          nameZh: cat.nameZh || cat.name || cat.nameEn || '',
+          nameEn: cat.nameEn || '',
+          nameZh: cat.nameZh || cat.nameEn || '',
           slug: cat.slug || String(cat.id),
+          productCount: cat.products?.length || 0,
         })),
       ];
     }
@@ -299,161 +301,171 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
         </div>
       </section>
 
-      {/* Filters - Warm parchment theme */}
-      <section className="py-8 bg-ivory border-b border-border-cream sticky top-16 z-40">
+      {/* Main content: Sidebar + Products */}
+      <section className="py-16 bg-parchment">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Category Pills - Horizontal scroll on mobile */}
-            <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto -mx-4 md:mx-0 px-4 md:px-0 no-scrollbar">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => handleCategoryChange(cat.id)}
-                  className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
-                    selectedCategory === cat.id
-                      ? 'bg-terracotta text-ivory shadow-ring-terracotta'
-                      : 'bg-warm-sand text-charcoal-warm hover:bg-warm-sand/80 hover:text-foreground shadow-ring-warm'
-                  }`}
-                >
-                  {locale === 'en' ? cat.nameEn : cat.nameZh}
-                </button>
-              ))}
-            </div>
+          <div className="flex gap-8">
+            {/* Left sidebar - hidden below lg */}
+            <CategorySidebar
+              categories={categories}
+              selectedCategory={selectedCategory}
+              searchQuery={searchQuery}
+              resultCount={filteredProducts.length}
+              locale={locale}
+              onCategoryChange={handleCategoryChange}
+              onSearchChange={setSearchQuery}
+              onClearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
 
-            {/* Search */}
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-gray" />
-              <Input
-                type="text"
-                placeholder={locale === 'en' ? 'Search products...' : '搜索产品...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label={locale === 'en' ? 'Search products' : '搜索产品'}
-                className="pl-10"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-gray hover:text-charcoal-warm"
-                  aria-label={locale === 'en' ? 'Clear search' : '清除搜索'}
-                >
-                  <X className="h-4 w-4" />
-                </button>
+            {/* Right content */}
+            <div className="flex-1 min-w-0">
+              {/* Mobile filter bar - visible only below lg */}
+              <div className="lg:hidden mb-8">
+                <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 md:mx-0 px-4 md:px-0 no-scrollbar">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => handleCategoryChange(cat.id)}
+                      className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                        selectedCategory === cat.id
+                          ? 'bg-terracotta text-ivory shadow-ring-terracotta'
+                          : 'bg-warm-sand text-charcoal-warm hover:bg-warm-sand/80 hover:text-foreground shadow-ring-warm'
+                      }`}
+                    >
+                      {locale === 'en' ? cat.nameEn : cat.nameZh}
+                    </button>
+                  ))}
+                </div>
+                <div className="relative mt-3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-gray" />
+                  <Input
+                    type="text"
+                    placeholder={locale === 'en' ? 'Search products...' : '搜索产品...'}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label={locale === 'en' ? 'Search products' : '搜索产品'}
+                    className="pl-10"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-gray hover:text-charcoal-warm"
+                      aria-label={locale === 'en' ? 'Clear search' : '清除搜索'}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                {hasActiveFilters && (
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border-cream">
+                    <span className="text-sm text-stone-gray">
+                      {isZh
+                        ? `显示 ${filteredProducts.length} 个产品`
+                        : `Showing ${filteredProducts.length} products`}
+                    </span>
+                    <button
+                      onClick={clearFilters}
+                      className="text-sm text-terracotta hover:text-coral flex items-center gap-1"
+                    >
+                      <X className="h-3 w-3" />
+                      {isZh ? '清除筛选' : 'Clear filters'}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Products Grid */}
+              {filteredProducts.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="max-w-md mx-auto">
+                    <Search className="h-16 w-16 text-warm-silver mx-auto mb-4" />
+                    <h3 className="text-xl font-serif font-medium text-charcoal-warm mb-2">
+                      {isZh ? '未找到相关产品' : 'No products found'}
+                    </h3>
+                    <p className="text-stone-gray mb-6">
+                      {isZh
+                        ? '尝试调整筛选条件或搜索关键词'
+                        : 'Try adjusting your filters or search terms'}
+                    </p>
+                    {hasActiveFilters && (
+                      <Button
+                        onClick={clearFilters}
+                        variant="outline"
+                        className="border-terracotta text-terracotta hover:bg-terracotta hover:text-ivory"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        {isZh ? '清除所有筛选' : 'Clear all filters'}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {filteredProducts.map((product) => {
+                    const name = locale === 'en' ? product.name.en : product.name.zh;
+                    return (
+                      <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
+                        <Link href={`/products/${product.slug}`}>
+                          <div className="relative aspect-[4/3] overflow-hidden bg-warm-sand">
+                            <img
+                              src={product.image}
+                              alt={name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                            {product.isFeatured && (
+                              <div className="absolute top-4 left-4">
+                                <span className="bg-terracotta text-ivory text-xs font-medium px-3 py-1 rounded-lg">
+                                  {locale === 'en' ? 'Featured' : '精选'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                        <CardContent className="p-5 flex-1 flex flex-col">
+                          <div className="flex-1">
+                            <div className="text-sm text-stone-gray mb-1">SKU: {product.sku}</div>
+                            <Link href={`/products/${product.slug}`}>
+                              <h3 className="font-serif text-lg text-foreground mb-2 group-hover:text-terracotta transition-colors">
+                                {name}
+                              </h3>
+                            </Link>
+                            <div className="flex items-center justify-between text-sm text-olive-gray mb-3">
+                              <div>
+                                <span className="font-medium">${product.priceMin}</span>
+                                {product.priceMax && <span> - ${product.priceMax}</span>}
+                              </div>
+                              <div>
+                                {t('moq')}: {product.moq}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mt-auto space-y-3">
+                            <Link href={`/products/${product.slug}`} className="flex items-center text-terracotta font-medium text-sm">
+                              {t('viewDetails')}
+                              <ArrowRight className="ml-1 h-4 w-4" />
+                            </Link>
+                            <QuickInquiryButton
+                              product={{
+                                id: product.id,
+                                nameEn: product.name?.en || '',
+                                nameZh: product.name?.zh || '',
+                                sku: product.sku || '',
+                                mainImage: product.image || '',
+                                priceMin: product.priceMin || 0,
+                                priceMax: product.priceMax || 0,
+                              }}
+                              className="w-full justify-center"
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
-
-          {/* Active filters indicator */}
-          {hasActiveFilters && (
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-border-cream">
-              <span className="text-sm text-stone-gray">
-                {isZh
-                  ? `显示 ${filteredProducts.length} 个产品`
-                  : `Showing ${filteredProducts.length} products`}
-              </span>
-              <button
-                onClick={clearFilters}
-                className="text-sm text-terracotta hover:text-coral flex items-center gap-1"
-              >
-                <X className="h-3 w-3" />
-                {isZh ? '清除筛选' : 'Clear filters'}
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Products Grid - Warm parchment theme */}
-      <section className="py-16 bg-parchment">
-        <div className="container mx-auto px-4">
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="max-w-md mx-auto">
-                <Search className="h-16 w-16 text-warm-silver mx-auto mb-4" />
-                <h3 className="text-xl font-serif font-medium text-charcoal-warm mb-2">
-                  {isZh ? '未找到相关产品' : 'No products found'}
-                </h3>
-                <p className="text-stone-gray mb-6">
-                  {isZh
-                    ? '尝试调整筛选条件或搜索关键词'
-                    : 'Try adjusting your filters or search terms'}
-                </p>
-                {hasActiveFilters && (
-                  <Button
-                    onClick={clearFilters}
-                    variant="outline"
-                    className="border-terracotta text-terracotta hover:bg-terracotta hover:text-ivory"
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    {isZh ? '清除所有筛选' : 'Clear all filters'}
-                  </Button>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProducts.map((product) => {
-                const name = locale === 'en' ? product.name.en : product.name.zh;
-                return (
-                  <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
-                    <Link href={`/products/${product.slug}`}>
-                      <div className="relative aspect-[4/3] overflow-hidden bg-warm-sand">
-                        <img
-                          src={product.image}
-                          alt={name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {product.isFeatured && (
-                          <div className="absolute top-4 left-4">
-                            <span className="bg-terracotta text-ivory text-xs font-medium px-3 py-1 rounded-lg">
-                              {locale === 'en' ? 'Featured' : '精选'}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                    <CardContent className="p-5 flex-1 flex flex-col">
-                      <div className="flex-1">
-                        <div className="text-sm text-stone-gray mb-1">SKU: {product.sku}</div>
-                        <Link href={`/products/${product.slug}`}>
-                          <h3 className="font-serif text-lg text-foreground mb-2 group-hover:text-terracotta transition-colors">
-                            {name}
-                          </h3>
-                        </Link>
-                        <div className="flex items-center justify-between text-sm text-olive-gray mb-3">
-                          <div>
-                            <span className="font-medium">${product.priceMin}</span>
-                            {product.priceMax && <span> - ${product.priceMax}</span>}
-                          </div>
-                          <div>
-                            {t('moq')}: {product.moq}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-auto space-y-3">
-                        <Link href={`/products/${product.slug}`} className="flex items-center text-terracotta font-medium text-sm">
-                          {t('viewDetails')}
-                          <ArrowRight className="ml-1 h-4 w-4" />
-                        </Link>
-                        <QuickInquiryButton
-                          product={{
-                            id: product.id,
-                            nameEn: product.name?.en || '',
-                            nameZh: product.name?.zh || '',
-                            sku: product.sku || '',
-                            mainImage: product.image || '',
-                            priceMin: product.priceMin || 0,
-                            priceMax: product.priceMax || 0,
-                          }}
-                          className="w-full justify-center"
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
         </div>
       </section>
 

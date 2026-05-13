@@ -472,7 +472,10 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             {/* Product Header */}
             <div className="bg-white border border-gray-200 rounded-xl p-6">
               <div className="text-sm text-gray-500 mb-2">
-                {product.category?.name || (isZh ? '产品分类' : 'Product')}
+                {(isZh
+                  ? ((product.category as any)?.nameZh || (product.category as any)?.name || '产品分类')
+                  : ((product.category as any)?.nameEn || (product.category as any)?.name || 'Product')
+                )}
               </div>
               <h1 className="text-2xl font-bold text-primary mb-2">
                 {name}
