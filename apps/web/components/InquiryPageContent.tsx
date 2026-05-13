@@ -25,7 +25,7 @@ export default function InquiryPageContent() {
   return (
     <div>
       {/* Hero - Warm parchment theme */}
-      <section className="bg-gradient-to-br from-dark-surface to-dark-warm text-ivory py-12">
+      <section className="bg-gradient-to-br from-dark-surface to-dark-warm text-ivory py-8 md:py-12">
         <div className="container mx-auto px-4">
           <Link
             href="/products"

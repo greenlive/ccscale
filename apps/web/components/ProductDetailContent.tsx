@@ -178,7 +178,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
       </div>
 
       {/* Main Content - New Layout with Sticky Right Column */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pb-20 xl:pb-8">
         <div className="flex flex-col xl:flex-row gap-8 xl:gap-12">
           {/* Left Column - Scrollable Content */}
           <div className="flex-1 space-y-6">

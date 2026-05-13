@@ -1,7 +1,7 @@
 'use client'
 
 import { X, ArrowRight, MessageSquare, Send, Undo2 } from 'lucide-react'
-import { useTranslations, useLocale } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import { useInquiryCart, useCartIsEmpty, useCartItemCount } from '@/stores/inquiry-cart'
 import { getStoredTrackingData } from '@/lib/utils/tracking'
@@ -22,7 +22,6 @@ interface InquiryCartDrawerProps {
 }
 
 export function InquiryCartDrawer({ open, onClose }: InquiryCartDrawerProps) {
-  const t = useTranslations('inquiry')
   const locale = useLocale() as 'en' | 'zh'
   const cart = useInquiryCart((state) => state.cart)
   const addItem = useInquiryCart((state) => state.addItem)
@@ -99,7 +98,7 @@ export function InquiryCartDrawer({ open, onClose }: InquiryCartDrawerProps) {
       <div className="absolute inset-0 bg-black/50 transition-opacity" />
 
       <div className={cn(
-        'relative w-full max-w-md bg-white h-full shadow-xl transform transition-transform',
+        'relative w-full max-w-md bg-white h-full shadow-xl transform transition-transform flex flex-col',
         open ? 'translate-x-0' : 'translate-x-full'
       )}>
         <div className="flex items-center justify-between p-4 border-b">
@@ -249,7 +248,6 @@ const isValidPhone = (phone: string): boolean => {
 
 // Inline inquiry form for drawer
 function DrawerInquiryForm({ onSuccess }: { onSuccess: () => void }) {
-  const t = useTranslations('inquiry')
   const locale = useLocale()
   const cart = useInquiryCart((state) => state.cart)
   const clearCart = useInquiryCart((state) => state.clearCart)
@@ -323,13 +321,21 @@ function DrawerInquiryForm({ onSuccess }: { onSuccess: () => void }) {
       }))
 
       const { landingPage: _landingPage, ...trackingData } = getStoredTrackingData();
+      const { trafficSource, utmSource, utmMedium, utmCampaign, utmContent, utmTerm, referrer } = trackingData;
 
       const inquiryData = {
         ...formData,
         message: cart.message || '',
         source: 'Website',
         items: items.length > 0 ? items : undefined,
-        ...trackingData,
+        // Only whitelist tracking fields the backend DTO accepts
+        ...(trafficSource ? { trafficSource } : {}),
+        ...(utmSource ? { utmSource } : {}),
+        ...(utmMedium ? { utmMedium } : {}),
+        ...(utmCampaign ? { utmCampaign } : {}),
+        ...(utmContent ? { utmContent } : {}),
+        ...(utmTerm ? { utmTerm } : {}),
+        ...(referrer ? { referrer } : {}),
       }
 
       const response = await fetch(getApiUrl('inquiries'), {

@@ -103,12 +103,13 @@ export default function InquiryForm() {
         productId: item.productId,
         productNameEn: item.productName.en,
         productNameZh: item.productName.zh,
-        quantity: item.quantity,
+        quantity: item.quantity || 1,
         unitPrice: item.priceMin,
       }));
 
-      // Get tracking data, strip landingPage (not in DTO)
+      // Get tracking data, strip landingPage (not in DTO) and whitelist only accepted fields
       const { landingPage: _landingPage, ...trackingData } = getStoredTrackingData();
+      const { trafficSource, utmSource, utmMedium, utmCampaign, utmContent, utmTerm, referrer } = trackingData;
 
       // Prepare the inquiry data
       const inquiryData = {
@@ -116,11 +117,18 @@ export default function InquiryForm() {
         message: formData.message || cart.message || '',
         source: 'Website',
         items: items.length > 0 ? items : undefined,
-        ...trackingData,
+        // Only whitelist tracking fields the backend DTO accepts
+        ...(trafficSource ? { trafficSource } : {}),
+        ...(utmSource ? { utmSource } : {}),
+        ...(utmMedium ? { utmMedium } : {}),
+        ...(utmCampaign ? { utmCampaign } : {}),
+        ...(utmContent ? { utmContent } : {}),
+        ...(utmTerm ? { utmTerm } : {}),
+        ...(referrer ? { referrer } : {}),
       };
 
       // Submit using React Query mutation
-      await submitInquiry.mutateAsync(inquiryData as any);
+      await submitInquiry.mutateAsync(inquiryData);
 
       setFormStatus('success');
       setFormData({
@@ -141,13 +149,6 @@ export default function InquiryForm() {
       console.error('Error submitting inquiry:', error);
       setFormStatus('error');
     }
-  };
-
-  const errorMessages = {
-    fullName: locale === 'en' ? 'Full name is required' : '请输入您的姓名',
-    email: locale === 'en' ? 'Valid email is required' : '请输入有效的邮箱',
-    phone: locale === 'en' ? 'Invalid phone format' : '电话格式不正确',
-    message: locale === 'en' ? 'Message is required (min 10 characters)' : '请输入留言（至少10个字符）',
   };
 
   return (
@@ -184,7 +185,7 @@ export default function InquiryForm() {
           </Button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-charcoal-warm mb-2">
