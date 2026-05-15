@@ -411,11 +411,11 @@ export function useSocialMediaSettings() {
       }
       const settings: Record<string, string> = await response.json();
       return {
-        facebook: settings['social_facebook'] || '',
-        instagram: settings['social_instagram'] || '',
-        linkedin: settings['social_linkedin'] || '',
-        twitter: settings['social_twitter'] || '',
-        youtube: settings['social_youtube'] || '',
+        facebook: settings['socialFacebook'] || '',
+        instagram: settings['socialInstagram'] || '',
+        linkedin: settings['socialLinkedIn'] || '',
+        twitter: settings['socialTwitter'] || '',
+        youtube: settings['socialYouTube'] || '',
       };
     },
     staleTime: 60 * 60 * 1000,

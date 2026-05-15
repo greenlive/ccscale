@@ -1,14 +1,57 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Globe, Mail, Phone, MessageCircle, Facebook, Linkedin, Youtube, Instagram, Twitter, Image, Video, FileText, ExternalLink, Heart } from 'lucide-react';
+import { Save, Globe, Mail, Phone, MessageCircle, Facebook, Linkedin, Youtube, Instagram, Twitter, Image, Video, Heart } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
+import { api } from '@/lib/apiClient';
+import { ImageUploadField } from '@/components/ImageUploadField';
+import { MultiImageUpload } from '@/components/MultiImageUpload';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Backend field mapping - frontend name -> backend key
+const FIELD_MAPPING: Record<string, string> = {
+  // Basic Settings
+  siteNameEn: 'seo_title_en',
+  siteNameZh: 'seo_title_zh',
+  siteDescriptionEn: 'seo_description_en',
+  siteDescriptionZh: 'seo_description_zh',
+  // Company Media
+  companyLogo: 'companyLogo',
+  companyBanner: 'companyBanner',
+  companyVideo: 'companyVideo',
+  companyPhotos: 'companyPhotos',
+  // Contact
+  contactEmail: 'contact_email',
+  contactPhone: 'contact_phone',
+  contactWhatsApp: 'contact_whatsapp',
+  contactAddressEn: 'company_address_en',
+  contactAddressZh: 'company_address_zh',
+  contactWorkingHoursEn: 'contactWorkingHoursEn',
+  contactWorkingHoursZh: 'contactWorkingHoursZh',
+  // Social Media
+  socialFacebook: 'socialFacebook',
+  socialLinkedIn: 'socialLinkedIn',
+  socialYouTube: 'socialYouTube',
+  socialInstagram: 'socialInstagram',
+  socialTwitter: 'socialTwitter',
+  socialAlibaba: 'socialAlibaba',
+  socialMadeInChina: 'socialMadeInChina',
+  // Social Media Content URLs
+  socialYoutubeContentUrl: 'socialYoutubeContentUrl',
+  socialFacebookContentUrl: 'socialFacebookContentUrl',
+  socialLinkedInContentUrl: 'socialLinkedInContentUrl',
+  socialInstagramContentUrl: 'socialInstagramContentUrl',
+  socialTikTokContentUrl: 'socialTikTokContentUrl',
+};
 
+// Reverse mapping for saving
+const REVERSE_FIELD_MAPPING: Record<string, string> = Object.fromEntries(
+  Object.entries(FIELD_MAPPING).map(([frontend, backend]) => [backend, frontend])
+);
+
+// All fields that should be saved to backend
 interface SiteSettings {
   // Basic
   siteNameEn: string;
@@ -36,7 +79,7 @@ interface SiteSettings {
   socialTwitter: string;
   socialAlibaba: string;
   socialMadeInChina: string;
-  // Social Media Content URLs (for frontend showcase)
+  // Social Media Content URLs
   socialYoutubeContentUrl: string;
   socialFacebookContentUrl: string;
   socialLinkedInContentUrl: string;
@@ -94,10 +137,20 @@ export default function SettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/site-settings`);
-      if (response.ok) {
-        const data = await response.json();
-        setSettings((prev) => ({ ...prev, ...data }));
+      const result = await api.get<Record<string, string>>('/site-settings');
+      if (result.success && result.data) {
+        // Map backend keys to frontend field names
+        const mappedData: Partial<SiteSettings> = {};
+        Object.entries(result.data).forEach(([backendKey, value]) => {
+          const frontendKey = REVERSE_FIELD_MAPPING[backendKey];
+          if (frontendKey) {
+            (mappedData as Record<string, string>)[frontendKey] = value;
+          } else {
+            // For keys not in mapping, use as-is (camelCase)
+            (mappedData as Record<string, string>)[backendKey] = value;
+          }
+        });
+        setSettings((prev) => ({ ...prev, ...mappedData }));
       }
     } catch (error) {
       console.error('Failed to fetch settings:', error);
@@ -111,22 +164,22 @@ export default function SettingsPage() {
     setMessage(null);
 
     try {
-      const settingsArray = Object.entries(settings).map(([key, value]) => ({
-        key,
-        value: String(value),
-      }));
-
-      const response = await fetch(`${API_URL}/api/site-settings`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settingsArray),
+      // Convert frontend field names to backend keys for saving
+      const settingsArray = Object.entries(settings).map(([frontendKey, value]) => {
+        const backendKey = FIELD_MAPPING[frontendKey] || frontendKey;
+        return {
+          key: backendKey,
+          value: String(value),
+        };
       });
 
-      if (response.ok) {
+      const result = await api.put('/site-settings', settingsArray);
+
+      if (result.success) {
         setMessage({ type: 'success', text: 'Settings saved successfully!' });
         setTimeout(() => setMessage(null), 3000);
       } else {
-        setMessage({ type: 'error', text: 'Failed to save settings' });
+        setMessage({ type: 'error', text: result.error?.message || 'Failed to save settings' });
       }
     } catch (error) {
       console.error('Failed to save settings:', error);
@@ -279,53 +332,23 @@ export default function SettingsPage() {
                 <CardTitle>Company Logo & Banner / 公司Logo和横幅</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                    <Image className="h-4 w-4" />
-                    Company Logo URL
-                  </label>
-                  <Input
-                    value={settings.companyLogo}
-                    onChange={(e) => handleChange('companyLogo', e.target.value)}
-                    placeholder="https://example.com/logo.png"
-                  />
-                  {settings.companyLogo && (
-                    <div className="mt-2">
-                      <img
-                        src={settings.companyLogo}
-                        alt="Company Logo Preview"
-                        className="h-16 max-w-full object-contain border rounded p-2 bg-white"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
+                <ImageUploadField
+                  label="Company Logo"
+                  value={settings.companyLogo}
+                  onChange={(url) => handleChange('companyLogo', url)}
+                  uploadType="company-logo"
+                  hint="Upload company logo (PNG, JPG, WebP)"
+                  previewHeight="h-16"
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                    <Image className="h-4 w-4" />
-                    Company Banner URL (Homepage Hero)
-                  </label>
-                  <Input
-                    value={settings.companyBanner}
-                    onChange={(e) => handleChange('companyBanner', e.target.value)}
-                    placeholder="https://example.com/banner.jpg"
-                  />
-                  {settings.companyBanner && (
-                    <div className="mt-2">
-                      <img
-                        src={settings.companyBanner}
-                        alt="Company Banner Preview"
-                        className="h-32 max-w-full object-cover border rounded"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
+                <ImageUploadField
+                  label="Company Banner URL (Homepage Hero)"
+                  value={settings.companyBanner}
+                  onChange={(url) => handleChange('companyBanner', url)}
+                  uploadType="company-banner"
+                  hint="Upload banner image for homepage hero section"
+                  previewHeight="h-32"
+                />
               </CardContent>
             </Card>
 
@@ -367,41 +390,17 @@ export default function SettingsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Company Photos / 公司图片 (Multiple URLs)</CardTitle>
+                <CardTitle>Company Photos / 公司图片</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Photo URLs (one per line)
-                  </label>
-                  <textarea
-                    value={settings.companyPhotos}
-                    onChange={(e) => handleChange('companyPhotos', e.target.value)}
-                    rows={6}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent"
-                    placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg&#10;https://example.com/photo3.jpg"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter one image URL per line. These will be displayed in a gallery.
-                  </p>
-                </div>
-                {settings.companyPhotos && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {settings.companyPhotos.split('\n').filter(url => url.trim()).map((url, index) => (
-                      <div key={index} className="border rounded p-2 bg-gray-50">
-                        <img
-                          src={url.trim()}
-                          alt={`Company photo ${index + 1}`}
-                          className="h-24 w-full object-cover rounded"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/placeholder.png';
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <MultiImageUpload
+                  label="Company Photos Gallery"
+                  value={settings.companyPhotos}
+                  onChange={(urls) => handleChange('companyPhotos', urls)}
+                  uploadType="company-photos"
+                  hint="Add more photos"
+                  maxImages={10}
+                />
               </CardContent>
             </Card>
           </>
