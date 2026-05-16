@@ -3,9 +3,10 @@
  * Automatically attaches Bearer tokens and handles 401 responses with retry logic
  */
 
-import { ensureValidToken, clearStoredAuth, getStoredToken } from './auth';
+import { ensureValidToken, clearStoredAuth, getStoredRefreshToken, getStoredUser, refreshAccessToken, setStoredAuth } from './auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Use relative URLs so requests go through Next.js rewrites, avoiding CORS issues
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 const MAX_RETRIES = 1; // Retry once on 401
 
 export interface ApiError {
@@ -75,10 +76,17 @@ async function apiRequest<T>(
 
     // Handle 401 Unauthorized
     if (response.status === 401 && retryCount < MAX_RETRIES) {
-      // Try to refresh token and retry
-      const refreshed = await ensureValidToken();
-      if (refreshed) {
-        return apiRequest<T>(endpoint, options, retryCount + 1);
+      // Force a token refresh (don't rely on ensureValidToken which may return the same bad token)
+      const storedRefreshToken = getStoredRefreshToken();
+      if (storedRefreshToken) {
+        const result = await refreshAccessToken(storedRefreshToken);
+        if (result) {
+          const user = getStoredUser();
+          if (user) {
+            setStoredAuth(result.accessToken, user, storedRefreshToken);
+            return apiRequest<T>(endpoint, options, retryCount + 1);
+          }
+        }
       }
       // Refresh failed, redirect to login
       if (typeof window !== 'undefined') {

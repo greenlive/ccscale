@@ -1,4 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Use relative URLs so requests go through Next.js rewrites, avoiding CORS issues
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 export interface AdminUser {
   id: number;
@@ -28,7 +29,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<{ access
     });
 
     if (response.ok) {
-      return response.json();
+      return await response.json();
     }
     return null;
   } catch {
@@ -217,6 +218,9 @@ export async function ensureValidToken(): Promise<string | null> {
         return newToken.accessToken;
       }
     }
+    // Refresh also failed — clear auth so the caller redirects to login
+    clearStoredAuth();
+    return null;
   }
 
   return token;
