@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import SkipToMain from '@/components/SkipToMain';
 import { OrganizationSchema, WebSiteSchema } from '@/components/SchemaOrg';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
+import { getSiteSettings } from '@/lib/api/server-settings';
 const AnalyticsTracker = dynamic(() => import('@/components/AnalyticsTracker').then(m => ({ default: m.AnalyticsTracker })), { ssr: false });
 import '../globals.css';
 
@@ -35,14 +36,17 @@ export async function generateMetadata({
   params: { locale },
 }: Omit<Props, 'children'>): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'home' });
+  const settings = await getSiteSettings();
 
   const title = locale === 'en'
-    ? 'CC Scale - Professional Weighing Solutions Manufacturer'
-    : 'CC Scale - 专业衡器制造商';
+    ? (settings.seoTitleEn || 'CC Scale - Professional Weighing Solutions Manufacturer')
+    : (settings.seoTitleZh || 'CC Scale - 专业衡器制造商');
 
   const description = locale === 'en'
-    ? 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales. OEM/ODM solutions for global B2B buyers.'
-    : '高品质衡器制造商，提供体重秤、吊秤、厨房秤、婴儿秤等产品。为全球B2B买家提供OEM/ODM解决方案。';
+    ? (settings.seoDescriptionEn || 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales. OEM/ODM solutions for global B2B buyers.')
+    : (settings.seoDescriptionZh || '高品质衡器制造商，提供体重秤、吊秤、厨房秤、婴儿秤等产品。为全球B2B买家提供OEM/ODM解决方案。');
+
+  const siteName = settings.companyNameEn || 'CC Scale';
 
   const alternates: Metadata['alternates'] = {
     canonical: `${baseUrl}/${locale}`,
@@ -61,7 +65,7 @@ export async function generateMetadata({
       description,
       url: `${baseUrl}/${locale}`,
       locale: locale === 'en' ? 'en_US' : 'zh_CN',
-      siteName: 'CC Scale',
+      siteName,
       type: 'website',
     },
     twitter: {

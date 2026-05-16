@@ -8,7 +8,7 @@ interface ImageUploadFieldProps {
   label: string;
   value: string;
   onChange: (url: string) => void;
-  uploadType?: 'general' | 'company-logo' | 'company-banner';
+  uploadType?: string;
   hint?: string;
   previewHeight?: string;
 }

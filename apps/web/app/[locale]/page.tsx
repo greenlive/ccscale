@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
@@ -47,6 +48,24 @@ function HomePageContent() {
       </section>
     </div>
   );
+}
+
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+  const isZh = locale === 'zh';
+  return {
+    title: isZh ? 'CC Scale - 专业衡器制造商' : 'CC Scale - Professional Weighing Solutions Manufacturer',
+    description: isZh
+      ? '高品质衡器的领先制造商。专业B2B衡器制造，提供体重秤、吊秤、厨房秤、婴儿秤等产品，厂家直销价格。'
+      : 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales, and more. B2B wholesale with factory-direct pricing.',
+    openGraph: {
+      title: isZh ? 'CC Scale - 专业衡器制造商' : 'CC Scale - Professional Weighing Solutions Manufacturer',
+      description: isZh
+        ? '高品质衡器的领先制造商。专业B2B衡器制造，提供体重秤、吊秤、厨房秤、婴儿秤等产品，厂家直销价格。'
+        : 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales, and more. B2B wholesale with factory-direct pricing.',
+      locale: isZh ? 'zh_CN' : 'en_US',
+      type: 'website',
+    },
+  };
 }
 
 export default function HomePage() {

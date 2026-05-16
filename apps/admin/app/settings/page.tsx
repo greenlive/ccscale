@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Globe, Mail, Phone, MessageCircle, Facebook, Linkedin, Youtube, Instagram, Twitter, Image, Video, Heart } from 'lucide-react';
+import { Save, Globe, Mail, Phone, MessageCircle, Facebook, Linkedin, Youtube, Instagram, Twitter, Image, Video, Heart, Building, Shield } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
@@ -11,39 +11,26 @@ import { ImageUploadField } from '@/components/ImageUploadField';
 import { MultiImageUpload } from '@/components/MultiImageUpload';
 
 // Backend field mapping - frontend name -> backend key
+// Only entries where frontend field name differs from backend key
 const FIELD_MAPPING: Record<string, string> = {
-  // Basic Settings
-  siteNameEn: 'seo_title_en',
-  siteNameZh: 'seo_title_zh',
-  siteDescriptionEn: 'seo_description_en',
-  siteDescriptionZh: 'seo_description_zh',
-  // Company Media
-  companyLogo: 'companyLogo',
-  companyBanner: 'companyBanner',
-  companyVideo: 'companyVideo',
-  companyPhotos: 'companyPhotos',
-  // Contact
-  contactEmail: 'contact_email',
-  contactPhone: 'contact_phone',
-  contactWhatsApp: 'contact_whatsapp',
-  contactAddressEn: 'company_address_en',
-  contactAddressZh: 'company_address_zh',
+  // Basic Settings (frontend uses user-friendly names, backend stores SEO-specific keys)
+  siteNameEn: 'seoTitleEn',
+  siteNameZh: 'seoTitleZh',
+  siteDescriptionEn: 'seoDescriptionEn',
+  siteDescriptionZh: 'seoDescriptionZh',
+  // Company Info
+  companyNameEn: 'companyNameEn',
+  companyNameZh: 'companyNameZh',
+  // Contact (frontend names match backend keys - listed for clarity)
+  contactEmail: 'contactEmail',
+  contactPhone: 'contactPhone',
+  contactWhatsApp: 'contactWhatsApp',
+  contactAddressEn: 'contactAddressEn',
+  contactAddressZh: 'contactAddressZh',
   contactWorkingHoursEn: 'contactWorkingHoursEn',
   contactWorkingHoursZh: 'contactWorkingHoursZh',
-  // Social Media
-  socialFacebook: 'socialFacebook',
-  socialLinkedIn: 'socialLinkedIn',
-  socialYouTube: 'socialYouTube',
-  socialInstagram: 'socialInstagram',
-  socialTwitter: 'socialTwitter',
-  socialAlibaba: 'socialAlibaba',
-  socialMadeInChina: 'socialMadeInChina',
-  // Social Media Content URLs
-  socialYoutubeContentUrl: 'socialYoutubeContentUrl',
-  socialFacebookContentUrl: 'socialFacebookContentUrl',
-  socialLinkedInContentUrl: 'socialLinkedInContentUrl',
-  socialInstagramContentUrl: 'socialInstagramContentUrl',
-  socialTikTokContentUrl: 'socialTikTokContentUrl',
+  // Legal
+  icpNumber: 'icpNumber',
 };
 
 // Reverse mapping for saving
@@ -58,6 +45,9 @@ interface SiteSettings {
   siteNameZh: string;
   siteDescriptionEn: string;
   siteDescriptionZh: string;
+  // Company Info
+  companyNameEn: string;
+  companyNameZh: string;
   // Company Media
   companyLogo: string;
   companyBanner: string;
@@ -85,13 +75,16 @@ interface SiteSettings {
   socialLinkedInContentUrl: string;
   socialInstagramContentUrl: string;
   socialTikTokContentUrl: string;
+  // Legal
+  icpNumber: string;
 }
 
 const TABS = [
   { id: 'basic', label: 'Basic Settings', icon: Globe },
-  { id: 'company', label: 'Company Media', icon: Image },
+  { id: 'company', label: 'Company Info & Media', icon: Building },
   { id: 'contact', label: 'Contact Info', icon: Phone },
   { id: 'social', label: 'Social Media', icon: MessageCircle },
+  { id: 'legal', label: 'Legal', icon: Shield },
 ];
 
 export default function SettingsPage() {
@@ -104,6 +97,8 @@ export default function SettingsPage() {
     siteNameZh: '',
     siteDescriptionEn: '',
     siteDescriptionZh: '',
+    companyNameEn: '',
+    companyNameZh: '',
     companyLogo: '',
     companyBanner: '',
     companyVideo: '',
@@ -127,6 +122,7 @@ export default function SettingsPage() {
     socialLinkedInContentUrl: '',
     socialInstagramContentUrl: '',
     socialTikTokContentUrl: '',
+    icpNumber: '',
   });
 
   useEffect(() => {
@@ -269,6 +265,30 @@ export default function SettingsPage() {
               <CardTitle>Basic Settings / 基本设置</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="font-medium text-gray-900 border-b pb-2">Company Name / 公司名称</h3>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Company Name (English)
+                  </label>
+                  <Input
+                    value={settings.companyNameEn}
+                    onChange={(e) => handleChange('companyNameEn', e.target.value)}
+                    placeholder="CC Scale Co., Ltd."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    公司名称
+                  </label>
+                  <Input
+                    value={settings.companyNameZh}
+                    onChange={(e) => handleChange('companyNameZh', e.target.value)}
+                    placeholder="CC衡器有限公司"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-4">
                 <h3 className="font-medium text-gray-900 border-b pb-2">English</h3>
                 <div>
@@ -673,6 +693,30 @@ export default function SettingsPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Legal */}
+        {activeTab === 'legal' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Legal Settings / 法律信息</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ICP Filing Number / ICP备案号
+                </label>
+                <Input
+                  value={settings.icpNumber}
+                  onChange={(e) => handleChange('icpNumber', e.target.value)}
+                  placeholder="浙ICP备XXXXXXXX号"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Shown in the website footer. Chinese website ICP filing number.
+                </p>
               </div>
             </CardContent>
           </Card>

@@ -91,6 +91,15 @@ export function ProductDetailContent({ slug }: { slug: string }) {
   const isZh = locale === 'zh';
   const [isFavorite, setIsFavorite] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [companyName, setCompanyName] = useState('CC Scale Co., Ltd');
+
+  // Fetch dynamic company name from site settings
+  useEffect(() => {
+    fetch('/api/site-settings')
+      .then(r => r.ok ? r.json() : {})
+      .then((data: Record<string, unknown>) => { if (data.companyNameEn) setCompanyName(String(data.companyNameEn)); })
+      .catch(() => {});
+  }, []);
 
   const { data: apiProduct, isLoading, error } = useProduct(slug);
   const { data: relatedProducts } = useRelatedProducts(apiProduct?.id ?? 0, 4);
@@ -147,7 +156,6 @@ export function ProductDetailContent({ slug }: { slug: string }) {
         description={product.descriptionEn || description}
         image={mainImageUrl}
         sku={product.sku}
-        brand="CC Scale"
         offers={{
           price: priceMin?.toString() || '0',
           priceCurrency: 'USD',
@@ -599,7 +607,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   <Factory className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <div className="font-semibold text-primary">CC Scale Co., Ltd</div>
+                  <div className="font-semibold text-primary">{companyName}</div>
                   <div className="text-sm text-gray-500">{isZh ? '认证制造商' : 'Verified Manufacturer'}</div>
                 </div>
               </div>

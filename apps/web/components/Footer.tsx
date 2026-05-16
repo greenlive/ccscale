@@ -7,12 +7,15 @@ import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Youtube, Instagram, C
 import { getApiUrl } from '@/lib/config/api';
 
 interface SiteSettings {
+  companyNameEn?: string;
+  companyNameZh?: string;
   contactEmail?: string;
   contactPhone?: string;
   contactWhatsApp?: string;
   contactAddressEn?: string;
   contactAddressZh?: string;
   contactWorkingHoursEn?: string;
+  contactWorkingHoursZh?: string;
   socialFacebook?: string;
   socialLinkedIn?: string;
   socialYouTube?: string;
@@ -55,6 +58,8 @@ export default function Footer({ locale }: { locale?: string }) {
   const [settings, setSettings] = useState<SiteSettings>({});
   const [loadError, setLoadError] = useState(false);
   const isZh = locale === 'zh';
+  const brandName = settings.companyNameEn || 'CC Scale';
+  const brandNameZh = settings.companyNameZh || 'CC衡器';
 
   useEffect(() => {
     fetchSettings();
@@ -98,7 +103,7 @@ export default function Footer({ locale }: { locale?: string }) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {/* Brand & Description */}
             <div className="col-span-1">
-              <h3 className="text-2xl font-bold mb-4">CC Scale</h3>
+              <h3 className="text-2xl font-bold mb-4">{isZh ? brandNameZh : brandName}</h3>
               <p className="text-gray-400 mb-4 text-sm">
                 {isZh ? '专业衡器解决方案，服务全球市场' : 'Professional weighing solutions for global markets.'}
               </p>
@@ -201,7 +206,7 @@ export default function Footer({ locale }: { locale?: string }) {
               )}
               {settings.contactWorkingHoursEn && (
                 <li className="text-gray-400 text-sm mt-2 pt-2 border-t border-gray-800">
-                  {isZh ? '工作时间' : 'Working Hours'}: {settings.contactWorkingHoursEn}
+                  {isZh ? '工作时间' : 'Working Hours'}: {isZh ? (settings.contactWorkingHoursZh || settings.contactWorkingHoursEn) : settings.contactWorkingHoursEn}
                 </li>
               )}
             </ul>
@@ -258,7 +263,7 @@ export default function Footer({ locale }: { locale?: string }) {
         {/* Copyright & Legal */}
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} CC Scale. {isZh ? '保留所有权利。' : 'All rights reserved.'}
+            &copy; {new Date().getFullYear()} {isZh ? brandNameZh : brandName}. {isZh ? '保留所有权利。' : 'All rights reserved.'}
           </p>
           <div className="flex flex-wrap justify-center md:justify-end gap-4 md:gap-6">
             <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">{t('privacy')}</Link>
@@ -268,7 +273,7 @@ export default function Footer({ locale }: { locale?: string }) {
                 {t('icp')}: {settings.icpNumber}
               </a>
             ) : (
-              <span className="text-gray-400 text-sm">{t('icp')}: 浙ICP备XXXXXXXX号</span>
+              <span className="text-gray-400 text-sm">{t('icp')}: {settings.icpNumber || '浙ICP备XXXXXXXX号'}</span>
             )}
           </div>
         </div>

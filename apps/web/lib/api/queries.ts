@@ -400,6 +400,28 @@ export function useSubmitInquiry() {
   });
 }
 
+// Page Content Hooks
+export interface PageContent {
+  id: number;
+  pageKey: string;
+  titleEn: string;
+  titleZh: string;
+  contentEn?: string;
+  contentZh?: string;
+  metaEn?: string;
+  metaZh?: string;
+  updatedAt: string;
+}
+
+export function usePageContent(pageKey: string) {
+  return useQuery({
+    queryKey: ['page-content', pageKey],
+    queryFn: () => fetchApi<PageContent>(`/page-content/${pageKey}`),
+    enabled: !!pageKey,
+    staleTime: 60 * 60 * 1000, // Settings rarely change
+  });
+}
+
 // Social Media Settings Hook
 export function useSocialMediaSettings() {
   return useQuery({

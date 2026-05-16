@@ -7,6 +7,7 @@ import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { Button, cn } from '@cc-scale/ui';
 import { InquiryCartButton } from '@/components/inquiry/InquiryCartButton';
 import { InquiryCartDrawer } from '@/components/inquiry/InquiryCartDrawer';
+import { getApiUrl } from '@/lib/config/api';
 
 const navLinks = [
   { href: '/', key: 'home' },
@@ -26,6 +27,7 @@ export default function Header({ locale }: { locale: string }) {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [brandName, setBrandName] = useState('CC Scale');
 
   // Handle scroll effect
   useEffect(() => {
@@ -37,6 +39,20 @@ export default function Header({ locale }: { locale: string }) {
     handleScroll(); // Check initial scroll position
 
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch site settings for dynamic brand name
+  useEffect(() => {
+    const fetchBrandName = async () => {
+      try {
+        const res = await fetch(getApiUrl('site-settings/companyNameEn'));
+        if (res.ok) {
+          const data = await res.json();
+          if (data.value) setBrandName(data.value);
+        }
+      } catch {}
+    };
+    fetchBrandName();
   }, []);
 
   return (
@@ -52,7 +68,7 @@ export default function Header({ locale }: { locale: string }) {
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-primary">CC Scale</span>
+            <span className="text-2xl font-bold text-primary">{brandName}</span>
           </Link>
 
           {/* Desktop Nav */}

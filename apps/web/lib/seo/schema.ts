@@ -19,11 +19,12 @@ export function generateProductSchema(product: any, locale: string) {
   };
 }
 
-export function generateOrganizationSchema() {
+export function generateOrganizationSchema(companyName?: string) {
+  const name = companyName || 'CC Scale';
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'CC Scale',
+    name,
     url: 'https://www.ccscale.com',
     logo: 'https://www.ccscale.com/logo.png',
     contactPoint: {
@@ -48,8 +49,9 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
   };
 }
 
-export function generateBlogPostingSchema(post: any, locale: string) {
+export function generateBlogPostingSchema(post: any, locale: string, companyName?: string) {
   const isZh = locale === 'zh';
+  const publisherName = companyName || 'CC Scale';
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -60,11 +62,11 @@ export function generateBlogPostingSchema(post: any, locale: string) {
     dateModified: post.updatedAt,
     author: {
       '@type': 'Organization',
-      name: 'CC Scale',
+      name: publisherName,
     },
     publisher: {
       '@type': 'Organization',
-      name: 'CC Scale',
+      name: publisherName,
       logo: {
         '@type': 'ImageObject',
         url: 'https://www.ccscale.com/logo.png',

@@ -19,6 +19,7 @@ import {
   FolderOpen,
   Download,
   User,
+  FileText,
 } from 'lucide-react';
 import { cn } from '@cc-scale/ui';
 import { getStoredUser } from '@/lib/auth';
@@ -79,6 +80,11 @@ const menuItems = [
     href: '/settings',
     icon: Settings,
     label: '系统设置',
+  },
+  {
+    href: '/page-content',
+    icon: FileText,
+    label: '页面内容',
   },
 ];
 

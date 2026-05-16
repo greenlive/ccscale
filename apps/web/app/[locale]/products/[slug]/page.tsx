@@ -2,6 +2,7 @@ import { ProductSchema, BreadcrumbSchema } from '@/components/SchemaOrg';
 import { ProductDetailContent } from '@/components/ProductDetailContent';
 import type { Metadata } from 'next';
 import { locales } from '@/i18n/routing';
+import { getSiteSettings } from '@/lib/api/server-settings';
 
 type Props = {
   params: { locale: string; slug: string };
@@ -97,10 +98,12 @@ export async function generateMetadata({ params: { locale, slug } }: Props): Pro
   const isZh = locale === 'zh';
   const product = await getProductForSEO(slug);
   const baseUrl = 'https://www.ccscale.com';
+  const settings = await getSiteSettings();
+  const siteName = settings.companyNameEn || 'CC Scale';
 
   if (!product) {
     return {
-      title: `${isZh ? '产品' : 'Product'} | CC Scale`,
+      title: `${isZh ? '产品' : 'Product'} | ${siteName}`,
       description: isZh ? '查看产品详情' : 'View product details',
     };
   }
@@ -108,7 +111,6 @@ export async function generateMetadata({ params: { locale, slug } }: Props): Pro
   const name = isZh ? (product.nameZh || product.nameEn || '') : (product.nameEn || product.nameZh || '');
   const seoTitle = isZh ? (product.seoTitleZh || product.seoTitleEn || name) : (product.seoTitleEn || product.seoTitleZh || name);
   const seoDesc = isZh ? (product.seoDescZh || product.seoDescEn || '') : (product.seoDescEn || product.seoDescZh || '');
-  const siteName = 'CC Scale';
 
   // Generate B2B international keywords
   const categorySlug = product.category?.slug || '';
@@ -130,9 +132,9 @@ export async function generateMetadata({ params: { locale, slug } }: Props): Pro
     title: seoTitle || `${name} | ${siteName}`,
     description: seoDesc || (isZh ? `了解${name}的详细信息、规格和价格。` : `View details, specifications and pricing for ${name}.`),
     keywords: keywords.join(', '),
-    authors: [{ name: 'CC Scale' }],
-    creator: 'CC Scale',
-    publisher: 'CC Scale',
+    authors: [{ name: siteName }],
+    creator: siteName,
+    publisher: siteName,
     openGraph: {
       title: seoTitle || name,
       description: seoDesc,
@@ -181,6 +183,8 @@ export default async function ProductPage({ params: { locale, slug } }: Props) {
 
   // Fetch full product data for JSON-LD schema
   const product = await getProductForSEO(slug);
+  const settings = await getSiteSettings();
+  const brandName = settings.companyNameEn || 'CC Scale';
 
   const breadcrumbItems = [
     { name: isZh ? '首页' : 'Home', url: `${baseUrl}/${locale}` },
@@ -197,7 +201,7 @@ export default async function ProductPage({ params: { locale, slug } }: Props) {
           description={isZh ? (product.seoDescZh || product.seoDescEn || '') : (product.seoDescEn || product.seoDescZh || '')}
           image={product.mainImage || 'https://www.ccscale.com/og-image.jpg'}
           sku={product.sku}
-          brand="CC Scale"
+          brand={brandName}
           category={product.category?.name || undefined}
           offers={{
             price: product.priceMin ? String(product.priceMin) : undefined,

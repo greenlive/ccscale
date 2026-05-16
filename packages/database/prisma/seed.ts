@@ -415,39 +415,41 @@ async function main() {
   }
 
   // Create site settings
+  // All keys use camelCase naming for front-end/back-end consistency
   const siteSettings = [
-    { key: 'company_name_en', value: 'CC Scale Co., Ltd.' },
-    { key: 'company_name_zh', value: 'CC衡器有限公司' },
-    { key: 'company_address_en', value: 'No. 88, Industrial Park, Yongkang, Zhejiang, China' },
-    { key: 'company_address_zh', value: '中国浙江省永康市工业园区88号' },
-    { key: 'company_phone', value: '+86 123 4567 8900' },
-    { key: 'company_email', value: 'sales@ccscale.com' },
-    { key: 'company_wechat', value: 'ccscale' },
-    { key: 'company_whatsapp', value: '+86 123 4567 8900' },
-    { key: 'seo_title_en', value: 'CC Scale - Professional Weighing Solutions Manufacturer' },
-    { key: 'seo_title_zh', value: 'CC衡器 - 专业衡器制造商' },
-    { key: 'seo_description_en', value: 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales. OEM/ODM solutions for global B2B buyers.' },
-    { key: 'seo_description_zh', value: '高品质衡器制造商，提供体重秤、吊秤、厨房秤、婴儿秤等产品。为全球B2B买家提供OEM/ODM解决方案。' },
-    // Contact Info (用于 Footer)
+    // Company Info
+    { key: 'companyNameEn', value: 'CC Scale Co., Ltd.' },
+    { key: 'companyNameZh', value: 'CC衡器有限公司' },
+    { key: 'companyWechat', value: 'ccscale' },
+    // SEO
+    { key: 'seoTitleEn', value: 'CC Scale - Professional Weighing Solutions Manufacturer' },
+    { key: 'seoTitleZh', value: 'CC衡器 - 专业衡器制造商' },
+    { key: 'seoDescriptionEn', value: 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales. OEM/ODM solutions for global B2B buyers.' },
+    { key: 'seoDescriptionZh', value: '高品质衡器制造商，提供体重秤、吊秤、厨房秤、婴儿秤等产品。为全球B2B买家提供OEM/ODM解决方案。' },
+    // Contact Info (用于 Footer / Contact page)
     { key: 'contactEmail', value: 'sales@ccscale.com' },
     { key: 'contactPhone', value: '+86 123 4567 8900' },
     { key: 'contactWhatsApp', value: '+86 123 4567 8900' },
     { key: 'contactAddressEn', value: 'No. 88, Industrial Park, Yongkang, Zhejiang, China' },
     { key: 'contactAddressZh', value: '中国浙江省永康市工业园区88号' },
     { key: 'contactWorkingHoursEn', value: 'Monday - Friday: 9:00 AM - 6:00 PM (GMT+8)' },
-    // Social Media Links (用于 Footer 的社交媒体链接)
+    { key: 'contactWorkingHoursZh', value: '周一至周五: 9:00 - 18:00 (北京时间)' },
+    // Social Media Links (用于 Footer 社交媒体图标)
     { key: 'socialFacebook', value: 'https://www.facebook.com/ccscale' },
     { key: 'socialLinkedIn', value: 'https://www.linkedin.com/company/ccscale' },
     { key: 'socialYouTube', value: 'https://www.youtube.com/@ccscale' },
     { key: 'socialInstagram', value: 'https://www.instagram.com/ccscale' },
     { key: 'socialTwitter', value: 'https://twitter.com/ccscale' },
     { key: 'socialAlibaba', value: 'https://ccscale.en.alibaba.com' },
+    { key: 'socialMadeInChina', value: '' },
     // Social Media Content URLs (用于首页 SocialMediaShowcase 展示)
     { key: 'socialYoutubeContentUrl', value: 'https://www.youtube.com/@ccscale' },
     { key: 'socialFacebookContentUrl', value: 'https://www.facebook.com/ccscale' },
     { key: 'socialLinkedInContentUrl', value: 'https://www.linkedin.com/company/ccscale' },
     { key: 'socialInstagramContentUrl', value: 'https://www.instagram.com/ccscale' },
     { key: 'socialTikTokContentUrl', value: '' },
+    // Legal
+    { key: 'icpNumber', value: '浙ICP备XXXXXXXX号' },
   ];
 
   for (const setting of siteSettings) {
@@ -458,6 +460,108 @@ async function main() {
     });
   }
   console.log('Created site settings');
+
+  // Create page contents
+  const pageContents = [
+    {
+      pageKey: 'about',
+      titleEn: 'About Us',
+      titleZh: '关于我们',
+      contentEn: JSON.stringify({
+        stats: [
+          { number: '20+', labelEn: 'Years Experience', labelZh: '年经验' },
+          { number: '100+', labelEn: 'Countries', labelZh: '个国家' },
+          { number: '500K+', labelEn: 'Units/Year', labelZh: '年产量' },
+          { number: '50+', labelEn: 'R&D Team', labelZh: '研发团队' },
+        ],
+        storyParagraphs: [
+          'Founded in 2004, CC Scale has grown from a small workshop to a leading manufacturer of professional weighing equipment. Our commitment to quality and innovation has made us a trusted partner for businesses worldwide.',
+          'With state-of-the-art production facilities and a dedicated R&D team, we continue to push the boundaries of weighing technology, delivering precise, reliable, and innovative solutions to our customers.',
+        ],
+        media: {
+          storyImage: 'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=600',
+          videoCover: 'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=1200',
+          videoUrl: '',
+          videoTitleEn: 'CC Scale Factory Tour',
+          videoTitleZh: 'CC Scale 工厂参观',
+          videoDurationEn: '4:30 min',
+          videoDurationZh: '4分30秒',
+          sectionTitleEn: 'Take a Tour of Our Factory',
+          sectionTitleZh: '参观我们的工厂',
+          sectionSubtitleEn: 'See our state-of-the-art production facilities and quality control processes in action.',
+          sectionSubtitleZh: '观看我们先进的生产设施和质量控制流程。',
+          thumbnails: [
+            { src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400', altEn: 'Production Line', altZh: '生产线' },
+            { src: 'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=400', altEn: 'Quality Control', altZh: '质量控制' },
+            { src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400', altEn: 'R&D Lab', altZh: '研发实验室' },
+            { src: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400', altEn: 'Packaging & Shipping', altZh: '包装与运输' },
+          ],
+        },
+      }),
+      contentZh: JSON.stringify({
+        milestones: [
+          { year: '2004', titleEn: 'Founded', titleZh: '公司成立', descEn: 'Started with a small workshop', descZh: '从一个小车间起步' },
+          { year: '2010', titleEn: 'ISO Certification', titleZh: 'ISO认证', descEn: 'Achieved ISO 9001 quality certification', descZh: '获得ISO 9001质量认证' },
+          { year: '2015', titleEn: 'Global Expansion', titleZh: '全球拓展', descEn: 'Exported to 50+ countries', descZh: '出口到50多个国家' },
+          { year: '2020', titleEn: 'Smart Factory', titleZh: '智能工厂', descEn: 'Automated production lines', descZh: '自动化生产线' },
+        ],
+        storyParagraphs: [
+          'CC Scale成立于2004年，从一个小车间发展成为专业衡器设备的领先制造商。我们对质量和创新的承诺使我们成为全球企业值得信赖的合作伙伴。',
+          '凭借先进的生产设施和专业的研发团队，我们不断突破衡器技术的边界，为客户提供精确、可靠和创新的解决方案。',
+        ],
+      }),
+      metaEn: 'Two decades of excellence in weighing solutions',
+      metaZh: '二十年衡器解决方案的卓越经验',
+    },
+    {
+      pageKey: 'guarantee',
+      titleEn: 'Our Guarantees',
+      titleZh: '保障中心',
+      contentEn: '',
+      contentZh: '',
+      metaEn: 'Quality assurance and delivery guarantees for B2B buyers',
+      metaZh: '为B2B买家提供质量保证和交付保障',
+    },
+    {
+      pageKey: 'contact',
+      titleEn: 'Contact Us',
+      titleZh: '联系我们',
+      contentEn: JSON.stringify({
+        heroSubtitle: {
+          en: 'Get in touch with us for inquiries, quotes, or technical support',
+          zh: '与我们联系以获取询盘、报价或技术支持',
+        },
+        address: {
+          en: 'No. 88, Industrial Park, Yongkang, Zhejiang, China',
+          zh: '中国浙江省永康市工业园区88号',
+        },
+        email: {
+          en: 'sales@ccscale.com; support@ccscale.com',
+          zh: 'sales@ccscale.com; support@ccscale.com',
+        },
+        phone: {
+          en: '+86 123 4567 8900; +86 123 4567 8901',
+          zh: '+86 123 4567 8900; +86 123 4567 8901',
+        },
+        hours: {
+          en: 'Monday - Friday: 9:00 - 18:00 (GMT+8)',
+          zh: '周一至周五: 9:00 - 18:00 (北京时间)',
+        },
+      }),
+      contentZh: '',
+      metaEn: 'Contact CC Scale for inquiries about weighing scales, OEM services, and custom solutions',
+      metaZh: '联系CC Scale，咨询衡器产品、OEM服务和定制解决方案',
+    },
+  ];
+
+  for (const page of pageContents) {
+    await prisma.pageContent.upsert({
+      where: { pageKey: page.pageKey },
+      update: page,
+      create: page,
+    });
+  }
+  console.log('Created page contents');
 
   console.log('Seed completed!');
 }

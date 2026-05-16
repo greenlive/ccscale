@@ -19,6 +19,7 @@ import { DownloadsModule } from './downloads/downloads.module';
 import { UploadModule } from './upload/upload.module';
 import { BlogModule } from './blog/blog.module';
 import { CasesModule } from './cases/cases.module';
+import { PageContentModule } from './page-content/page-content.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { CasesModule } from './cases/cases.module';
     UploadModule,
     BlogModule,
     CasesModule,
+    PageContentModule,
   ],
   providers: [
     // Global rate limiting guard

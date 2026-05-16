@@ -1,6 +1,22 @@
 'use client';
 
 import { useLocale } from 'next-intl';
+import { useState, useEffect } from 'react';
+
+interface SiteSettingsMap {
+  [key: string]: string;
+}
+
+function useSiteSettings(): SiteSettingsMap {
+  const [settings, setSettings] = useState<SiteSettingsMap>({});
+  useEffect(() => {
+    fetch('/api/site-settings')
+      .then(r => r.ok ? r.json() : {})
+      .then(data => setSettings(data))
+      .catch(() => {});
+  }, []);
+  return settings;
+}
 
 interface OrganizationSchemaProps {
   name?: string;
@@ -9,33 +25,44 @@ interface OrganizationSchemaProps {
 }
 
 export function OrganizationSchema({
-  name = 'CC Scale',
+  name: propName,
   url = 'https://www.ccscale.com',
   logo = 'https://www.ccscale.com/logo.png',
 }: OrganizationSchemaProps) {
   const locale = useLocale();
+  const settings = useSiteSettings();
+  const name = propName || settings.companyNameEn || 'CC Scale';
+  const phone = settings.contactPhone || '+86-123-4567-8900';
+  const email = settings.contactEmail || 'sales@ccscale.com';
+  const addressEn = settings.contactAddressEn || 'No. 88, Industrial Park, Yongkang, Zhejiang, China';
+
+  // Parse address components
+  const addressParts = addressEn.split(',').map(s => s.trim());
+  const streetAddress = addressParts[0] || 'No. 88, Industrial Park';
+  const addressLocality = addressParts[1] || 'Yongkang';
+  const addressRegion = addressParts.length > 2 ? addressParts[addressParts.length - 2] : 'Zhejiang';
+  const addressCountry = addressParts.length > 2 ? addressParts[addressParts.length - 1] : 'China';
 
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${url}#organization`,
     name,
-    alternateName: locale === 'zh' ? '永康衡器' : undefined,
     url,
     logo,
     image: logo,
     sameAs: [
-      'https://www.facebook.com/ccscale',
-      'https://www.twitter.com/ccscale',
-      'https://www.linkedin.com/company/ccscale',
-      'https://www.youtube.com/@ccscale',
-    ],
+      settings.socialFacebook || 'https://www.facebook.com/ccscale',
+      settings.socialTwitter || 'https://www.twitter.com/ccscale',
+      settings.socialLinkedIn || 'https://www.linkedin.com/company/ccscale',
+      settings.socialYouTube || 'https://www.youtube.com/@ccscale',
+    ].filter(Boolean),
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+86-123-4567-8900',
+      telephone: phone,
       contactType: 'customer service',
       availableLanguage: ['English', 'Chinese'],
-      email: 'sales@ccscale.com',
+      email: email,
       hoursAvailable: [
         {
           '@type': 'OpeningHoursSpecification',
@@ -47,11 +74,10 @@ export function OrganizationSchema({
     },
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'No. 88, Industrial Park',
-      addressLocality: 'Yongkang',
-      addressRegion: 'Zhejiang',
-      postalCode: '321300',
-      addressCountry: 'CN',
+      streetAddress,
+      addressLocality,
+      addressRegion,
+      addressCountry,
     },
     areaServed: ['Worldwide', 'North America', 'Europe', 'Asia'],
     makesOffer: {
@@ -107,13 +133,15 @@ export function ProductSchema({
   description,
   image,
   sku,
-  brand = 'CC Scale',
+  brand: propBrand,
   category,
   mpn,
   aggregateRating,
   offers,
   additionalProperty,
 }: ProductSchemaProps) {
+  const settings = useSiteSettings();
+  const brand = propBrand || settings.companyNameEn || 'CC Scale';
   const schema: any = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -127,7 +155,7 @@ export function ProductSchema({
     },
     manufacturer: {
       '@type': 'Organization',
-      name: 'CC Scale',
+      name: brand,
     },
   };
 
@@ -207,10 +235,12 @@ interface WebSiteSchemaProps {
 }
 
 export function WebSiteSchema({
-  name = 'CC Scale',
+  name: propName,
   url = 'https://www.ccscale.com',
   searchUrl = 'https://www.ccscale.com/search?q={search_term_string}',
 }: WebSiteSchemaProps) {
+  const settings = useSiteSettings();
+  const name = propName || settings.companyNameEn || 'CC Scale';
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -245,13 +275,16 @@ interface AboutPageSchemaProps {
 }
 
 export function AboutPageSchema({ locale = 'en' }: AboutPageSchemaProps) {
+  const settings = useSiteSettings();
+  const brandName = settings.companyNameEn || 'CC Scale';
+  const brandNameZh = settings.companyNameZh || 'CC衡器';
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
-    name: locale === 'en' ? 'About CC Scale' : '关于我们',
+    name: locale === 'en' ? `About ${brandName}` : '关于我们',
     description: locale === 'en'
-      ? 'Learn about CC Scale, your trusted partner for professional weighing solutions with over 20 years of manufacturing experience.'
-      : '了解CC Scale，您值得信赖的专业衡器解决方案合作伙伴，拥有20多年的制造经验。',
+      ? `Learn about ${brandName}, your trusted partner for professional weighing solutions with over 20 years of manufacturing experience.`
+      : `了解${brandNameZh}，您值得信赖的专业衡器解决方案合作伙伴，拥有20多年的制造经验。`,
     mainEntity: {
       '@type': 'Organization',
       '@id': 'https://www.ccscale.com#organization',
@@ -272,13 +305,15 @@ interface ContactPageSchemaProps {
 }
 
 export function ContactPageSchema({ locale = 'en' }: ContactPageSchemaProps) {
+  const settings = useSiteSettings();
+  const brandName = settings.companyNameEn || 'CC Scale';
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
-    name: locale === 'en' ? 'Contact CC Scale' : '联系我们',
+    name: locale === 'en' ? `Contact ${brandName}` : '联系我们',
     description: locale === 'en'
-      ? 'Get in touch with CC Scale for inquiries about our weighing scales and OEM/ODM services.'
-      : '联系CC Scale，咨询我们的衡器产品和OEM/ODM服务。',
+      ? `Get in touch with ${brandName} for inquiries about our weighing scales and OEM/ODM services.`
+      : `联系${settings.companyNameZh || 'CC Scale'}，咨询我们的衡器产品和OEM/ODM服务。`,
   };
 
   return (
@@ -326,19 +361,22 @@ interface AISummarySchemaProps {
 }
 
 export function AISummarySchema({ locale = 'en' }: AISummarySchemaProps) {
+  const settings = useSiteSettings();
+  const brandName = settings.companyNameEn || 'CC Scale';
+  const brandNameZh = settings.companyNameZh || 'CC衡器';
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: locale === 'en' ? 'AI Summary - CC Scale' : 'AI摘要 - CC Scale',
+    name: locale === 'en' ? `AI Summary - ${brandName}` : `AI摘要 - ${brandNameZh}`,
     description: locale === 'en'
-      ? 'Structured summary of CC Scale for AI assistants and large language models.'
-      : '为AI助手和大语言模型提供的CC Scale结构化摘要。',
+      ? `Structured summary of ${brandName} for AI assistants and large language models.`
+      : `为AI助手和大语言模型提供的${brandNameZh}结构化摘要。`,
     about: {
       '@type': 'Organization',
-      name: 'CC Scale',
+      name: brandName,
       description: locale === 'en'
-        ? 'CC Scale is a leading manufacturer of weighing scales based in Yongkang, Zhejiang, China. We specialize in body scales, hanging scales, kitchen scales, baby scales, crane scales, dial scales, and industrial weighing equipment. We offer OEM/ODM manufacturing services with MOQ flexibility, custom branding, and private labeling options.'
-        : 'CC Scale是位于中国浙江永康的领先衡器制造商。我们专业生产体重秤、吊秤、厨房秤、婴儿秤、吊钩秤、度盘秤和工业称重设备。我们提供OEM/ODM制造服务，具有灵活的起订量、定制品牌和私有标签选项。',
+        ? `${brandName} is a leading manufacturer of weighing scales based in Yongkang, Zhejiang, China. We specialize in body scales, hanging scales, kitchen scales, baby scales, crane scales, dial scales, and industrial weighing equipment. We offer OEM/ODM manufacturing services with MOQ flexibility, custom branding, and private labeling options.`
+        : `${brandNameZh}是位于中国浙江永康的领先衡器制造商。我们专业生产体重秤、吊秤、厨房秤、婴儿秤、吊钩秤、度盘秤和工业称重设备。我们提供OEM/ODM制造服务，具有灵活的起订量、定制品牌和私有标签选项。`,
       foundingDate: '2004',
       numberOfEmployees: {
         '@type': 'QuantitativeValue',
