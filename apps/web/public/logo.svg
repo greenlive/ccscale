@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" role="img" aria-label="CC Scale logo">
+  <text x="0" y="42" font-family="Georgia, serif" font-size="32" font-weight="700" fill="#c97a5a">CC Scale</text>
+  <g stroke="#c97a5a" stroke-width="1.5" fill="none" opacity="0.7">
+    <circle cx="170" cy="30" r="14"/>
+    <rect x="156" y="16" width="28" height="28" rx="4"/>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Weighing scale manufacturing">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d2a26"/>
+      <stop offset="50%" stop-color="#3a342c"/>
+      <stop offset="100%" stop-color="#1f1d1a"/>
+    </linearGradient>
+    <radialGradient id="orb1" cx="20%" cy="30%" r="40%">
+      <stop offset="0%" stop-color="#c97a5a" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#c97a5a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orb2" cx="80%" cy="70%" r="35%">
+      <stop offset="0%" stop-color="#e8a87c" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#e8a87c" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#f5f0e8" stroke-width="0.5" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+  <rect width="1920" height="1080" fill="url(#orb1)"/>
+  <rect width="1920" height="1080" fill="url(#orb2)"/>
+  <g opacity="0.12" stroke="#f5f0e8" stroke-width="1.5" fill="none">
+    <circle cx="960" cy="540" r="200"/>
+    <circle cx="960" cy="540" r="280"/>
+    <rect x="800" y="380" width="320" height="320" rx="20"/>
+  </g>
+</svg>

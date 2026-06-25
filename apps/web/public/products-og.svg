@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="CC Scale Products Catalog">
+  <defs>
+    <linearGradient id="pog" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a342c"/>
+      <stop offset="100%" stop-color="#1f1d1a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#pog)"/>
+  <g fill="#f5f0e8">
+    <text x="80" y="180" font-family="system-ui" font-size="32" fill-opacity="0.7" letter-spacing="6">PRODUCT CATALOG</text>
+    <text x="80" y="270" font-family="Georgia, serif" font-size="72" font-weight="700">Weighing Scales</text>
+    <text x="80" y="340" font-family="Georgia, serif" font-size="72" font-weight="700">Made Simple</text>
+    <text x="80" y="430" font-family="system-ui" font-size="26" fill-opacity="0.7">Body · Hanging · Kitchen · Baby · Crane · Dial</text>
+    <text x="80" y="540" font-family="system-ui" font-size="22" fill-opacity="0.5">CC Scale · Direct Manufacturer · OEM/ODM</text>
+  </g>
+</svg>
