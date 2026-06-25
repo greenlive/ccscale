@@ -9,10 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@cc-scale/ui": "*",
     "@cc-scale/shared-types": "*",
+    "@cc-scale/ui": "*",
     "@hookform/resolvers": "^3.3.0",
     "@tanstack/react-query": "^5.20.0",
+    "@vercel/analytics": "^2.0.1",
     "axios": "^1.6.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.454.0",
