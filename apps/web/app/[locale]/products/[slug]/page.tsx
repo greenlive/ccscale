@@ -1,218 +1,126 @@
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { prisma } from '@cc-scale/database';
 import { ProductSchema, BreadcrumbSchema } from '@/components/SchemaOrg';
-import { ProductDetailContent } from '@/components/ProductDetailContent';
-import type { Metadata } from 'next';
-import { locales } from '@/i18n/routing';
-import { getSiteSettings } from '@/lib/api/server-settings';
+import ProductDetailView from './ProductDetailView';
 
-type Props = {
-  params: { locale: string; slug: string };
-};
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-// B2B trade keywords for international buyers
-const categoryKeywords: Record<string, string[]> = {
-  'body-scales': [
-    'digital body scale', 'body weight scale', 'bathroom scale', 'personal scale',
-    'weight scale digital', 'body composition analyzer', 'smart body scale',
-    'weighing scale for home', 'professional body scale', 'medical body scale',
-    'digital bathroom scale', 'LED display scale', 'glass platform scale',
-  ],
-  'hanging-scales': [
-    'hanging scale', 'industrial hanging scale', 'crane scale', '吊秤',
-    'digital hanging scale', 'pallet scale', 'warehouse scale', 'heavy duty scale',
-    'industrial weighing scale', 'mechanical hanging scale', 'digital crane scale',
-    'hook scale', 'suspension scale', 'livestock weighing scale',
-  ],
-  'kitchen-scales': [
-    'kitchen scale', 'digital kitchen scale', 'food scale', 'cooking scale',
-    'precision kitchen scale', 'bath scale', 'culinary scale', 'bakery scale',
-    'stainless steel kitchen scale', 'digital food scale', 'measuring scale',
-    'diet scale', 'food weighing scale', 'commercial kitchen scale',
-  ],
-  'baby-scales': [
-    'baby scale', 'infant scale', 'pediatric scale', 'digital baby scale',
-    'baby weighing scale', 'neonatal scale', 'medical infant scale',
-    'baby height scale', 'nursing scale', 'birth weight scale',
-  ],
-  'dial-scales': [
-    'dial scale', 'mechanical scale', 'platform scale', 'bench scale',
-    'industrial platform scale', 'mechanical platform scale', 'dial platform scale',
-    'warehouse platform scale', 'heavy platform scale', 'commercial scale',
-  ],
-};
-
-// Generate English keywords combining product name with category terms
-function generateProductKeywords(productName: string, category: string | null): string[] {
-  const baseKeywords = [
-    'weighing scale', 'digital scale', 'precision scale', 'industrial scale',
-    'commercial scale', 'B2B scale', 'wholesale scale', 'factory price',
-    'OEM scale', 'ODM scale', 'custom scale', 'private label scale',
-  ];
-
-  const categoryTerms = category ? categoryKeywords[category] || [] : [];
-  const productTerms = productName.toLowerCase().split(' ').filter(t => t.length > 2);
-
-  return Array.from(new Set([...productTerms, ...categoryTerms.slice(0, 5), ...baseKeywords]));
+interface Props {
+  params: Promise<{ locale: string; slug: string }>;
 }
 
-interface ProductSEOData {
-  id: number;
-  slug: string;
-  nameEn: string | null;
-  nameZh: string | null;
-  seoTitleEn: string | null;
-  seoTitleZh: string | null;
-  seoDescEn: string | null;
-  seoDescZh: string | null;
-  category: { name: string | null; slug?: string | null } | null;
-  priceMin?: number;
-  priceMax?: number;
-  mainImage?: string;
-  sku?: string;
-}
+export const revalidate = 300; // revalidate every 5 min (was 60, loosened to reduce DB hits)
+export const dynamicParams = true; // allow slugs not pre-generated
 
-// All product slugs from database
-const allProductSlugs = [
-  'digital-body-scale-bs-200',
-  'smart-body-scale-bs-100',
-  'industrial-hanging-scale-hs-500',
-  'precision-kitchen-scale-ks-300',
-  'digital-baby-scale-bb-100',
-];
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ccscale.com';
 
-async function getProductForSEO(slug: string): Promise<ProductSEOData | null> {
+export async function generateStaticParams() {
+  // Pre-render the most recent 100 active products. New ones render on demand.
   try {
-    const res = await fetch(`${API_URL}/api/products/slug/${slug}`, {
-      cache: 'no-store',
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: { slug: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 100,
     });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data;
-  } catch {
+    return products.map((p) => ({ slug: p.slug }));
+  } catch (err) {
+    console.warn('generateStaticParams: DB unavailable, skipping pre-render', err);
+    return [];
+  }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params;
+  try {
+    const product = await prisma.product.findUnique({ where: { slug } });
+    if (!product) return { title: 'Product Not Found' };
+    const isZh = locale === 'zh';
+    const title = (isZh ? product.seoTitleZh : product.seoTitleEn)
+      || (isZh ? product.nameZh : product.nameEn);
+    const description = (isZh ? product.seoDescZh : product.seoDescEn)
+      || (isZh ? product.shortDescZh : product.shortDescEn)
+      || (isZh ? product.descriptionZh : product.descriptionEn)?.slice(0, 160);
+    const path = `${isZh ? '/zh' : ''}/products/${slug}`;
+    return {
+      title,
+      description,
+      alternates: {
+        canonical: `${SITE_URL}${path}`,
+        languages: {
+          'en-US': `${SITE_URL}/products/${slug}`,
+          'zh-CN': `${SITE_URL}/zh/products/${slug}`,
+        },
+      },
+      openGraph: {
+        title,
+        description,
+        url: `${SITE_URL}${path}`,
+        type: 'website',
+        images: product.mainImages
+          ? (() => {
+              try {
+                const arr = JSON.parse(product.mainImages);
+                return Array.isArray(arr) && arr[0] ? [{ url: arr[0] }] : [];
+              } catch {
+                return [];
+              }
+            })()
+          : [],
+      },
+    };
+  } catch (err) {
+    console.warn('generateMetadata: DB error for slug', slug, err);
+    return { title: 'Product' };
+  }
+}
+
+async function getProduct(slug: string) {
+  try {
+    return await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        category: true,
+        images: { orderBy: { order: 'asc' } },
+        specs: { orderBy: { order: 'asc' } },
+        customerCases: { where: { isActive: true }, orderBy: { order: 'asc' }, take: 6 },
+      },
+    });
+  } catch (err) {
+    console.error('getProduct: DB error for slug', slug, err);
     return null;
   }
 }
 
-export async function generateMetadata({ params: { locale, slug } }: Props): Promise<Metadata> {
-  const isZh = locale === 'zh';
-  const product = await getProductForSEO(slug);
-  const baseUrl = 'https://www.ccscale.com';
-  const settings = await getSiteSettings();
-  const siteName = settings.companyNameEn || 'CC Scale';
+export default async function ProductPage({ params }: Props) {
+  const { locale, slug } = await params;
+  const product = await getProduct(slug);
+  if (!product) notFound();
 
-  if (!product) {
-    return {
-      title: `${isZh ? '产品' : 'Product'} | ${siteName}`,
-      description: isZh ? '查看产品详情' : 'View product details',
-    };
-  }
-
-  const name = isZh ? (product.nameZh || product.nameEn || '') : (product.nameEn || product.nameZh || '');
-  const seoTitle = isZh ? (product.seoTitleZh || product.seoTitleEn || name) : (product.seoTitleEn || product.seoTitleZh || name);
-  const seoDesc = isZh ? (product.seoDescZh || product.seoDescEn || '') : (product.seoDescEn || product.seoDescZh || '');
-
-  // Generate B2B international keywords
-  const categorySlug = product.category?.slug || '';
-  const keywords = generateProductKeywords(name, categorySlug);
-
-  // Build hreflang alternates
-  const alternates: Metadata['alternates'] = {
-    canonical: `${baseUrl}/${locale}/products/${slug}`,
-    languages: {},
-  };
-  locales.forEach((l) => {
-    alternates.languages![l === 'en' ? 'en-US' : 'zh-CN'] = `${baseUrl}/${l}/products/${slug}`;
-  });
-
-  // Open Graph images
-  const ogImage = product.mainImage || 'https://www.ccscale.com/og-image.jpg';
-
-  return {
-    title: seoTitle || `${name} | ${siteName}`,
-    description: seoDesc || (isZh ? `了解${name}的详细信息、规格和价格。` : `View details, specifications and pricing for ${name}.`),
-    keywords: keywords.join(', '),
-    authors: [{ name: siteName }],
-    creator: siteName,
-    publisher: siteName,
-    openGraph: {
-      title: seoTitle || name,
-      description: seoDesc,
-      siteName,
-      type: 'website',
-      url: `${baseUrl}/${locale}/products/${slug}`,
-      locale: locale === 'en' ? 'en_US' : 'zh_CN',
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: name,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: seoTitle || name,
-      description: seoDesc,
-      site: '@CCScale',
-      creator: '@CCScale',
-      images: [ogImage],
-    },
-    alternates,
-  };
-}
-
-export function generateStaticParams() {
-  const locales = ['en', 'zh'];
-  const params: Array<{ locale: string; slug: string }> = [];
-
-  locales.forEach((locale) => {
-    allProductSlugs.forEach((slug) => {
-      params.push({ locale, slug });
-    });
-  });
-
-  return params;
-}
-
-export default async function ProductPage({ params: { locale, slug } }: Props) {
-  const baseUrl = 'https://www.ccscale.com';
-  const name = locale === 'en' ? '产品' : 'Product';
-  const isZh = locale === 'zh';
-
-  // Fetch full product data for JSON-LD schema
-  const product = await getProductForSEO(slug);
-  const settings = await getSiteSettings();
-  const brandName = settings.companyNameEn || 'CC Scale';
-
+  const path = `${locale === 'zh' ? '/zh' : ''}/products/${slug}`;
   const breadcrumbItems = [
-    { name: isZh ? '首页' : 'Home', url: `${baseUrl}/${locale}` },
-    { name: isZh ? '产品中心' : 'Products', url: `${baseUrl}/${locale}/products` },
-    { name, url: `${baseUrl}/${locale}/products/${slug}` },
+    { name: locale === 'zh' ? '首页' : 'Home', url: `${SITE_URL}/${locale === 'zh' ? 'zh' : ''}` },
+    { name: locale === 'zh' ? '产品' : 'Products', url: `${SITE_URL}${locale === 'zh' ? '/zh' : ''}/products` },
+    { name: locale === 'zh' ? product.nameZh : product.nameEn, url: `${SITE_URL}${path}` },
   ];
 
   return (
     <>
+      <ProductSchema
+        name={product.nameEn}
+        description={(product.descriptionEn || product.shortDescEn || '').slice(0, 1000)}
+        image={(() => { try { const arr = JSON.parse(product.mainImages || '[]'); return Array.isArray(arr) ? arr[0] : (product.mainImages || ''); } catch { return product.mainImages || ''; } })()}
+        sku={product.sku}
+        brand="CC Scale"
+        category={product.category?.nameEn}
+        offers={{
+          price: product.priceMin ? String(product.priceMin) : undefined,
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          url: `${SITE_URL}${path}`,
+        }}
+      />
       <BreadcrumbSchema items={breadcrumbItems} />
-      {product && (
-        <ProductSchema
-          name={product.nameEn || product.nameZh || ''}
-          description={isZh ? (product.seoDescZh || product.seoDescEn || '') : (product.seoDescEn || product.seoDescZh || '')}
-          image={product.mainImage || 'https://www.ccscale.com/og-image.jpg'}
-          sku={product.sku}
-          brand={brandName}
-          category={product.category?.name || undefined}
-          offers={{
-            price: product.priceMin ? String(product.priceMin) : undefined,
-            priceCurrency: 'USD',
-            availability: 'https://schema.org/InStock',
-            url: `${baseUrl}/${locale}/products/${slug}`,
-            minOrderQuantity: 100,
-          }}
-        />
-      )}
-      <ProductDetailContent slug={slug} />
+      <ProductDetailView product={product} locale={locale} />
     </>
   );
 }

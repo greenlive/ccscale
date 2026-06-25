@@ -1,88 +1,64 @@
 import type { Metadata } from 'next';
-import { useLocale } from 'next-intl';
-import { Link } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
-import { Button } from '@cc-scale/ui';
 import Hero from '@/components/Hero';
-import RiskReversal from '@/components/RiskReversal';
-import AlibabaTrustBadge from '@/components/AlibabaTrustBadge';
-import AdvantagesWithData from '@/components/AdvantagesWithData';
 import ProductCategories from '@/components/ProductCategories';
-import SupplierComparison from '@/components/SupplierComparison';
-import Testimonials from '@/components/Testimonials';
-import Clients from '@/components/Clients';
-import SocialMediaShowcase from '@/components/SocialMediaShowcase';
-import { CollectionPageSchema } from '@/components/SchemaOrg';
+import TrustBadges from '@/components/TrustBadges';
+import Advantages from '@/components/Advantages';
+import { OrganizationSchema, WebSiteSchema } from '@/components/SchemaOrg';
 
-function HomePageContent() {
-  const locale = useLocale() as 'en' | 'zh';
-  const t = useTranslations('home');
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ccscale.com';
 
-  return (
-    <div>
-      <Hero />
-      <RiskReversal />
-      <AlibabaTrustBadge />
-      <ProductCategories locale={locale} />
-      <AdvantagesWithData />
-      <SupplierComparison />
-      <Testimonials locale={locale} />
-      <SocialMediaShowcase locale={locale} />
-      <Clients />
+type Props = {
+  params: Promise<{ locale: string }>;
+};
 
-      {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            {t('ctaTitle')}
-          </h2>
-          <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-            {t('ctaDesc')}
-          </p>
-          <Button asChild size="lg" className="bg-accent hover:bg-accent/90">
-            <Link href="/contact">
-              {t('getFreeQuote')}
-            </Link>
-          </Button>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
   const isZh = locale === 'zh';
+  const title = isZh
+    ? '专业衡器制造商与出口商 - CC Scale | OEM/ODM 衡器定制'
+    : 'Professional Weighing Scale Manufacturer & Exporter | CC Scale';
+  const description = isZh
+    ? 'CC Scale 永康专业衡器制造商,20+ 年行业经验,出口 100+ 国家。提供体重秤、吊秤、厨房秤、婴儿秤等 OEM/ODM 定制服务。'
+    : 'CC Scale is a professional weighing scale manufacturer with 20+ years of experience, exporting to 100+ countries. OEM/ODM services for body scales, hanging scales, kitchen scales, baby scales, and more.';
   return {
-    title: isZh ? 'CC Scale - 专业衡器制造商' : 'CC Scale - Professional Weighing Solutions Manufacturer',
-    description: isZh
-      ? '高品质衡器的领先制造商。专业B2B衡器制造，提供体重秤、吊秤、厨房秤、婴儿秤等产品，厂家直销价格。'
-      : 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales, and more. B2B wholesale with factory-direct pricing.',
+    title,
+    description,
+    alternates: {
+      canonical: `${SITE_URL}/${locale}`,
+      languages: {
+        'en-US': `${SITE_URL}/en`,
+        'zh-CN': `${SITE_URL}/zh`,
+        'x-default': `${SITE_URL}/en`,
+      },
+    },
     openGraph: {
-      title: isZh ? 'CC Scale - 专业衡器制造商' : 'CC Scale - Professional Weighing Solutions Manufacturer',
-      description: isZh
-        ? '高品质衡器的领先制造商。专业B2B衡器制造，提供体重秤、吊秤、厨房秤、婴儿秤等产品，厂家直销价格。'
-        : 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales, and more. B2B wholesale with factory-direct pricing.',
+      title,
+      description,
+      url: `${SITE_URL}/${locale}`,
+      siteName: 'CC Scale',
       locale: isZh ? 'zh_CN' : 'en_US',
       type: 'website',
+      images: [{ url: `${SITE_URL}/og-image.svg`, width: 1200, height: 630, alt: 'CC Scale' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/og-image.svg`],
     },
   };
 }
 
-export default function HomePage() {
-  const locale = useLocale() as 'en' | 'zh';
-
-  const schemaName = locale === 'en'
-    ? 'CC Scale - Professional Weighing Solutions'
-    : 'CC Scale - 专业衡器解决方案';
-
-  const schemaDesc = locale === 'en'
-    ? 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales, and more.'
-    : '高品质衡器的领先制造商。体重秤、吊秤、厨房秤、婴儿秤等产品。';
-
+export default async function HomePage({ params }: Props) {
+  const { locale } = await params;
   return (
     <>
-      <CollectionPageSchema name={schemaName} description={schemaDesc} locale={locale} />
-      <HomePageContent />
+      <OrganizationSchema />
+      <WebSiteSchema />
+      <Hero locale={locale} />
+      <TrustBadges locale={locale} />
+      <Advantages locale={locale} />
+      <ProductCategories locale={locale} />
     </>
   );
 }

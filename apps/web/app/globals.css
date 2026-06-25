@@ -55,7 +55,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-parchment text-foreground font-sans;
+    @apply bg-parchment dark:bg-[#141413] text-foreground font-sans;
   }
   /* Serif for all h1-h6 headlines per DESIGN.md */
   h1, h2, h3, h4, h5, h6 {
@@ -103,6 +103,50 @@
   /* Body text line-height 1.60 for editorial reading experience */
   p {
     @apply leading-relaxed;
+  }
+}
+
+/* ---------- Focus-visible (keyboard accessibility) ---------- */
+@layer base {
+  /* Visible focus ring only for keyboard navigation, never on mouse click */
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Form fields get a softer inner ring */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.45);
+    border-color: hsl(var(--ring));
+  }
+  /* Buttons — keep their own ring; just make sure they get one */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
+  }
+}
+
+/* ---------- Smooth theme transition ---------- */
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  html.theme-transitioning,
+  html.theme-transitioning *,
+  html.theme-transitioning *::before,
+  html.theme-transitioning *::after {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease !important;
   }
 }
 
