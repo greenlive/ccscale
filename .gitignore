@@ -1,4 +1,4 @@
-node_modules
+﻿node_modules
 .turbo
 dist
 build
@@ -24,3 +24,44 @@ nike/
 shopify/
 dev.db
 console-errors.txt
+
+# Tool state & scratch
+.omc/
+.ai-bridge/
+.claude/
+.codex/
+.superpowers/
+.windsurf/
+.agents/
+tests/test-results/
+
+# Backup files
+*.bak
+*.backup
+*.tsbuildinfo
+
+# Local scratch & binary docs (root-level artifacts)
+review_report*.md
+部署工作清单.docx
+关于b2b*.md
+PROGRESS_SUMMARY.md
+SECURITY_REPORT.md
+TEST_REPORT.md
+TEST_REPORT_2026-04-20.md
+COMPREHENSIVE_TEST_PLAN.md
+COMPREHENSIVE_TEST_REPORT_LATEST.md
+CLAUDE.md
+FINAL_VERIFICATION.md
+b2bneed.txt
+docker-compose.prod.yml
+console-full.log
+api.log
+api-error.log
+web.log
+start-dev.bat
+test-all.bat
+docker/
+docx/
+
+# Patches directory contains one-time migration scripts
+scripts/patches/
