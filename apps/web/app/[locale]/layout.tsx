@@ -1,133 +1,44 @@
-import { notFound } from 'next/navigation';
-import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { NextIntlClientProvider } from 'next-intl';
-import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
-import { locales } from '@/i18n/routing';
-import dynamic from 'next/dynamic';
+import { getMessages } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import SkipToMain from '@/components/SkipToMain';
-import { OrganizationSchema, WebSiteSchema } from '@/components/SchemaOrg';
+import AnalyticsTrackerWrapper from '@/components/AnalyticsTrackerWrapper';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
-import { getSiteSettings } from '@/lib/api/server-settings';
-const AnalyticsTracker = dynamic(() => import('@/components/AnalyticsTracker').then(m => ({ default: m.AnalyticsTracker })), { ssr: false });
-import '../globals.css';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const baseUrl = 'https://www.ccscale.com';
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-};
 
 type Props = {
-  params: { locale: string };
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 };
 
-export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
-}
+export default async function LocaleLayout({ children, params }: Props) {
+  const { locale } = await params;
 
-export async function generateMetadata({
-  params: { locale },
-}: Omit<Props, 'children'>): Promise<Metadata> {
-  const t = await getTranslations({ locale, namespace: 'home' });
-  const settings = await getSiteSettings();
-
-  const title = locale === 'en'
-    ? (settings.seoTitleEn || 'CC Scale - Professional Weighing Solutions Manufacturer')
-    : (settings.seoTitleZh || 'CC Scale - 专业衡器制造商');
-
-  const description = locale === 'en'
-    ? (settings.seoDescriptionEn || 'Leading manufacturer of high-quality weighing scales. Body scales, hanging scales, kitchen scales, baby scales. OEM/ODM solutions for global B2B buyers.')
-    : (settings.seoDescriptionZh || '高品质衡器制造商，提供体重秤、吊秤、厨房秤、婴儿秤等产品。为全球B2B买家提供OEM/ODM解决方案。');
-
-  const siteName = settings.companyNameEn || 'CC Scale';
-
-  const alternates: Metadata['alternates'] = {
-    canonical: `${baseUrl}/${locale}`,
-    languages: {},
-  };
-
-  locales.forEach((l) => {
-    alternates.languages![l === 'en' ? 'en-US' : 'zh-CN'] = `${baseUrl}/${l}`;
-  });
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `${baseUrl}/${locale}`,
-      locale: locale === 'en' ? 'en_US' : 'zh_CN',
-      siteName,
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      site: '@CCScale',
-      creator: '@CCScale',
-      images: ['https://www.ccscale.com/og-image.jpg'],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-    alternates,
-  };
-}
-
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: Props) {
-  if (!locales.includes(locale as any)) notFound();
-  setRequestLocale(locale);
-
-  let messages;
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default;
-  } catch (error) {
+  if (!routing.locales.includes(locale as 'en' | 'zh')) {
     notFound();
   }
 
+  const messages = await getMessages();
+
   return (
-    <html lang={locale} className={inter.variable} suppressHydrationWarning>
-      <head>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#141413" />
-        <meta name="msapplication-TileColor" content="#141413" />
-      </head>
-      <body className="min-h-screen bg-parchment antialiased" suppressHydrationWarning>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <QueryProvider>
-            <AnalyticsTracker />
-            <OrganizationSchema />
-            <WebSiteSchema />
-            <SkipToMain locale={locale} />
+    <html lang={locale}>
+      <body className='antialiased'>
+        <QueryProvider>
+          <NextIntlClientProvider messages={messages}>
+            <AnalyticsTrackerWrapper />
             <Header locale={locale} />
-            <main id="main-content" className="min-h-screen" role="main">
-              {children}
-            </main>
+            <main className='min-h-screen'>{children}</main>
             <Footer locale={locale} />
-          </QueryProvider>
-        </NextIntlClientProvider>
+            <WhatsAppButton />
+          </NextIntlClientProvider>
+        </QueryProvider>
       </body>
     </html>
   );
+}
+
+export async function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
 }

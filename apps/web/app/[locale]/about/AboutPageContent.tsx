@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Award, Users, TrendingUp, Play } from 'lucide-react';
 import { Card, CardContent } from '@cc-scale/ui';
 import { usePageContent } from '@/lib/api/queries';
@@ -152,10 +153,13 @@ export default function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
             </div>
             <div className="relative">
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                <img
-                  src={media.storyImage}
+                <Image
+                  src={media.storyImage || '/images/placeholder.svg'}
                   alt={locale === 'en' ? 'Factory' : '工厂'}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  unoptimized
                 />
               </div>
             </div>
@@ -184,10 +188,13 @@ export default function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
             >
               {/* Video Placeholder / Thumbnail */}
               <div className="absolute inset-0">
-                <img
-                  src={media.videoCover}
+                <Image
+                  src={media.videoCover || '/images/placeholder.svg'}
                   alt={locale === 'en' ? media.videoTitleEn : media.videoTitleZh}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 80vw"
+                  className="object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+                  unoptimized
                 />
               </div>
 
@@ -214,10 +221,13 @@ export default function AboutPageContent({ locale }: { locale: 'en' | 'zh' }) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
                 {media.thumbnails.map((thumb, i) => (
                   <div key={i} className="aspect-video bg-gray-800 rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-accent transition-all">
-                    <img
-                      src={thumb.src || '/placeholder.jpg'}
+                    <Image
+                      src={thumb.src || '/images/placeholder.svg'}
                       alt={locale === 'en' ? thumb.altEn : thumb.altZh}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      className="object-cover"
+                      unoptimized
                     />
                   </div>
                 ))}

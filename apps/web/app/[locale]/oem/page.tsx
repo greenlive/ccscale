@@ -1,17 +1,5 @@
-import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
-
-const OEMPageContent = dynamic(
-  () => import('./OEMPageContent').then((mod) => mod.OEMPageContent),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-)
+import { OEMPageContent } from './OEMPageContent'
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
   const isZh = locale === 'zh';

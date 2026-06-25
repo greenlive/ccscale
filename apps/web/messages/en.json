@@ -1,4 +1,13 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "switchLanguage": "Switch language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "languageLabel": "Language",
+    "englishOption": "English",
+    "chineseOption": "中文"
+  },
   "nav": {
     "home": "Home",
     "about": "About Us",
@@ -8,13 +17,7 @@
     "support": "Support",
     "blog": "Blog",
     "aiSummary": "For AI",
-    "contact": "Contact",
-    "language": "Language",
-    "openMenu": "Open menu",
-    "closeMenu": "Close menu"
-  },
-  "a11y": {
-    "skipToContent": "Skip to main content"
+    "contact": "Contact"
   },
   "common": {
     "submit": "Submit",
@@ -105,7 +108,26 @@
     "quickLinks": "Quick Links",
     "contactInfo": "Contact Info",
     "followUs": "Follow Us",
+    "newsletterDesc": "Subscribe to our newsletter for updates on new products and promotions.",
+    "newsletterEmailPlaceholder": "Your email",
+    "newsletterButtonSubscribe": "Subscribe",
+    "newsletterSuccess": "Subscribed successfully!",
     "copyright": "© 2024 CC Scale. All rights reserved.",
+    "allRightsReserved": "All rights reserved.",
+    "columnQuickLinks": "Quick Links",
+    "columnProducts": "Products",
+    "columnMore": "More",
+    "brandDesc": "Professional weighing solutions for global markets.",
+    "workingHoursLabel": "Working Hours",
+    "footerLinkHome": "Home",
+    "footerLinkAbout": "About Us",
+    "footerLinkProducts": "Products",
+    "footerLinkOem": "OEM/ODM",
+    "footerLinkSupport": "Support",
+    "footerLinkDownloads": "Downloads",
+    "footerLinkContact": "Contact",
+    "footerLinkBlog": "Blog",
+    "footerLinkGuarantees": "Guarantees",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "icp": "ICP License"
@@ -262,5 +284,39 @@
       "bookFactoryVisit": "Book Factory Visit",
       "requestQuote": "Request a Quote"
     }
+  },
+  "contact": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "company": "Company",
+    "message": "Message",
+    "namePlaceholder": "John Smith",
+    "companyPlaceholder": "Your Company",
+    "messagePlaceholder": "Tell us about your needs...",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent!",
+    "successDesc": "We will respond within 24 hours.",
+    "sendAnother": "Send another",
+    "error": "Something went wrong. Please try again.",
+    "tryAgain": "Try Again",
+    "errNameRequired": "Name is required",
+    "errEmailRequired": "Valid email is required",
+    "errMessageShort": "Message is too short"
+  },
+  "toast": {
+    "inquirySubmitted": "Inquiry submitted!",
+    "inquirySubmittedDesc": "We will respond within 24 hours.",
+    "inquiryFailed": "Submission failed",
+    "inquiryFailedDesc": "Please try again or contact us directly.",
+    "settingsSaved": "Settings saved",
+    "settingsFailed": "Failed to save settings",
+    "addedToCart": "Added to inquiry cart",
+    "removedFromCart": "Removed from inquiry cart",
+    "languageChanged": "Language switched",
+    "themeChanged": "Theme switched",
+    "networkError": "Network error",
+    "networkErrorDesc": "Please check your connection."
   }
 }

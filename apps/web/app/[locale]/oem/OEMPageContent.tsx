@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import Image from 'next/image';
 import { MessageSquare, PenTool, Settings, Layout, CheckCircle, Truck, Package, Star } from 'lucide-react';
 import { Card, CardContent } from '@cc-scale/ui';
 import { Button } from '@cc-scale/ui';
@@ -263,10 +264,12 @@ export function OEMPageContent({ locale }: OEMPageContentProps) {
             </div>
             <div className="relative">
               <div className="aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=600"
-                  alt="OEM"
-                  className="w-full h-full object-cover"
+                <Image
+                  src="/images/oem-service.svg"
+                  alt="OEM/ODM Service"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
                 />
               </div>
             </div>

@@ -35,7 +35,10 @@ export function BlogCard({ post }: BlogCardProps) {
               src={post.coverImage}
               alt={title}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
+              placeholder="blur"
+              blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0IDMnPjxyZWN0IHdpZHRoPSc0JyBoZWlnaHQ9JzMnIGZpbGw9JyNlOGRmZDAnLz48Y2lyY2xlIGN4PScyJyBjeT0nMS41JyByPScxJyBvcGFjaXR5PScuMycgZmlsbD0nI2E4OWI4NicvPjwvc3ZnPg=="
             />
           </div>
         )}

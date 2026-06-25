@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getApiUrl } from '@/lib/config/api';
@@ -269,10 +270,13 @@ export default function Testimonials({ locale }: { locale: string }) {
 
                     <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
                       {testimonial.avatarUrl ? (
-                        <img
+                        <Image
                           src={testimonial.avatarUrl}
                           alt={name}
+                          width={48}
+                          height={48}
                           className="h-12 w-12 rounded-full object-cover border-2 border-accent/20"
+                          unoptimized
                         />
                       ) : (
                         <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent/20 to-accent/40 flex items-center justify-center">

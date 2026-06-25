@@ -1,4 +1,13 @@
 {
+  "a11y": {
+    "skipToContent": "跳到主要内容",
+    "switchLanguage": "切换语言",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "languageLabel": "语言",
+    "englishOption": "English",
+    "chineseOption": "中文"
+  },
   "nav": {
     "home": "首页",
     "about": "公司简介",
@@ -8,13 +17,7 @@
     "support": "技术支持",
     "blog": "博客资讯",
     "aiSummary": "AI摘要",
-    "contact": "联系我们",
-    "language": "语言",
-    "openMenu": "打开菜单",
-    "closeMenu": "关闭菜单"
-  },
-  "a11y": {
-    "skipToContent": "跳到主要内容"
+    "contact": "联系我们"
   },
   "common": {
     "submit": "提交",
@@ -105,7 +108,26 @@
     "quickLinks": "快速链接",
     "contactInfo": "联系方式",
     "followUs": "关注我们",
+    "newsletterDesc": "订阅我们的新闻通讯，获取最新产品更新和促销信息。",
+    "newsletterEmailPlaceholder": "您的邮箱",
+    "newsletterButtonSubscribe": "订阅",
+    "newsletterSuccess": "订阅成功！",
     "copyright": "© 2024 CC Scale. 保留所有权利。",
+    "allRightsReserved": "保留所有权利。",
+    "columnQuickLinks": "快速链接",
+    "columnProducts": "产品服务",
+    "columnMore": "更多内容",
+    "brandDesc": "专业衡器解决方案，服务全球市场。",
+    "workingHoursLabel": "工作时间",
+    "footerLinkHome": "首页",
+    "footerLinkAbout": "关于我们",
+    "footerLinkProducts": "产品中心",
+    "footerLinkOem": "OEM定制",
+    "footerLinkSupport": "技术支持",
+    "footerLinkDownloads": "下载中心",
+    "footerLinkContact": "联系我们",
+    "footerLinkBlog": "博客资讯",
+    "footerLinkGuarantees": "保障中心",
     "privacy": "隐私政策",
     "terms": "服务条款",
     "icp": "ICP备案号"
@@ -262,5 +284,39 @@
       "bookFactoryVisit": "预约工厂参观",
       "requestQuote": "获取报价"
     }
+  },
+  "contact": {
+    "name": "姓名",
+    "email": "邮箱",
+    "phone": "电话",
+    "company": "公司",
+    "message": "留言",
+    "namePlaceholder": "张三",
+    "companyPlaceholder": "您的公司",
+    "messagePlaceholder": "请告诉我们您的需求...",
+    "send": "发送留言",
+    "sending": "发送中...",
+    "success": "留言已发送！",
+    "successDesc": "我们将在24小时内回复您。",
+    "sendAnother": "再次发送",
+    "error": "提交失败，请重试。",
+    "tryAgain": "重试",
+    "errNameRequired": "请输入姓名",
+    "errEmailRequired": "请输入有效邮箱",
+    "errMessageShort": "留言过短"
+  },
+  "toast": {
+    "inquirySubmitted": "询盘提交成功！",
+    "inquirySubmittedDesc": "我们将在24小时内回复您。",
+    "inquiryFailed": "提交失败",
+    "inquiryFailedDesc": "请重试或直接联系我们。",
+    "settingsSaved": "设置已保存",
+    "settingsFailed": "保存设置失败",
+    "addedToCart": "已添加到询价车",
+    "removedFromCart": "已从询价车移除",
+    "languageChanged": "已切换语言",
+    "themeChanged": "已切换主题",
+    "networkError": "网络错误",
+    "networkErrorDesc": "请检查您的网络连接。"
   }
 }

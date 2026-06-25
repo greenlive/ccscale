@@ -1,15 +1,13 @@
-'use client';
-
-import { useTranslations, useLocale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Shield, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@cc-scale/ui';
 import { Button } from '@cc-scale/ui';
 
 const ALIBABA_URL = 'https://zzscale.en.alibaba.com/index.html?spm=a2700.shop_plgr.88.10.643d71213FpJji';
 
-export default function AlibabaTrustBadge() {
-  const t = useTranslations('alibaba');
-  const locale = useLocale() as 'en' | 'zh';
+// Server Component — static content, no client JS needed.
+export default async function AlibabaTrustBadge({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'alibaba' });
   const isZh = locale === 'zh';
 
   return (

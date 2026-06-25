@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Hreflang Tags Component
  * Generates comprehensive hreflang tags for international SEO
  * 

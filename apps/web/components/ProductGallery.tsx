@@ -193,11 +193,15 @@ export function ProductGallery(props: ProductGalleryProps) {
           }`}
           onClick={() => handleThumbnailClick(idx)}
         >
-          <img
-            src={src}
+          <Image
+            src={src || '/images/placeholder.svg'}
             alt={`${props.name} - ${idx + 1}`}
+            width={80}
+            height={80}
+            sizes="80px"
             className="w-full h-full object-cover"
             onError={() => setImageError((prev) => ({ ...prev, [idx]: true }))}
+            unoptimized
           />
         </div>
       );
@@ -294,11 +298,15 @@ export function ProductGallery(props: ProductGalleryProps) {
               playsInline
             />
           ) : currentImage && !imageError[selectedIndex] ? (
-            <img
+            <Image
               src={currentImage}
               alt={props.name}
-              className="w-full h-full object-contain"
+              fill
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-contain"
               onError={() => setImageError((prev) => ({ ...prev, [selectedIndex]: true }))}
+              priority
+              unoptimized
             />
           ) : (
             /* Default placeholder when no main image */

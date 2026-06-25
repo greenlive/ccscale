@@ -96,16 +96,20 @@ export function Skeleton({
 // Card skeleton loader
 export function CardSkeleton() {
   return (
-    <div className="bg-ivory rounded-xl border border-border-cream p-6 shadow-whisper animate-pulse">
-      <div className="w-full h-48 bg-warm-sand rounded-lg mb-4" />
-      <div className="h-6 bg-warm-sand rounded w-3/4 mb-3" />
+    <div
+      role="status"
+      aria-label="Loading content"
+      className="bg-ivory dark:bg-[#1f1d1a] rounded-xl border border-border-cream dark:border-gray-800 p-6 shadow-whisper animate-pulse"
+    >
+      <div className="w-full h-48 bg-warm-sand dark:bg-gray-800 rounded-lg mb-4" />
+      <div className="h-6 bg-warm-sand dark:bg-gray-800 rounded w-3/4 mb-3" />
       <div className="space-y-2">
-        <div className="h-4 bg-warm-sand rounded w-full" />
-        <div className="h-4 bg-warm-sand rounded w-5/6" />
+        <div className="h-4 bg-warm-sand dark:bg-gray-800 rounded w-full" />
+        <div className="h-4 bg-warm-sand dark:bg-gray-800 rounded w-5/6" />
       </div>
       <div className="mt-4 flex gap-2">
-        <div className="h-8 bg-warm-sand rounded w-20" />
-        <div className="h-8 bg-warm-sand rounded w-20" />
+        <div className="h-8 bg-warm-sand dark:bg-gray-800 rounded w-20" />
+        <div className="h-8 bg-warm-sand dark:bg-gray-800 rounded w-20" />
       </div>
     </div>
   );
@@ -120,7 +124,7 @@ export function GridSkeleton({
   CardComponent?: typeof CardSkeleton;
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="status" aria-label="Loading grid">
       {Array.from({ length: count }).map((_, i) => (
         <CardComponent key={i} />
       ))}
@@ -131,16 +135,84 @@ export function GridSkeleton({
 // List skeleton loader
 export function ListSkeleton({ count = 5 }: { count?: number }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" role="status" aria-label="Loading list">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 p-4 bg-ivory rounded-xl border border-border-cream animate-pulse">
-          <div className="w-12 h-12 bg-warm-sand rounded-full flex-shrink-0" />
+        <div key={i} className="flex items-center gap-4 p-4 bg-ivory dark:bg-[#1f1d1a] rounded-xl border border-border-cream dark:border-gray-800 animate-pulse">
+          <div className="w-12 h-12 bg-warm-sand dark:bg-gray-800 rounded-full flex-shrink-0" />
           <div className="flex-1 space-y-2">
-            <div className="h-4 bg-warm-sand rounded w-1/3" />
-            <div className="h-3 bg-warm-sand rounded w-2/3" />
+            <div className="h-4 bg-warm-sand dark:bg-gray-800 rounded w-1/3" />
+            <div className="h-3 bg-warm-sand dark:bg-gray-800 rounded w-2/3" />
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+// Testimonial skeleton
+export function TestimonialSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="status" aria-label="Loading testimonials">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="bg-ivory dark:bg-[#1f1d1a] rounded-xl border border-border-cream dark:border-gray-800 p-6 shadow-whisper animate-pulse">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-warm-sand dark:bg-gray-800 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-warm-sand dark:bg-gray-800 rounded w-1/2" />
+              <div className="h-3 bg-warm-sand dark:bg-gray-800 rounded w-1/3" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-3 bg-warm-sand dark:bg-gray-800 rounded w-full" />
+            <div className="h-3 bg-warm-sand dark:bg-gray-800 rounded w-5/6" />
+            <div className="h-3 bg-warm-sand dark:bg-gray-800 rounded w-4/6" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Hero skeleton — fallback for very first paint
+export function HeroSkeleton() {
+  return (
+    <div className="relative bg-primary text-ivory py-16 sm:py-20 md:py-24" role="status" aria-label="Loading">
+      <div className="container mx-auto px-4 max-w-[1400px]">
+        <div className="h-6 w-32 bg-ivory/20 rounded-full mb-4 animate-pulse" />
+        <div className="max-w-3xl rounded-2xl border border-ivory/15 bg-ivory/5 p-6 sm:p-8 md:p-10 animate-pulse">
+          <div className="h-12 bg-ivory/15 rounded w-3/4 mb-6" />
+          <div className="h-4 bg-ivory/10 rounded w-full mb-2" />
+          <div className="h-4 bg-ivory/10 rounded w-5/6 mb-8" />
+          <div className="flex gap-4">
+            <div className="h-12 w-32 bg-terracotta/40 rounded" />
+            <div className="h-12 w-32 bg-ivory/20 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Empty state component — for "no products found" / "no blog posts" etc.
+interface EmptyStateProps {
+  icon?: React.ReactNode;
+  title: string;
+  description?: string;
+  action?: React.ReactNode;
+}
+export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+  return (
+    <div className="text-center py-16 px-4">
+      {icon && (
+        <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-warm-sand dark:bg-gray-800 flex items-center justify-center text-stone-gray">
+          {icon}
+        </div>
+      )}
+      <h3 className="text-xl font-serif font-medium text-charcoal-warm dark:text-gray-200 mb-2">{title}</h3>
+      {description && (
+        <p className="text-stone-gray dark:text-gray-400 mb-6 max-w-md mx-auto">{description}</p>
+      )}
+      {action}
     </div>
   );
 }

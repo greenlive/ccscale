@@ -26,7 +26,7 @@ export function generateOrganizationSchema(companyName?: string) {
     '@type': 'Organization',
     name,
     url: 'https://www.ccscale.com',
-    logo: 'https://www.ccscale.com/logo.png',
+    logo: 'https://www.ccscale.com/logo.svg',
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+86-XXX-XXXX-XXXX',
@@ -69,7 +69,7 @@ export function generateBlogPostingSchema(post: any, locale: string, companyName
       name: publisherName,
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.ccscale.com/logo.png',
+        url: 'https://www.ccscale.com/logo.svg',
       },
     },
   };

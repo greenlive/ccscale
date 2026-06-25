@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import Image from 'next/image';
 import { Search, ArrowRight, X } from 'lucide-react';
 import { Card, CardContent } from '@cc-scale/ui';
 import { Button, Input } from '@cc-scale/ui';
@@ -11,6 +12,7 @@ import { QuickInquiryButton } from '@/components/inquiry/QuickInquiryButton';
 import { useProducts, useProductCategories, ProductCategory } from '@/lib/api/queries';
 import { GridSkeleton } from '@/components/ErrorBoundary';
 import CategorySidebar from '@/components/CategorySidebar';
+import { EmptyState } from '@/components/ErrorBoundary';
 
 // Default categories for initial render (before API loads)
 const defaultCategories = [
@@ -35,7 +37,7 @@ const mockProducts = [
     sku: 'BS-200',
     name: { en: 'Digital Body Scale BS-200', zh: '数字体重秤 BS-200' },
     category: 'body-scales',
-    image: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=400',
+    image: '/images/placeholder.svg',
     priceMin: 15,
     priceMax: 25,
     moq: 100,
@@ -47,7 +49,7 @@ const mockProducts = [
     sku: 'HS-500',
     name: { en: 'Industrial Hanging Scale HS-500', zh: '工业吊秤 HS-500' },
     category: 'hanging-scales',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+    image: '/images/placeholder.svg',
     priceMin: 45,
     priceMax: 85,
     moq: 50,
@@ -59,7 +61,7 @@ const mockProducts = [
     sku: 'KS-300',
     name: { en: 'Precision Kitchen Scale KS-300', zh: '精密厨房秤 KS-300' },
     category: 'kitchen-scales',
-    image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400',
+    image: '/images/placeholder.svg',
     priceMin: 12,
     priceMax: 20,
     moq: 200,
@@ -71,7 +73,7 @@ const mockProducts = [
     sku: 'BS-100',
     name: { en: 'Smart Body Composition Scale', zh: '智能体脂秤' },
     category: 'body-scales',
-    image: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=400',
+    image: '/images/placeholder.svg',
     priceMin: 25,
     priceMax: 45,
     moq: 80,
@@ -83,7 +85,7 @@ const mockProducts = [
     sku: 'HS-300',
     name: { en: 'Mini Crane Scale 300kg', zh: '迷你吊钩秤 300kg' },
     category: 'hanging-scales',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+    image: '/images/placeholder.svg',
     priceMin: 35,
     priceMax: 55,
     moq: 60,
@@ -95,7 +97,7 @@ const mockProducts = [
     sku: 'KS-100',
     name: { en: 'Stainless Steel Kitchen Scale', zh: '不锈钢厨房秤' },
     category: 'kitchen-scales',
-    image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400',
+    image: '/images/placeholder.svg',
     priceMin: 18,
     priceMax: 28,
     moq: 150,
@@ -145,7 +147,7 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
   // Use mock data if API data not available
   const products = apiProducts.length > 0 ? apiProducts.map(p => {
     // Parse mainImages - could be JSON array string or array
-    let imageUrl = 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=400';
+    let imageUrl = '/images/placeholder.svg';
     if (p.mainImages) {
       try {
         const images = typeof p.mainImages === 'string' ? JSON.parse(p.mainImages) : p.mainImages;
@@ -351,41 +353,42 @@ export default function ProductsPageContent({ locale }: { locale: 'en' | 'zh' })
 
               {/* Products Grid */}
               {filteredProducts.length === 0 ? (
-                <div className="text-center py-20">
-                  <div className="max-w-md mx-auto">
-                    <Search className="h-16 w-16 text-warm-silver mx-auto mb-4" />
-                    <h3 className="text-xl font-serif font-medium text-charcoal-warm mb-2">
-                      {isZh ? '未找到相关产品' : 'No products found'}
-                    </h3>
-                    <p className="text-stone-gray mb-6">
-                      {isZh
-                        ? '尝试调整筛选条件或搜索关键词'
-                        : 'Try adjusting your filters or search terms'}
-                    </p>
-                    {hasActiveFilters && (
-                      <Button
-                        onClick={clearFilters}
-                        variant="outline"
-                        className="border-terracotta text-terracotta hover:bg-terracotta hover:text-ivory"
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        {isZh ? '清除所有筛选' : 'Clear all filters'}
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                <EmptyState
+                  icon={<Search className="h-8 w-8" />}
+                  title={isZh ? '未找到相关产品' : 'No products found'}
+                  description={isZh
+                    ? '尝试调整筛选条件或搜索关键词'
+                    : 'Try adjusting your filters or search terms'}
+                  action={hasActiveFilters ? (
+                    <Button
+                      onClick={clearFilters}
+                      variant="outline"
+                      className="border-terracotta text-terracotta hover:bg-terracotta hover:text-ivory"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      {isZh ? '清除所有筛选' : 'Clear all filters'}
+                    </Button>
+                  ) : undefined}
+                />
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                  {filteredProducts.map((product) => {
-                    const name = locale === 'en' ? product.name.en : product.name.zh;
+                  {filteredProducts.map((product, index) => {
+                    const name = locale === 'en' ? (product.name.en || '') : (product.name.zh || '');
                     return (
                       <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
                         <Link href={`/products/${product.slug}`}>
                           <div className="relative aspect-[4/3] overflow-hidden bg-warm-sand">
-                            <img
-                              src={product.image}
+                            <Image
+                              src={product.image || '/images/placeholder.svg'}
                               alt={name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading={index < 3 ? 'eager' : 'lazy'}
+                              priority={index < 3}
+                              placeholder="blur"
+                              blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0IDMnPjxyZWN0IHdpZHRoPSc0JyBoZWlnaHQ9JzMnIGZpbGw9JyNlOGRmZDAnLz48Y2lyY2xlIGN4PScyJyBjeT0nMS41JyByPScxJyBvcGFjaXR5PScuMycgZmlsbD0nI2E4OWI4NicvPjwvc3ZnPg=="
+                              unoptimized
                             />
                             {product.isFeatured && (
                               <div className="absolute top-4 left-4">

@@ -27,7 +27,7 @@ interface OrganizationSchemaProps {
 export function OrganizationSchema({
   name: propName,
   url = 'https://www.ccscale.com',
-  logo = 'https://www.ccscale.com/logo.png',
+  logo = 'https://www.ccscale.com/logo.svg',
 }: OrganizationSchemaProps) {
   const locale = useLocale();
   const settings = useSiteSettings();

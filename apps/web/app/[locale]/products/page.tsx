@@ -68,7 +68,7 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
       locale: locale === 'en' ? 'en_US' : 'zh_CN',
       images: [
         {
-          url: 'https://www.ccscale.com/products-og.jpg',
+          url: 'https://www.ccscale.com/products-og.svg',
           width: 1200,
           height: 630,
           alt: isZh ? `${siteName}产品列表` : `${siteName} Products Catalog`,
@@ -81,7 +81,7 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
       description,
       site: '@CCScale',
       creator: '@CCScale',
-      images: ['https://www.ccscale.com/products-og.jpg'],
+      images: ['https://www.ccscale.com/products-og.svg'],
     },
     alternates,
   };

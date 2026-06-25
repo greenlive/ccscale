@@ -1,6 +1,4 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Clock, Award, Globe, Building2 } from 'lucide-react';
 
 const badges = [
@@ -10,8 +8,8 @@ const badges = [
   { icon: Clock, valueKey: 'response', labelKey: 'responseLabel' },
 ];
 
-export default function TrustBadges() {
-  const t = useTranslations('guarantee.trustBadges');
+export default async function TrustBadges({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'guarantee.trustBadges' });
 
   return (
     <div className="py-8 border-t border-white/20">

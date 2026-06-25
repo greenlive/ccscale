@@ -1,17 +1,5 @@
-import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
-
-const SupportPageContent = dynamic(
-  () => import('./SupportPageContent').then((mod) => mod.SupportPageContent),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-)
+import { SupportPageContent } from './SupportPageContent'
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
   const isZh = locale === 'zh';

@@ -1,6 +1,7 @@
 /**
  * Server-side site settings fetcher for generateMetadata
- * Fetches directly from the backend API
+ * Uses ISR (Incremental Static Regeneration) with 1-hour revalidation
+ * to avoid hammering the backend on every request.
  */
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -24,17 +25,27 @@ export interface ServerSiteSettings {
   [key: string]: string | undefined;
 }
 
+// Cache across requests in a single Node.js process
+let cachedSettings: { data: ServerSiteSettings; expires: number } | null = null;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 min in-memory cache
+
 export async function getSiteSettings(): Promise<ServerSiteSettings> {
+  // Layer 1: in-memory cache (fastest)
+  const now = Date.now();
+  if (cachedSettings && cachedSettings.expires > now) {
+    return cachedSettings.data;
+  }
+
   try {
+    // Layer 2: Next.js fetch cache with 1h ISR (cross-process)
     const res = await fetch(`${API_URL}/api/site-settings`, {
-      cache: 'no-store',
+      next: { revalidate: 3600, tags: ['site-settings'] },
     });
-    if (res.ok) {
-      return await res.json();
-    }
-    return {};
+    const data: ServerSiteSettings = res.ok ? await res.json() : {};
+    cachedSettings = { data, expires: now + CACHE_TTL_MS };
+    return data;
   } catch {
-    return {};
+    return cachedSettings?.data || {};
   }
 }
 

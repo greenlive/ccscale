@@ -7,6 +7,7 @@ import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { Button, cn } from '@cc-scale/ui';
 import { InquiryCartButton } from '@/components/inquiry/InquiryCartButton';
 import { InquiryCartDrawer } from '@/components/inquiry/InquiryCartDrawer';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { getApiUrl } from '@/lib/config/api';
 
 const navLinks = [
@@ -22,6 +23,7 @@ const navLinks = [
 
 export default function Header({ locale }: { locale: string }) {
   const t = useTranslations('nav');
+  const tA11y = useTranslations('a11y');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -29,14 +31,21 @@ export default function Header({ locale }: { locale: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [brandName, setBrandName] = useState('CC Scale');
 
-  // Handle scroll effect
+  // Handle scroll effect — throttled with rAF to avoid scroll jank
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Check initial scroll position
+    handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -91,7 +100,7 @@ export default function Header({ locale }: { locale: string }) {
               <button
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
                 className="flex items-center space-x-1 text-sm font-medium text-gray-600 hover:text-primary"
-                aria-label="Switch language"
+                aria-label={tA11y('switchLanguage')}
                 aria-expanded={langMenuOpen}
                 aria-haspopup="true"
               >
@@ -111,7 +120,7 @@ export default function Header({ locale }: { locale: string }) {
                       locale === 'en' ? 'bg-gray-100 text-primary' : 'text-gray-700 hover:bg-gray-50'
                     )}
                   >
-                    English
+                    {tA11y('englishOption')}
                   </Link>
                   <Link
                     href={pathname}
@@ -122,7 +131,7 @@ export default function Header({ locale }: { locale: string }) {
                       locale === 'zh' ? 'bg-gray-100 text-primary' : 'text-gray-700 hover:bg-gray-50'
                     )}
                   >
-                    中文
+                    {tA11y('chineseOption')}
                   </Link>
                 </div>
               )}
@@ -130,21 +139,24 @@ export default function Header({ locale }: { locale: string }) {
 
             <InquiryCartButton onClick={() => setCartOpen(true)} />
 
+            <ThemeToggle />
+
             <Button asChild variant="accent">
               <Link href="/contact">{t('contact')}</Link>
             </Button>
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-1 md:hidden">
             <InquiryCartButton className="h-10 w-10 p-0" onClick={() => setCartOpen(true)} />
+            <ThemeToggle />
             <button
               type="button"
-              className="text-gray-600 p-2 -mr-2 rounded-md hover:bg-gray-100"
+              className="text-gray-600 dark:text-gray-200 p-2 -mr-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
-              aria-label={menuOpen ? t('closeMenu') : t('openMenu')}
+              aria-label={menuOpen ? tA11y('closeMenu') : tA11y('openMenu')}
             >
               {menuOpen ? <X className="h-6 w-6" aria-hidden /> : <Menu className="h-6 w-6" aria-hidden />}
             </button>
@@ -173,7 +185,7 @@ export default function Header({ locale }: { locale: string }) {
             ))}
 
             <div className="pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-500 mb-3">{t('language')}</p>
+              <p className="text-sm text-gray-500 mb-3">{tA11y('languageLabel')}</p>
               <div className="flex gap-2">
                 <Link
                   href={pathname}
@@ -184,7 +196,7 @@ export default function Header({ locale }: { locale: string }) {
                     locale === 'en' ? 'bg-primary text-white border-primary' : 'text-gray-600'
                   )}
                 >
-                  English
+                  {tA11y('englishOption')}
                 </Link>
                 <Link
                   href={pathname}
@@ -195,7 +207,7 @@ export default function Header({ locale }: { locale: string }) {
                     locale === 'zh' ? 'bg-primary text-white border-primary' : 'text-gray-600'
                   )}
                 >
-                  中文
+                  {tA11y('chineseOption')}
                 </Link>
               </div>
             </div>

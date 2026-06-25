@@ -1,6 +1,7 @@
 'use client'
 
 import { useLocale } from 'next-intl'
+import Image from 'next/image'
 import { Star, MessageSquare } from 'lucide-react'
 
 interface CustomerCase {
@@ -63,14 +64,17 @@ export function ProductCustomerCases({
             className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2"
           >
             {item.logo ? (
-              <img
+              <Image
                 src={item.logo}
                 alt={item.companyName}
+                width={24}
+                height={24}
                 className="w-6 h-6 rounded object-cover"
+                unoptimized
               />
             ) : (
-              <div className="w-6 h-6 rounded bg-amber-100 flex items-center justify-center text-xs text-amber-600 font-bold">
-                {item.companyName.charAt(0)}
+              <div className="w-6 h-6 rounded bg-warm-sand flex items-center justify-center text-xs text-stone-gray">
+                {item.companyName?.charAt(0) || '?'}
               </div>
             )}
             <span className="text-sm text-gray-700 font-medium">{item.companyName}</span>

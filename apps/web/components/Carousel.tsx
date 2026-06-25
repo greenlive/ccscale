@@ -66,8 +66,17 @@ export default function Carousel({
   return (
     <div
       className={`relative ${className}`}
-      onMouseEnter={() => emblaApi?.plugins()?.autoplay?.stop()}
-      onMouseLeave={() => emblaApi?.plugins()?.autoplay?.play()}
+      onMouseEnter={() => {
+        // Only stop autoplay on devices with hover capability (desktop); mobile touch is unaffected
+        if (window.matchMedia('(hover: hover)').matches) {
+          emblaApi?.plugins()?.autoplay?.stop();
+        }
+      }}
+      onMouseLeave={() => {
+        if (window.matchMedia('(hover: hover)').matches) {
+          emblaApi?.plugins()?.autoplay?.play();
+        }
+      }}
     >
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">

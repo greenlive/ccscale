@@ -1,6 +1,4 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Factory, PenTool, Truck, ShieldCheck, Heart } from 'lucide-react';
 import { Card, CardContent } from '@cc-scale/ui';
 
@@ -12,9 +10,10 @@ const advantages = [
   { icon: Heart, titleKey: 'excellentService', descKey: 'excellentServiceDesc' },
 ];
 
-export default function Advantages() {
-  const t = useTranslations('advantages');
-  const tHome = useTranslations('home');
+// Server Component — pure presentational, no client state needed.
+export default async function Advantages({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'advantages' });
+  const tHome = await getTranslations({ locale, namespace: 'home' });
 
   return (
     <section className="py-16 bg-warm-sand">

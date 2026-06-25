@@ -1,19 +1,32 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import TrustBadges from '@/components/TrustBadges';
 
-export default function Hero() {
-  const t = useTranslations('home');
+/**
+ * Server Component — no client JS needed for the Hero.
+ * This is the LCP element; rendering on the server eliminates hydration cost
+ * and ships zero JS for this critical content.
+ */
+export default async function Hero({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   return (
     <section className="relative bg-primary text-ivory py-16 sm:py-20 md:py-24 overflow-hidden">
-      {/* Photo wash + soft orbs */}
-      <div className="absolute inset-0 opacity-[0.12]">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920')] bg-cover bg-center" />
+      {/* Local SVG background wash — replaced Unsplash external image to fix LCP */}
+      <div className="absolute inset-0 opacity-90">
+        <Image
+          src="/images/hero-bg.svg"
+          alt=""
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          quality={85}
+          className="object-cover"
+        />
       </div>
       <div
         className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-terracotta/25 blur-3xl motion-safe:animate-pulse motion-reduce:animate-none"
@@ -56,7 +69,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <TrustBadges />
+      <TrustBadges locale={locale} />
     </section>
   );
 }
