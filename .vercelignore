@@ -1,0 +1,60 @@
+# .vercelignore — Vercel deploy ignore list
+# Keep deploy bundle small and avoid leaking dev-only files.
+
+# Logs and runtime artifacts
+*.log
+api.log
+api-error.log
+web.log
+console-full.log
+
+# Documentation and meta files (not needed at runtime)
+AGENTS.md
+CLAUDE.md
+README.md
+PRE_DEPLOYMENT_CHECK_REPORT.md
+PROGRESS_SUMMARY.md
+FINAL_VERIFICATION.md
+SECURITY_REPORT.md
+SEO_AI_READINESS_CHECKLIST.md
+DEPLOYMENT.md
+VERCEL_DEPLOYMENT.md
+BATCH_IMPORT_GUIDE.md
+BATCH_PRODUCT_TOOL.md
+TEST_REPORT*.md
+TEST_EXECUTION_REPORT*.md
+COMPREHENSIVE_TEST_*.md
+review_report*.md
+PROGRESS_SUMMARY.md
+PROJECT_INFO.md
+DESIGN.md
+*.docx
+
+# AI / OMC / agent config
+.omc
+.agents
+.claude
+.cursor
+.codex
+.windsurf
+.superpowers
+.ai-bridge
+.turbo
+.github
+.git
+
+# Local config
+.env
+.env.local
+.env*.local
+.dockerignore
+
+# Docker / container
+docker
+Dockerfile
+docker-compose.yml
+
+# Uploads — Vercel is stateless; media should be on R2/S3.
+uploads
+apps/api/uploads
+apps/web/public/uploads

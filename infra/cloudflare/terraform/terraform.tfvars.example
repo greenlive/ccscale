@@ -1,0 +1,7 @@
+# Copy to terraform.tfvars and fill in real values (do NOT commit)
+cloudflare_api_token  = "your-cloudflare-api-token-here"
+zone_id               = "your-cloudflare-zone-id-here"
+vercel_web_cname      = "cname-of-www-project.vercel-dns.com"
+vercel_admin_cname    = "cname-of-admin-project.vercel-dns.com"
+railway_cname         = "api-ccscale.up.railway.app"
+r2_public_cname       = "media.ccscale.com.cdn.cloudflare.net"

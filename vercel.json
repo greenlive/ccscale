@@ -1,0 +1,124 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "regions": [
+    "fra1"
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://*.googletagmanager.com https://*.google-analytics.com https://*.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://media.ccscale.com https://*.ccscale.com https://*.google-analytics.com https://*.googletagmanager.com; media-src 'self' https://media.ccscale.com blob:; connect-src 'self' https://api.ccscale.com https://*.ccscale.com https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.sentry.io wss:; frame-src 'self' https://challenges.cloudflare.com https://www.google.com https://www.youtube.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.ccscale.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+        }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/llms-full.txt",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/uploads/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, s-maxage=2592000, immutable"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/products",
+      "destination": "https://api.ccscale.com/api/products"
+    },
+    {
+      "source": "/api/inquiries",
+      "destination": "https://api.ccscale.com/api/inquiries"
+    },
+    {
+      "source": "/api/auth/:path*",
+      "destination": "https://api.ccscale.com/api/auth/:path*"
+    },
+    {
+      "source": "/api/upload/:path*",
+      "destination": "https://api.ccscale.com/api/upload/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://media.ccscale.com/:path*"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "https://admin.ccscale.com",
+      "statusCode": 302,
+      "permanent": false
+    }
+  ],
+  "crons": []
+}

@@ -1,0 +1,33 @@
+; BIND zone file for ccscale.com
+; Import: Cloudflare Dashboard > DNS > Records > Advanced > Import BIND zone file
+; Replace placeholders with real values before importing.
+
+; 1. Apex A record (placeholder IP; actual redirect handled by Rules)
+@       IN  3600  A     192.0.2.1
+
+; 2. CNAMEs
+www     IN  3600  CNAME cname.vercel-dns.com.
+admin   IN  3600  CNAME cname.vercel-dns.com.
+api     IN  3600  CNAME <railway-cname>.up.railway.app.
+media   IN  3600  CNAME media.ccscale.com.cdn.cloudflare.net.
+
+; 3. MX
+@       IN  3600  MX    10 feedback-smtp.us-east-1.amazonses.com.
+
+; 4. SPF
+@       IN  3600  TXT   "v=spf1 include:amazonses.com ~all"
+
+; 5. DMARC
+_dmarc  IN  3600  TXT   "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@ccscale.com; pct=100"
+
+; 6. Resend DKIM (replace with value from Resend dashboard)
+resend._domainkey IN 3600 CNAME resend._domainkey.amazonses.com.
+
+; 7. Resend verification
+@       IN  3600  TXT   "resend-site-verification=<value>"
+
+; 8. GSC verification
+@       IN  3600  TXT   "google-site-verification=<value>"
+
+; 9. MS Office 365 SPF (skip if not used)
+; @    IN  3600  TXT   "v=spf1 include:amazonses.com include:spf.protection.outlook.com ~all"

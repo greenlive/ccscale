@@ -1,0 +1,182 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      skip_smoke:
+        description: "Skip post-deploy smoke"
+        required: false
+        default: "false"
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID_WEB: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+  VERCEL_PROJECT_ID_ADMIN: ${{ secrets.VERCEL_PROJECT_ID_ADMIN }}
+
+jobs:
+  test-and-build:
+    name: Test & Build
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  # ---------------------------------------------------------------------------
+  # 1. Database migration (before any deploy runs)
+  # ---------------------------------------------------------------------------
+  db-migrate:
+    name: Prisma migrate deploy
+    needs: test-and-build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+      - run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter @cc-scale/database prisma generate
+      - name: Apply migrations to production
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+        run: pnpm --filter @cc-scale/database prisma migrate deploy
+      - name: Verify migrations applied
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+        run: pnpm --filter @cc-scale/database prisma migrate status
+
+  # ---------------------------------------------------------------------------
+  # 2. Web (marketing site) -> Vercel
+  # ---------------------------------------------------------------------------
+  deploy-web:
+    name: Deploy Web to Vercel
+    needs: [test-and-build, db-migrate]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+      - run: pnpm install --frozen-lockfile
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      - name: Pull Vercel env (web)
+        working-directory: apps/web
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build (web)
+        working-directory: apps/web
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy (web)
+        working-directory: apps/web
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+    environment:
+      name: production-web
+      url: https://www.ccscale.com
+
+  # ---------------------------------------------------------------------------
+  # 3. Admin -> Vercel (independent project)
+  # ---------------------------------------------------------------------------
+  deploy-admin:
+    name: Deploy Admin to Vercel
+    needs: [test-and-build, db-migrate]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+      - run: pnpm install --frozen-lockfile
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      - name: Pull Vercel env (admin)
+        working-directory: apps/admin
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build (admin)
+        working-directory: apps/admin
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy (admin)
+        working-directory: apps/admin
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+    environment:
+      name: production-admin
+      url: https://admin.ccscale.com
+
+  # ---------------------------------------------------------------------------
+  # 4. API -> Railway (triggered via webhook)
+  # ---------------------------------------------------------------------------
+  deploy-api-railway:
+    name: Trigger Railway API deploy
+    needs: [test-and-build, db-migrate]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger Railway deploy via API
+        run: |
+          curl -fsSL -X POST "${{ secrets.RAILWAY_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"serviceId":"${{ secrets.RAILWAY_API_SERVICE_ID }}"}'
+      - name: Wait for Railway to come up
+        run: |
+          echo "Railway deploy triggered. Waiting 60s for service to start..."
+          sleep 60
+    environment:
+      name: production-api
+
+  # ---------------------------------------------------------------------------
+  # 5. Post-deploy smoke against production
+  # ---------------------------------------------------------------------------
+  smoke:
+    name: Post-deploy smoke
+    needs: [deploy-web, deploy-api-railway, deploy-admin]
+    if: github.event_name == 'push' && (github.event.inputs.skip_smoke != 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Smoke test against production
+        env:
+          SMOKE_API: https://api.ccscale.com
+          SMOKE_WEB: https://www.ccscale.com
+        run: |
+          # Allow DNS / edge cache to settle
+          sleep 30
+          node scripts/smoke/smoke.mjs
+      - name: Notify on smoke failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": ":rotating_light: Production deploy smoke FAILED\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}\nRun: ${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ---------------------------------------------------------------------------
+  # 6. Rollback helper (manual trigger only)
+  # ---------------------------------------------------------------------------
+  rollback-web:
+    name: Rollback Web to previous deploy
+    if: github.event_name == 'workflow_dispatch' && contains(github.event.inputs.skip_smoke, 'rollback')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      - name: List recent deployments
+        working-directory: apps/web
+        run: vercel ls --token=${{ secrets.VERCEL_TOKEN }} --limit=5
+      - name: Rollback comment
+        run: |
+          echo "To rollback, use the Vercel dashboard or:"
+          echo "vercel rollback --token=${{ secrets.VERCEL_TOKEN }}"

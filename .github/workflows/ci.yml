@@ -1,0 +1,82 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  bom:
+    name: BOM check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Verify no UTF-8 BOM in repo
+        run: node scripts/check-bom.mjs
+
+  api-build:
+    name: API build
+    runs-on: ubuntu-latest
+    needs: bom
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ccscale
+          POSTGRES_PASSWORD: ccscale123
+          POSTGRES_DB: ccscale
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://ccscale:ccscale123@localhost:5432/ccscale
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci-only-jwt-secret-32-characters-minimum-xxxx
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter @cc-scale/database prisma generate
+      - name: Run prisma migrations
+        run: pnpm --filter @cc-scale/database prisma migrate deploy
+      - name: Build API
+        run: pnpm --filter @cc-scale/api build
+      - name: Lint
+        run: pnpm --filter @cc-scale/api lint
+
+  web-build:
+    name: Web build
+    runs-on: ubuntu-latest
+    needs: bom
+    env:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter @cc-scale/database prisma generate
+      - name: Build Web
+        run: pnpm --filter @cc-scale/web build
+      - name: Lint
+        run: pnpm --filter @cc-scale/web lint

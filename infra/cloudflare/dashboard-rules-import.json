@@ -1,0 +1,80 @@
+{
+  \"_comment\": \"Cloudflare Rules (Lists + Rulesets) for CC Scale. Apply via API:\",
+  \"_comment2\": \"  curl -X PUT -H 'Authorization: Bearer <CF_TOKEN>' -H 'Content-Type: application/json'\",
+  \"_comment3\": \"  --data @dashboard-rules-import.json\",
+  \"_comment4\": \"  https://api.cloudflare.com/client/v4/zones/<ZONE_ID>/rulesets\",
+  \"redirect_rules\": [
+    {
+      \"name\": \"apex-to-www\",
+      \"description\": \"301 redirect ccscale.com to www.ccscale.com\",
+      \"expression\": \"http.host eq \\\"ccscale.com\\\"\",
+      \"action\": \"redirect\",
+      \"status_code\": 301,
+      \"target_url\": \"https://www.ccscale.com\\\",
+      \"preserve_query_string\": true
+    },
+    {
+      \"name\": \"http-to-https\",
+      \"description\": \"Force HTTPS on all subdomains\",
+      \"expression\": \"not ssl\",
+      \"action\": \"redirect\",
+      \"status_code\": 301,
+      \"target_url\": \"https://\\System.Management.Automation.Internal.Host.InternalHost\\\",
+      \"preserve_query_string\": true
+    },
+    {
+      \"name\": \"admin-on-www-to-subdomain\",
+      \"description\": \"Move /admin* from www to admin.ccscale.com\",
+      \"expression\": \"http.host eq \\\"www.ccscale.com\\\" and starts_with(http.request.uri.path, \\\"/admin\\\")\",
+      \"action\": \"redirect\",
+      \"status_code\": 301,
+      \"target_url\": \"https://admin.ccscale.com\\\",
+      \"preserve_query_string\": true
+    }
+  ],
+  \"cache_rules\": [
+    {
+      \"name\": \"cache-r2-media\",
+      \"description\": \"Aggressive cache for product images\",
+      \"expression\": \"http.host eq \\\"media.ccscale.com\\\"\",
+      \"action\": \"set_cache_settings\",
+      \"edge_ttl\": 2592000,
+      \"browser_ttl\": 2592000,
+      \"cache\": true
+    },
+    {
+      \"name\": \"cache-next-static\",
+      \"description\": \"Immutable cache for _next/static/*\",
+      \"expression\": \"http.host eq \\\"www.ccscale.com\\\" and starts_with(http.request.uri.path, \\\"/_next/static/\\\")\",
+      \"action\": \"set_cache_settings\",
+      \"edge_ttl\": 31536000,
+      \"browser_ttl\": 31536000,
+      \"cache\": true
+    }
+  ],
+  \"rate_limits\": [
+    {
+      \"name\": \"rate-limit-inquiry\",
+      \"description\": \"Inquiry POST 10/min/IP\",
+      \"expression\": \"http.host eq \\\"api.ccscale.com\\\" and http.request.uri.path eq \\\"/api/inquiries\\\" and http.request.method eq \\\"POST\\\"\",
+      \"action\": \"block\",
+      \"status_code\": 429,
+      \"characteristics\": [\"ip.src\"],
+      \"period\": 60,
+      \"requests_per_period\": 10,
+      \"mitigation_timeout\": 600
+    },
+    {
+      \"name\": \"rate-limit-auth\",
+      \"description\": \"Auth 5/min/IP\",
+      \"expression\": \"http.host eq \\\"api.ccscale.com\\\" and starts_with(http.request.uri.path, \\\"/api/auth\\\")\",
+      \"action\": \"block\",
+      \"status_code\": 429,
+      \"characteristics\": [\"ip.src\"],
+      \"period\": 60,
+      \"requests_per_period\": 5,
+      \"mitigation_timeout\": 600
+    }
+  ],
+  \"ip_allowlist_comment\": \"Block all countries by default? No - we want global B2B traffic. Use Turnstile for bot mitigation.\"
+}

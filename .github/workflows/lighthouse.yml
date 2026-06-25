@@ -1,0 +1,74 @@
+name: lighthouse
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly Monday 06:00 UTC
+    - cron: "0 6 * * 1"
+
+jobs:
+  lighthouse:
+    name: Lighthouse audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+
+      - name: Cache lighthouse
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm/_npx
+          key: ${{ runner.os }}-lighthouse-${{ hashFiles('package.json') }}
+          restore-keys: ${{ runner.os }}-lighthouse-
+
+      - name: Run Lighthouse
+        env:
+          LH_THRESHOLD_PERF: "0.90"
+          LH_THRESHOLD_A11Y: "0.95"
+          LH_THRESHOLD_BP:    "0.95"
+          LH_THRESHOLD_SEO:   "0.95"
+        run: |
+          mkdir -p lighthouse-reports
+          node scripts/lighthouse/run.mjs \
+            https://www.ccscale.com/en \
+            https://www.ccscale.com/zh \
+            https://www.ccscale.com/en/products
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: lighthouse-reports/
+          retention-days: 30
+
+      - name: Comment on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const dir = 'lighthouse-reports';
+            if (!fs.existsSync(dir)) return;
+            const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+            const lines = files.map(f => {
+              const r = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+              const c = r.categories || {};
+              const pct = k => c[k] ? Math.round(c[k].score * 100) : 'n/a';
+              return `\`${f}\` perf=${pct('performance')} a11y=${pct('accessibility')} bp=${pct('best-practices')} seo=${pct('seo')}`;
+            });
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: ':rotating_light: Lighthouse threshold check failed.\n\n' + lines.join('\n')
+            });

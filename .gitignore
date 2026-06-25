@@ -17,7 +17,7 @@ prisma/dev.db-journal
 archive
 .playwright-mcp/
 *.png
-*.yml
+# *.yml (allow yml files - needed for GitHub workflows)
 test-results/
 uploads/
 nike/
