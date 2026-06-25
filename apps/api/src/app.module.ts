@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import configuration from './config/configuration';
+import { AppConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
 import { InquiriesModule } from './inquiries/inquiries.module';
@@ -20,10 +21,10 @@ import { UploadModule } from './upload/upload.module';
 import { BlogModule } from './blog/blog.module';
 import { CasesModule } from './cases/cases.module';
 import { PageContentModule } from './page-content/page-content.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
-    // Serve uploaded files statically
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
@@ -33,18 +34,12 @@ import { PageContentModule } from './page-content/page-content.module';
       load: [configuration],
       envFilePath: ['.env.local', '.env'],
     }),
+    AppConfigModule,
     PrismaModule,
-    // Rate limiting configuration
     ThrottlerModule.forRoot([
       {
-        name: 'short',
-        ttl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10) * 1000, // Convert to ms
+        ttl: parseInt(process.env.RATE_LIMIT_TTL || '60000', 10),
         limit: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
-      },
-      {
-        name: 'long',
-        ttl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10) * 1000 * 60, // 1 hour in ms
-        limit: parseInt(process.env.RATE_LIMIT_MAX || '100', 10) * 10,
       },
     ]),
     ProductsModule,
@@ -61,9 +56,9 @@ import { PageContentModule } from './page-content/page-content.module';
     BlogModule,
     CasesModule,
     PageContentModule,
+    HealthModule,
   ],
   providers: [
-    // Global rate limiting guard
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

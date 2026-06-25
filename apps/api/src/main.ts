@@ -3,9 +3,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { TurnstileService } from './common/turnstile.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Fail fast in production if Turnstile is not configured. Throws before
+  // binding to the port, so Railway's healthcheck won't pass either.
+  const turnstile = app.get(TurnstileService);
+  turnstile.assertProductionReady();
 
   // Security headers with Helmet
   app.use(helmet({
@@ -40,7 +46,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Strip properties not in DTOs
-      forbidNonWhitelisted: false, // Don't reject — silently strip instead
+      forbidNonWhitelisted: false, // Don't reject - silently strip instead
       transform: true, // Auto-transform payloads to DTO instances
       transformOptions: {
         enableImplicitConversion: true,
@@ -77,10 +83,11 @@ async function bootstrap() {
 
   const port = parseInt(process.env.PORT, 10) || 8000;
   await app.listen(port);
-  console.log(`✅ API server is running on http://localhost:${port}`);
-  console.log(`📚 API docs: http://localhost:${port}/api/docs`);
-  console.log(`🔒 Rate limiting enabled`);
-  console.log(`🛡️  Security headers enabled`);
+  console.log(`API server is running on http://localhost:${port}`);
+  console.log(`API docs: http://localhost:${port}/api/docs`);
+  console.log(`Rate limiting enabled`);
+  console.log(`Security headers enabled`);
+  console.log(`Turnstile: ${turnstile.isConfigured() ? 'configured' : 'bypassed (dev only)'}`);
 }
 
 bootstrap();

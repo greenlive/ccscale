@@ -10,15 +10,26 @@ import {
   HttpCode,
   HttpStatus,
   UnauthorizedException,
+  Inject,
+  Res,
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto, RegisterDto, UpdatePasswordDto, ResetPasswordDto, AuthResponse } from './dto/auth.dto';
+import { ConfigType } from '@nestjs/config';
+import { LoginDto, RegisterDto, UpdatePasswordDto, ResetPasswordDto, UpdateUserRoleDto, AuthResponse } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
+import configuration, { CONFIGURATION_KEY } from '../config/configuration';
+
+import { setAuthCookies, clearAuthCookies } from './auth-cookies';
+
+export const ACCESS_COOKIE = 'cc_access';
+export const REFRESH_COOKIE = 'cc_refresh';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -26,149 +37,126 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
+    @Inject(CONFIGURATION_KEY)
+    private readonly config: ConfigType<typeof configuration>,
   ) {}
 
-  // Strict rate limiting for login - 5 attempts per minute
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 attempts per minute
+  @Throttle({ short: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Login user' })
   @ApiResponse({ status: 200, description: 'Login successful', type: AuthResponse })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @ApiResponse({ status: 429, description: 'Too many login attempts' })
-  async login(@Body() loginDto: LoginDto) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthResponse> {
     const user = await this.authService.validateUser(loginDto.email, loginDto.password);
-
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generate JWT token with proper signing
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    const accessToken = this.jwtService.sign(payload, { expiresIn: this.config.jwt.accessTtl as any });
+    const refreshToken = this.jwtService.sign(
+      { sub: user.id, type: 'refresh' },
+      { expiresIn: this.config.jwt.refreshTtl as any },
+    );
 
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '24h',
-    });
+    setAuthCookies(res, this.config, accessToken, refreshToken);
 
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: '7d',
-    });
-
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      accessToken,
-      refreshToken,
-    };
+    return { id: user.id, email: user.email, name: user.name, role: user.role };
   }
 
-  // No rate limit for token refresh
   @Post('refresh')
-  @SkipThrottle()
   @HttpCode(HttpStatus.OK)
+  @Throttle({ short: { limit: 30, ttl: 60000 } })
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed' })
-  async refreshToken(@Body() body: { refreshToken: string }) {
+  async refresh(
+    @Request() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ ok: true }> {
+    const refreshToken: string | undefined =
+      req.cookies?.[REFRESH_COOKIE] ?? req.body?.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('Missing refresh token');
+    }
     try {
-      const payload = this.jwtService.verify(body.refreshToken, {
-        secret: process.env.JWT_SECRET || 'cc-scale-jwt-secret-change-in-production',
-      });
-
+      const payload = this.jwtService.verify(refreshToken, { secret: this.config.jwt.secret });
+      if (payload.type !== 'refresh' || !payload.sub) {
+        throw new Error('invalid type');
+      }
       const user = await this.authService.getUserById(payload.sub);
-
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-
-      const newPayload = {
-        sub: user.id,
-        email: user.email,
-        role: user.role,
-      };
-
-      const accessToken = this.jwtService.sign(newPayload, {
-        expiresIn: '24h',
-      });
-
-      return {
-        accessToken,
-      };
+      const accessToken = this.jwtService.sign(
+        { sub: user.id, email: user.email, role: user.role },
+        { expiresIn: this.config.jwt.accessTtl as any },
+      );
+      setAuthCookies(res, this.config, accessToken, undefined);
+      return { ok: true };
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Logout user (clear auth cookies)' })
+  async logout(@Res({ passthrough: true }) res: Response): Promise<{ ok: true }> {
+    clearAuthCookies(res, this.config);
+    return { ok: true };
   }
 
   @Post('register')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
+  @ApiCookieAuth(ACCESS_COOKIE)
   @ApiOperation({ summary: 'Register new user (admin only)' })
   @ApiResponse({ status: 201, description: 'User created', type: AuthResponse })
-  @ApiResponse({ status: 409, description: 'User already exists' })
-  async register(@Body() registerDto: RegisterDto) {
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
+    if (!registerDto.role) registerDto.role = 'VIEWER';
     const user = await this.authService.createUser(
       registerDto.email,
       registerDto.password,
       registerDto.name,
       registerDto.role,
     );
-
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '24h',
-    });
-
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      accessToken,
-    };
+    return { id: user.id, email: user.email, name: user.name, role: user.role };
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiCookieAuth(ACCESS_COOKIE)
   @SkipThrottle()
   @ApiOperation({ summary: 'Get current user' })
-  @ApiResponse({ status: 200, description: 'Current user info' })
-  async getCurrentUser(@Request() req) {
+  async getCurrentUser(@Request() req): Promise<AuthResponse> {
     const user = await this.authService.getUserById(req.user.id);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-    const { password, ...result } = user;
+    if (!user) throw new UnauthorizedException('User not found');
+    const { password: _pw, ...result } = user as any;
     return result;
   }
 
   @Put('password')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiCookieAuth(ACCESS_COOKIE)
   @HttpCode(HttpStatus.OK)
-  @SkipThrottle()
+  @Throttle({ short: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Update password' })
-  @ApiResponse({ status: 200, description: 'Password updated' })
-  async updatePassword(@Request() req, @Body() updatePasswordDto: UpdatePasswordDto) {
+  async updatePassword(
+    @Request() req,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ): Promise<{ message: string }> {
     const user = await this.authService.validateUser(req.user.email, updatePasswordDto.currentPassword);
-
-    if (!user) {
-      throw new UnauthorizedException('Current password is incorrect');
-    }
-
+    if (!user) throw new UnauthorizedException('Current password is incorrect');
     await this.authService.updatePassword(req.user.id, updatePasswordDto.newPassword);
-
     return { message: 'Password updated successfully' };
   }
 
@@ -176,9 +164,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
+  @ApiCookieAuth(ACCESS_COOKIE)
   @SkipThrottle()
   @ApiOperation({ summary: 'Get all users (admin only)' })
-  @ApiResponse({ status: 200, description: 'List of users' })
   async getAllUsers() {
     return this.authService.getAllUsers();
   }
@@ -187,38 +175,43 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
+  @ApiCookieAuth(ACCESS_COOKIE)
   @SkipThrottle()
   @ApiOperation({ summary: 'Update user role (admin only)' })
-  @ApiResponse({ status: 200, description: 'User role updated' })
-  async updateUserRole(@Param('id') id: string, @Body('role') role: string) {
-    return this.authService.updateUserRole(parseInt(id), role);
+  async updateUserRole(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserRoleDto,
+  ): Promise<AuthResponse> {
+    const user = await this.authService.updateUserRole(parseInt(id, 10), dto.role);
+    const { password: _pw, ...result } = user as any;
+    return result;
   }
 
   @Post('users/:id/delete')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
+  @ApiCookieAuth(ACCESS_COOKIE)
   @HttpCode(HttpStatus.NO_CONTENT)
   @SkipThrottle()
   @ApiOperation({ summary: 'Delete user (admin only)' })
-  @ApiResponse({ status: 204, description: 'User deleted' })
-  async deleteUser(@Param('id') id: string) {
-    await this.authService.deleteUser(parseInt(id));
+  async deleteUser(@Param('id') id: string): Promise<void> {
+    await this.authService.deleteUser(parseInt(id, 10));
   }
 
   @Post('users/:id/reset-password')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
+  @ApiCookieAuth(ACCESS_COOKIE)
   @HttpCode(HttpStatus.OK)
-  @SkipThrottle()
+  @Throttle({ short: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Reset user password (admin only)' })
-  @ApiResponse({ status: 200, description: 'Password reset successfully' })
   async resetUserPassword(
     @Param('id') id: string,
     @Body() resetPasswordDto: ResetPasswordDto,
-  ) {
-    await this.authService.resetUserPassword(parseInt(id), resetPasswordDto.newPassword);
+  ): Promise<{ message: string }> {
+    await this.authService.resetUserPassword(parseInt(id, 10), resetPasswordDto.newPassword);
     return { message: 'Password reset successfully' };
   }
 }

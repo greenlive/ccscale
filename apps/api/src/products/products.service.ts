@@ -1,24 +1,70 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
+
+export interface ProductRow {
+  sku: string;
+  name_en: string;
+  name_zh: string;
+  slug: string;
+  category_slug: string;
+  price_min?: string;
+  price_max?: string;
+  moq?: string;
+  lead_time?: string;
+  is_active?: string;
+  main_images?: string;
+  detail_images?: string;
+}
+
+export interface ImportError {
+  row: number;
+  field: string;
+  message: string;
+}
+
+export interface ImportResult {
+  success: boolean;
+  message: string;
+  total: number;
+  imported: number;
+  updated: number;
+  failed: number;
+  errors: ImportError[];
+}
 
 @Injectable()
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(categoryId?: number, isActive: boolean = true) {
-    return this.prisma.product.findMany({
-      where: {
-        ...(categoryId && { categoryId }),
-        isActive,
-      },
-      include: {
-        category: true,
-        images: true,
-        specs: true,
-      },
-      orderBy: { order: 'asc' },
-    });
+  async findAll(
+    categoryId?: number,
+    isActive: boolean = true,
+    page: number = 1,
+    pageSize: number = 20,
+  ) {
+    const safePage = Math.max(1, Math.floor(page));
+    const safeSize = Math.min(100, Math.max(1, Math.floor(pageSize)));
+    const skip = (safePage - 1) * safeSize;
+    const [data, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where: { ...(categoryId && { categoryId }), isActive },
+        include: { category: true, images: true, specs: true },
+        orderBy: { order: 'asc' },
+        skip,
+        take: safeSize,
+      }),
+      this.prisma.product.count({
+        where: { ...(categoryId && { categoryId }), isActive },
+      }),
+    ]);
+    return {
+      data,
+      total,
+      page: safePage,
+      pageSize: safeSize,
+      totalPages: Math.ceil(total / safeSize),
+    };
   }
 
   async findOne(id: number) {
@@ -64,7 +110,6 @@ export class ProductsService {
   }
 
   async findRelated(productId: number, limit: number = 4) {
-    // Get the current product to find its category
     const currentProduct = await this.prisma.product.findUnique({
       where: { id: productId },
       include: { category: true },
@@ -74,7 +119,6 @@ export class ProductsService {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
 
-    // Try to find products in the same category first
     const relatedFromCategory = await this.prisma.product.findMany({
       where: {
         categoryId: currentProduct.categoryId,
@@ -89,13 +133,9 @@ export class ProductsService {
       orderBy: { order: 'asc' },
     });
 
-    // If we don't have enough from same category, fill with random products
     if (relatedFromCategory.length < limit) {
       const additionalCount = limit - relatedFromCategory.length;
-      const existingIds = [
-        productId,
-        ...relatedFromCategory.map((p) => p.id),
-      ];
+      const existingIds = [productId, ...relatedFromCategory.map((p) => p.id)];
 
       const additionalProducts = await this.prisma.product.findMany({
         where: {
@@ -222,10 +262,8 @@ export class ProductsService {
   async update(id: number, updateProductDto: UpdateProductDto) {
     const { specs, images, mainImages, detailImages, videos, ...restData } = updateProductDto;
 
-    // First check if product exists
     await this.findOne(id);
 
-    // Build update data
     const data: any = {
       ...restData,
       ...(mainImages !== undefined && { mainImages: mainImages || null }),
@@ -233,7 +271,6 @@ export class ProductsService {
       ...(videos !== undefined && { videos: videos || null }),
     };
 
-    // Clear old productImage table when updating with new image fields
     if (mainImages !== undefined || detailImages !== undefined) {
       await this.prisma.productImage.deleteMany({ where: { productId: id } });
     }
@@ -278,6 +315,176 @@ export class ProductsService {
   async remove(id: number) {
     await this.findOne(id);
     return this.prisma.product.delete({ where: { id } });
+  }
+
+  // Batch import products from CSV
+  async batchImport(csvContent: string): Promise<ImportResult> {
+    const rows = this.parseCSV(csvContent);
+    
+    let imported = 0;
+    let updated = 0;
+    let failed = 0;
+    const errors: ImportError[] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rowNumber = i + 2;
+
+      try {
+        if (!row.sku || !row.name_en || !row.name_zh || !row.slug || !row.category_slug) {
+          errors.push({
+            row: rowNumber,
+            field: 'required',
+            message: 'Missing required fields: sku, name_en, name_zh, slug, category_slug'
+          });
+          failed++;
+          continue;
+        }
+
+        const category = await this.prisma.productCategory.findFirst({
+          where: { slug: row.category_slug }
+        });
+
+        if (!category) {
+          errors.push({
+            row: rowNumber,
+            field: 'category_slug',
+            message: `Category not found: ${row.category_slug}`
+          });
+          failed++;
+          continue;
+        }
+
+        const existingProduct = await this.prisma.product.findFirst({
+          where: {
+            OR: [{ sku: row.sku }, { slug: row.slug }]
+          }
+        });
+
+        const productData: any = {
+          sku: row.sku,
+          name: row.name_en,
+          nameZh: row.name_zh,
+          slug: row.slug,
+          categoryId: category.id,
+          priceMin: row.price_min ? parseFloat(row.price_min) : null,
+          priceMax: row.price_max ? parseFloat(row.price_max) : null,
+          moq: row.moq ? parseInt(row.moq) : null,
+          leadTime: row.lead_time || null,
+          isActive: row.is_active !== '0',
+        };
+
+        let productId: number;
+
+        if (existingProduct) {
+          await this.prisma.product.update({
+            where: { id: existingProduct.id },
+            data: productData
+          });
+          productId = existingProduct.id;
+          updated++;
+        } else {
+          const product = await this.prisma.product.create({
+            data: productData
+          });
+          productId = product.id;
+          imported++;
+        }
+
+        // Handle main images
+        if (row.main_images) {
+          await this.prisma.productImage.deleteMany({
+            where: { productId, isMain: true }
+          });
+          
+          const mainImageUrls = row.main_images.split(',').map(url => url.trim()).filter(Boolean);
+          for (let j = 0; j < mainImageUrls.length; j++) {
+            await this.prisma.productImage.create({
+              data: {
+                productId,
+                imageUrl: mainImageUrls[j],
+                isMain: j === 0,
+                type: 'MAIN'
+              }
+            });
+          }
+        }
+
+        // Handle detail images
+        if (row.detail_images) {
+          await this.prisma.productImage.deleteMany({
+            where: { productId, isMain: false }
+          });
+          
+          const detailImageUrls = row.detail_images.split(',').map(url => url.trim()).filter(Boolean);
+          for (const url of detailImageUrls) {
+            await this.prisma.productImage.create({
+              data: {
+                productId,
+                imageUrl: url,
+                isMain: false,
+                type: 'DETAIL'
+              }
+            });
+          }
+        }
+
+      } catch (rowError) {
+        errors.push({
+          row: rowNumber,
+          field: 'unknown',
+          message: rowError instanceof Error ? rowError.message : 'Unknown error'
+        });
+        failed++;
+      }
+    }
+
+    return {
+      success: failed === 0,
+      message: failed === 0 ? 'Import completed successfully' : `Import completed with ${failed} errors`,
+      total: rows.length,
+      imported,
+      updated,
+      failed,
+      errors: errors.slice(0, 50)
+    };
+  }
+
+  private parseCSV(content: string): ProductRow[] {
+    const lines = content.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const rows: ProductRow[] = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = this.parseCSVLine(lines[i]);
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      rows.push(row as ProductRow);
+    }
+
+    return rows;
+  }
+
+  private parseCSVLine(line: string): string[] {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
   }
 
   // Category methods

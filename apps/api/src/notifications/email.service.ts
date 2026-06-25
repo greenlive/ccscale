@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { escapeHtml, escapeUrl } from '../common/html-escape';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter;
 
   constructor() {
@@ -17,6 +19,11 @@ export class EmailService {
     });
   }
 
+  /**
+   * Low-level send. The `html` argument is sent as-is and is the caller's
+   * responsibility to be properly escaped. Use the higher-level helpers below
+   * for the user-inquiry flow.
+   */
   async sendEmail(to: string, subject: string, html: string): Promise<void> {
     try {
       await this.transporter.sendMail({
@@ -25,10 +32,11 @@ export class EmailService {
         subject,
         html,
       });
-      console.log(`Email sent to ${to}: ${subject}`);
+      this.logger.log(`Email sent to ${to}: ${subject}`);
     } catch (error) {
-      console.error('Failed to send email:', error);
-      // Don't throw - email failure shouldn't break the main flow
+      this.logger.error(`Failed to send email to ${to}: ${(error as Error).message}`);
+      // Intentionally not throwing - email failure should not break the main flow,
+      // but it is logged so ops can spot delivery issues.
     }
   }
 
@@ -38,21 +46,26 @@ export class EmailService {
     items?: Array<{ productNameEn?: string; productNameZh?: string; quantity?: number }>;
     message?: string;
   }): Promise<void> {
+    const safeName = escapeHtml(inquiry.fullName);
+    const itemList = (inquiry.items ?? [])
+      .map((item) => {
+        const name = escapeHtml(item.productNameEn || item.productNameZh || 'Product');
+        const qty = Math.max(1, Number(item.quantity) || 1);
+        return `<li>${name} - Qty: ${qty}</li>`;
+      })
+      .join('');
+    const safeMessage = inquiry.message
+      ? `<p><strong>Your Message:</strong><br/>${escapeHtml(inquiry.message).replace(/\n/g, '<br/>')}</p>`
+      : '';
+
     const subject = 'Thank you for your inquiry - CC Scale';
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #0A1628;">Thank You for Your Inquiry!</h1>
-        <p>Dear ${inquiry.fullName},</p>
+        <p>Dear ${safeName},</p>
         <p>We have received your inquiry and will get back to you within 24 hours.</p>
-        ${inquiry.items && inquiry.items.length > 0 ? `
-          <h3>Your Inquiry Details:</h3>
-          <ul>
-            ${inquiry.items.map(item => `
-              <li>${item.productNameEn || item.productNameZh || 'Product'} - Qty: ${item.quantity || 1}</li>
-            `).join('')}
-          </ul>
-        ` : ''}
-        ${inquiry.message ? `<p><strong>Your Message:</strong><br/>${inquiry.message}</p>` : ''}
+        ${itemList ? `<h3>Your Inquiry Details:</h3><ul>${itemList}</ul>` : ''}
+        ${safeMessage}
         <p>Best regards,<br/>CC Scale Team</p>
         <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
         <p style="color: #666; font-size: 12px;">
@@ -74,52 +87,39 @@ export class EmailService {
     items?: Array<{ productNameEn?: string; productNameZh?: string; quantity?: number }>;
   }): Promise<void> {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@ccscale.com';
+    const safeName = escapeHtml(inquiry.fullName);
+    const safeEmail = escapeHtml(inquiry.email);
+    const safePhone = inquiry.phone ? escapeHtml(inquiry.phone) : '';
+    const safeCompany = inquiry.company ? escapeHtml(inquiry.company) : '';
+    const safeCountry = inquiry.country ? escapeHtml(inquiry.country) : '';
+    const safeMessage = inquiry.message
+      ? `<h3 style="margin-top: 20px;">Message:</h3><p style="background: #f5f5f5; padding: 15px; border-radius: 4px;">${escapeHtml(inquiry.message).replace(/\n/g, '<br/>')}</p>`
+      : '';
+    const itemList = (inquiry.items ?? [])
+      .map((item) => {
+        const name = escapeHtml(item.productNameEn || item.productNameZh || 'Product');
+        const qty = Math.max(1, Number(item.quantity) || 1);
+        return `<li>${name} - Qty: ${qty}</li>`;
+      })
+      .join('');
+
+    const safeAdminUrl = escapeUrl(process.env.ADMIN_URL || 'http://localhost:3001');
+
     const subject = `[CC Scale] New Inquiry from ${inquiry.fullName}${inquiry.company ? ` (${inquiry.company})` : ''}`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #0A1628;">New Inquiry Received</h1>
         <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Customer Name:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${inquiry.fullName}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${inquiry.email}">${inquiry.email}</a></td>
-          </tr>
-          ${inquiry.phone ? `
-          <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Phone:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${inquiry.phone}</td>
-          </tr>
-          ` : ''}
-          ${inquiry.company ? `
-          <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Company:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${inquiry.company}</td>
-          </tr>
-          ` : ''}
-          ${inquiry.country ? `
-          <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Country:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${inquiry.country}</td>
-          </tr>
-          ` : ''}
+          <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Customer Name:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${safeName}</td></tr>
+          <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td><td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${safeEmail}">${safeEmail}</a></td></tr>
+          ${safePhone ? `<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Phone:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${safePhone}</td></tr>` : ''}
+          ${safeCompany ? `<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Company:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${safeCompany}</td></tr>` : ''}
+          ${safeCountry ? `<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Country:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${safeCountry}</td></tr>` : ''}
         </table>
-        ${inquiry.items && inquiry.items.length > 0 ? `
-          <h3 style="margin-top: 20px;">Products Interested:</h3>
-          <ul>
-            ${inquiry.items.map(item => `
-              <li>${item.productNameEn || item.productNameZh || 'Product'} - Qty: ${item.quantity || 1}</li>
-            `).join('')}
-          </ul>
-        ` : ''}
-        ${inquiry.message ? `
-          <h3 style="margin-top: 20px;">Message:</h3>
-          <p style="background: #f5f5f5; padding: 15px; border-radius: 4px;">${inquiry.message}</p>
-        ` : ''}
+        ${itemList ? `<h3 style="margin-top: 20px;">Products Interested:</h3><ul>${itemList}</ul>` : ''}
+        ${safeMessage}
         <p style="margin-top: 20px;">
-          <a href="${process.env.ADMIN_URL || 'http://localhost:3001'}/inquiries" style="background: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">View in Admin Panel</a>
+          <a href="${safeAdminUrl}/inquiries" style="background: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">View in Admin Panel</a>
         </p>
       </div>
     `;

@@ -11,6 +11,8 @@ export class InquiriesService {
   ) {}
 
   async findAll(status?: string, page: number = 1, pageSize: number = 20) {
+    page = Math.max(1, Math.floor(page));
+    pageSize = Math.min(100, Math.max(1, Math.floor(pageSize)));
     const skip = (page - 1) * pageSize;
 
     const [data, total] = await Promise.all([

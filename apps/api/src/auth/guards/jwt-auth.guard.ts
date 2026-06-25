@@ -1,9 +1,16 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import configuration, { CONFIGURATION_KEY } from '../../config/configuration';
+import { ConfigType } from '@nestjs/config';
+
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    @Inject(CONFIGURATION_KEY)
+    private readonly config: ConfigType<typeof configuration>,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -20,18 +27,15 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      // Verify the JWT token with proper signature validation
-      const secret = process.env.JWT_SECRET || 'cc-scale-jwt-secret-change-in-production';
+      // secret is loaded from validated config (throws on boot if missing in production)
       const decoded = this.jwtService.verify(token, {
-        secret,
+        secret: this.config.jwt.secret,
       });
 
-      // Validate the payload structure
       if (!decoded.sub || !decoded.email || !decoded.role) {
         throw new UnauthorizedException('Invalid token payload');
       }
 
-      // Attach user info to request
       request.user = {
         id: decoded.sub,
         email: decoded.email,
