@@ -1,4 +1,4 @@
-﻿# CC Scale 部署指南
+# CC Scale 部署指南
 
 ## 部署架构
 
