@@ -1,0 +1,6 @@
+sku,name_en,name_zh,slug,category_slug,price_min,price_max,moq,lead_time,is_active,main_images,detail_images
+BS-200,Digital Body Scale,数字体重秤,digital-body-scale,body-scales,25.00,35.00,100,15-25 days,1,,
+BS-300,Smart Body Scale,智能体重秤,smart-body-scale,body-scales,35.00,45.00,100,15-25 days,1,,
+HS-500,Industrial Hanging Scale,工业吊秤,industrial-hanging-scale,hanging-scales,85.00,120.00,20,20-30 days,1,,
+KS-300,Kitchen Scale,厨房秤,kitchen-scale,kitchen-scales,18.00,28.00,200,10-15 days,1,,
+BB-100,Baby Scale,婴儿秤,baby-scale,baby-scales,45.00,65.00,50,20-25 days,1,,
