@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Minimal HTML escape for safe interpolation into email HTML.
  *
  * Mirrors lodash's escape: escapes &, <, >, ", and '.

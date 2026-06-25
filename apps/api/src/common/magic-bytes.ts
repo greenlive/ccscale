@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Magic-byte (file signature) detection.
  *
  * Reads the first 12 bytes of a buffer and infers a normalized MIME type

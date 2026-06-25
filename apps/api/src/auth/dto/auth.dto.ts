@@ -1,4 +1,4 @@
-﻿import { IsEmail, IsString, MinLength, IsOptional, IsIn, IsEnum } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsOptional, IsIn, IsEnum } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export const USER_ROLES = ['ADMIN', 'EDITOR', 'VIEWER'] as const;

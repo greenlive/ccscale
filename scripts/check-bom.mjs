@@ -1,11 +1,11 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 // Detect UTF-8 BOM (EF BB BF) in source-controlled JSON/YAML/TOML files.
 // Run in CI: `node scripts/check-bom.mjs`
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, extname } from 'node:path';
 
 const SKIP = new Set(['node_modules', '.next', '.git', 'dist', 'coverage', 'out', 'uploads', '.omc', '.agents', '.claude', '.cursor', '.codex', '.superpowers', '.windsurf', '.turbo', '.ai-bridge']);
-const EXTS = new Set(['.json', '.yml', '.yaml', '.toml']);
+const EXTS = new Set(['.json', '.yml', '.yaml', '.toml', '.ts', '.tsx', '.js', '.mjs', '.cjs', '.css', '.md', '.html']);
 
 let problems = 0;
 function walk(dir) {
@@ -31,3 +31,5 @@ if (problems > 0) {
   process.exit(1);
 }
 console.log('\u2705 No BOM found');
+
+

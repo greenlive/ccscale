@@ -1,4 +1,4 @@
-﻿import { Response } from 'express';
+import { Response } from 'express';
 import { ConfigType } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { ACCESS_COOKIE, REFRESH_COOKIE } from './auth.controller';
