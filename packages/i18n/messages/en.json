@@ -11,7 +11,19 @@
     "aiSummary": "AI Summary",
     "closeMenu": "Close menu",
     "openMenu": "Open menu",
-    "language": "Language"
+    "language": "Language",
+    "switchLanguage": "Switch language",
+    "englishOption": "English",
+    "chineseOption": "中文"
+  },
+  "a11y": {
+    "switchLanguage": "Switch language",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "languageLabel": "Select language",
+    "englishOption": "English",
+    "chineseOption": "中文",
+    "skipToMain": "Skip to main content"
   },
   "common": {
     "submit": "Submit",
@@ -57,6 +69,7 @@
     "noThanks": "No thanks"
   },
   "home": {
+    "trustRibbon": "ISO 9001 Certified • Factory Direct",
     "heroTitle": "Professional Weighing Solutions",
     "heroSubtitle": "Leading manufacturer of high-quality scales for global markets",
     "exploreProducts": "Explore Products",
@@ -109,7 +122,7 @@
   },
   "inquiry": {
     "title": "Request a Quote",
-    "subtitle": "Fill out the form below and we'll get back to you within 24 hours.",
+    "subtitle": "Fill out the form below and we will get back to you within 24 hours.",
     "fullName": "Full Name",
     "email": "Email",
     "phone": "Phone",
@@ -148,7 +161,7 @@
   },
   "support": {
     "title": "Technical Support",
-    "subtitle": "We're here to help",
+    "subtitle": "We are here to help",
     "downloads": "Downloads",
     "downloadCenter": "Download Center",
     "manuals": "Manuals",
@@ -172,6 +185,7 @@
     "quickLinks": "Quick Links",
     "contactInfo": "Contact Info",
     "followUs": "Follow Us",
+    "brandDesc": "Professional weighing scale manufacturer and B2B exporter. OEM/ODM services for body scales, hanging scales, kitchen scales, and more.",
     "copyright": "© 2024 CC Scale. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
@@ -179,7 +193,12 @@
     "newsletter": "Newsletter",
     "newsletterDesc": "Subscribe for updates on new products and promotions",
     "subscribe": "Subscribe",
-    "yourEmail": "Your email"
+    "yourEmail": "Your email",
+    "newsletterSuccess": "Successfully subscribed!",
+    "newsletterEmailPlaceholder": "Enter your email",
+    "newsletterButtonSubscribe": "Subscribe",
+    "workingHoursLabel": "Working Hours",
+    "allRightsReserved": "All rights reserved."
   },
   "blog": {
     "title": "Blog",
@@ -208,7 +227,7 @@
   },
   "cases": {
     "title": "Success Cases",
-    "subtitle": "See how we've helped our clients"
+    "subtitle": "See how we have helped our clients"
   },
   "certifications": {
     "title": "Certifications",
@@ -217,5 +236,27 @@
   "aiSummary": {
     "title": "AI Product Summary",
     "subtitle": "Get an AI-powered overview of our products"
+  },
+  "product": {
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "minOrder": "Min. Order",
+    "pieces": "pieces",
+    "downloadSpecs": "Download Specifications",
+    "shareProduct": "Share Product",
+    "addToWishlist": "Add to Wishlist",
+    "certifications": "Certifications",
+    "applications": "Applications",
+    "packaging": "Packaging",
+    "faq": "FAQ",
+    "tradeTerms": "Trade Terms",
+    "customerCases": "Customer Cases"
+  },
+  "error": {
+    "pageNotFound": "Page Not Found",
+    "pageNotFoundDesc": "The page you are looking for does not exist or has been moved.",
+    "returnHome": "Return to Homepage",
+    "serverError": "Server Error",
+    "serverErrorDesc": "Something went wrong. Please try again later."
   }
 }

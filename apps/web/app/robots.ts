@@ -58,7 +58,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/admin/'],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: locales.map((l) => `${baseUrl}/${l === 'en' ? '' : l}/sitemap.xml`),
     host: baseUrl,
   };
 }

@@ -22,6 +22,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   assignedInquiries Inquiry[] @relation("AssignedInquiries")
+
+  @@index([role, isActive])
+  @@index([createdAt])
 }
 
 // ==================== 产品相关 ====================
@@ -39,6 +42,8 @@ model ProductCategory {
   updatedAt     DateTime  @updatedAt
 
   products      Product[]
+
+  @@index([isActive, order])
 }
 
 model Product {
@@ -110,6 +115,12 @@ model Product {
   specs          ProductSpec[]
   customerCases  CustomerCase[]
   inquiryItems   InquiryItem[]
+
+  @@index([isActive, isFeatured, order])
+  @@index([categoryId, isActive, order])
+  @@index([priceMin])
+  @@index([updatedAt])
+  @@index([moq])
 }
 
 model CustomerCase {
@@ -225,6 +236,12 @@ model Inquiry {
   items         InquiryItem[]
   assignedTo    User?         @relation("AssignedInquiries", fields: [assignedToId], references: [id])
   activities    ActivityLog[]
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@index([assignedToId, status])
+  @@index([trafficSource, createdAt])
+  @@index([createdAt])
 }
 
 // 询盘操作日志
@@ -237,6 +254,8 @@ model ActivityLog {
   createdAt   DateTime @default(now())
 
   inquiry     Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId, createdAt])
 }
 
 model InquiryItem {
@@ -336,6 +355,11 @@ model UserSession {
   pageViews   Int      @default(0)
 
   events      SessionEvent[]
+
+  @@index([lastVisit])
+  @@index([trafficSource, lastVisit])
+  @@index([utmSource, utmCampaign, lastVisit])
+  @@index([country, lastVisit])
 }
 
 model SessionEvent {
@@ -348,6 +372,11 @@ model SessionEvent {
   createdAt DateTime @default(now())
 
   session   UserSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([eventType, createdAt])
+  @@index([productId])
+  @@index([createdAt])
 }
 
 // ==================== 网站设置 ====================

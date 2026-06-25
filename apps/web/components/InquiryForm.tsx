@@ -8,8 +8,10 @@ import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Textarea } from '@cc-scale/ui';
 import { useInquiryCart } from '@/stores/inquiry-cart';
+import { useToast } from '@/stores/toast';
 import { getStoredTrackingData } from '@/lib/utils/tracking';
 import { useSubmitInquiry } from '@/lib/api/queries';
+import { Turnstile } from '@/components/Turnstile';
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -28,9 +30,11 @@ const PHONE_REGEX = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
 
 export default function InquiryForm() {
   const t = useTranslations('inquiry');
+  const tToast = useTranslations('toast');
   const locale = useLocale() as 'en' | 'zh';
   const cart = useInquiryCart((state) => state.cart);
   const clearCart = useInquiryCart((state) => state.clearCart);
+  const toast = useToast();
   const [formStatus, setFormStatus] = useState<FormStatus>('idle');
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState({
@@ -45,6 +49,8 @@ export default function InquiryForm() {
   });
 
   const submitInquiry = useSubmitInquiry();
+  const [turnstileToken, setTurnstileToken] = useState<string | undefined>(undefined);
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   // Validation function with locale context
   const validateForm = (data: typeof formData): FormErrors => {
@@ -125,6 +131,7 @@ export default function InquiryForm() {
         ...(utmContent ? { utmContent } : {}),
         ...(utmTerm ? { utmTerm } : {}),
         ...(referrer ? { referrer } : {}),
+        ...(turnstileToken ? { turnstileToken } : {}),
       };
 
       // Submit using React Query mutation
@@ -142,12 +149,15 @@ export default function InquiryForm() {
         message: '',
       });
       clearCart();
+      setTurnstileToken(undefined);
+      toast.success(tToast('inquirySubmitted'), tToast('inquirySubmittedDesc'));
 
       // Reset after 5 seconds
       setTimeout(() => setFormStatus('idle'), 5000);
     } catch (error) {
       console.error('Error submitting inquiry:', error);
       setFormStatus('error');
+      toast.error(tToast('inquiryFailed'), tToast('inquiryFailedDesc'));
     }
   };
 
@@ -298,6 +308,16 @@ export default function InquiryForm() {
               <p className="text-xs text-destructive mt-1">{formErrors.message}</p>
             )}
           </div>
+
+          {turnstileSiteKey ? (
+            <div className="my-2">
+              <Turnstile
+                siteKey={turnstileSiteKey}
+                onVerify={setTurnstileToken}
+                onExpire={() => setTurnstileToken(undefined)}
+              />
+            </div>
+          ) : null}
 
           <Button
             type="submit"

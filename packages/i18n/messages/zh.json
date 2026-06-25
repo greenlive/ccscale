@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "首页",
-    "about": "公司简介",
+    "about": "关于我们",
     "products": "产品中心",
     "oem": "OEM定制",
     "support": "技术支持",
@@ -11,7 +11,19 @@
     "aiSummary": "AI摘要",
     "closeMenu": "关闭菜单",
     "openMenu": "打开菜单",
-    "language": "语言"
+    "language": "语言",
+    "switchLanguage": "切换语言",
+    "englishOption": "English",
+    "chineseOption": "中文"
+  },
+  "a11y": {
+    "switchLanguage": "切换语言",
+    "openMenu": "打开导航菜单",
+    "closeMenu": "关闭导航菜单",
+    "languageLabel": "选择语言",
+    "englishOption": "English",
+    "chineseOption": "中文",
+    "skipToMain": "跳转到主要内容"
   },
   "common": {
     "submit": "提交",
@@ -57,6 +69,7 @@
     "noThanks": "不需要"
   },
   "home": {
+    "trustRibbon": "ISO 9001认证 • 厂家直销",
     "heroTitle": "专业衡器解决方案",
     "heroSubtitle": "面向全球市场的高品质衡器制造商",
     "exploreProducts": "浏览产品",
@@ -172,14 +185,20 @@
     "quickLinks": "快速链接",
     "contactInfo": "联系方式",
     "followUs": "关注我们",
-    "copyright": "© 2024 CC Scale. 保留所有权利。",
+    "brandDesc": "专业衡器制造商和B2B出口商。提供体重秤、吊秤、厨房秤等OEM/ODM服务。",
+    "copyright": "© 2024 CC Scale。保留所有权利。",
     "privacy": "隐私政策",
     "terms": "服务条款",
     "icp": "ICP备案号",
     "newsletter": "通讯订阅",
     "newsletterDesc": "订阅以获取新产品和促销信息",
     "subscribe": "订阅",
-    "yourEmail": "您的邮箱"
+    "yourEmail": "您的邮箱",
+    "newsletterSuccess": "订阅成功！",
+    "newsletterEmailPlaceholder": "输入您的邮箱",
+    "newsletterButtonSubscribe": "订阅",
+    "workingHoursLabel": "工作时间",
+    "allRightsReserved": "保留所有权利。"
   },
   "blog": {
     "title": "博客",
@@ -217,5 +236,27 @@
   "aiSummary": {
     "title": "AI 产品摘要",
     "subtitle": "获取 AI 驱动的产品概述"
+  },
+  "product": {
+    "inStock": "有货",
+    "outOfStock": "缺货",
+    "minOrder": "最小起订",
+    "pieces": "件",
+    "downloadSpecs": "下载规格书",
+    "shareProduct": "分享产品",
+    "addToWishlist": "收藏产品",
+    "certifications": "产品认证",
+    "applications": "应用场景",
+    "packaging": "包装信息",
+    "faq": "常见问题",
+    "tradeTerms": "贸易条款",
+    "customerCases": "客户案例"
+  },
+  "error": {
+    "pageNotFound": "页面未找到",
+    "pageNotFoundDesc": "您访问的页面不存在或已被移动。",
+    "returnHome": "返回首页",
+    "serverError": "服务器错误",
+    "serverErrorDesc": "出了点问题，请稍后再试。"
   }
 }
