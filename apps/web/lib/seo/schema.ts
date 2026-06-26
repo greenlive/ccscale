@@ -1,4 +1,4 @@
-export function generateProductSchema(product: any, locale: string) {
+﻿export function generateProductSchema(product: any, locale: string) {
   const isZh = locale === 'zh';
   const name = isZh ? product.nameZh : product.nameEn;
   const description = isZh ? product.descriptionZh : product.descriptionEn;
@@ -25,8 +25,8 @@ export function generateOrganizationSchema(companyName?: string) {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name,
-    url: 'https://www.ccscale.com',
-    logo: 'https://www.ccscale.com/logo.svg',
+    url: 'https://www.zzscale.com',
+    logo: 'https://www.zzscale.com/logo.svg',
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+86-XXX-XXXX-XXXX',
@@ -69,7 +69,7 @@ export function generateBlogPostingSchema(post: any, locale: string, companyName
       name: publisherName,
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.ccscale.com/logo.svg',
+        url: 'https://www.zzscale.com/logo.svg',
       },
     },
   };

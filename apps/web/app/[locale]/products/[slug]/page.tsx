@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+﻿import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { prisma } from '@cc-scale/database';
 import { ProductSchema, BreadcrumbSchema } from '@/components/SchemaOrg';
@@ -11,7 +11,7 @@ interface Props {
 export const revalidate = 300; // revalidate every 5 min (was 60, loosened to reduce DB hits)
 export const dynamicParams = true; // allow slugs not pre-generated
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ccscale.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.zzscale.com';
 
 export async function generateStaticParams() {
   // Pre-render the most recent 100 active products. New ones render on demand.
@@ -98,8 +98,8 @@ export default async function ProductPage({ params }: Props) {
 
   const path = `${locale === 'zh' ? '/zh' : ''}/products/${slug}`;
   const breadcrumbItems = [
-    { name: locale === 'zh' ? '首页' : 'Home', url: `${SITE_URL}/${locale === 'zh' ? 'zh' : ''}` },
-    { name: locale === 'zh' ? '产品' : 'Products', url: `${SITE_URL}${locale === 'zh' ? '/zh' : ''}/products` },
+    { name: locale === 'zh' ? '棣栭〉' : 'Home', url: `${SITE_URL}/${locale === 'zh' ? 'zh' : ''}` },
+    { name: locale === 'zh' ? '浜у搧' : 'Products', url: `${SITE_URL}${locale === 'zh' ? '/zh' : ''}/products` },
     { name: locale === 'zh' ? product.nameZh : product.nameEn, url: `${SITE_URL}${path}` },
   ];
 

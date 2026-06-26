@@ -1,4 +1,4 @@
-import createMiddleware from "next-intl/middleware";
+﻿import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { routing, type Locale } from "./i18n/routing";
 
@@ -69,13 +69,13 @@ const CSP_HEADER = (
     `script-src ${scriptSrc.join(" ")}`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
-    "img-src 'self' data: blob: https://media.ccscale.com https://*.ccscale.com https://*.google-analytics.com https://*.googletagmanager.com",
-    "media-src 'self' https://media.ccscale.com blob:",
-    "connect-src 'self' https://api.ccscale.com https://*.ccscale.com https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.sentry.io wss:",
+    "img-src 'self' data: blob: https://media.zzscale.com https://*.zzscale.com https://*.google-analytics.com https://*.googletagmanager.com",
+    "media-src 'self' https://media.zzscale.com blob:",
+    "connect-src 'self' https://api.zzscale.com https://*.zzscale.com https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.sentry.io wss:",
     "frame-src 'self' https://challenges.cloudflare.com https://www.google.com https://www.youtube.com",
     "frame-ancestors 'self'",
     "base-uri 'self'",
-    "form-action 'self' https://api.ccscale.com",
+    "form-action 'self' https://api.zzscale.com",
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     "upgrade-insecure-requests",

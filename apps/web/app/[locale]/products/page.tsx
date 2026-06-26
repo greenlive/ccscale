@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+﻿import { Suspense } from 'react';
 import ProductsPageContent from './ProductsPageContent';
 import type { Metadata } from 'next';
 import { locales } from '@/i18n/routing';
@@ -8,7 +8,7 @@ type Props = {
   params: { locale: string };
 };
 
-const baseUrl = 'https://www.ccscale.com';
+const baseUrl = 'https://www.zzscale.com';
 
 // B2B trade keywords for products listing page
 const productsPageKeywords = [
@@ -33,14 +33,14 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
   const isZh = locale === 'zh';
   const settings = await getSiteSettings();
   const siteName = settings.companyNameEn || 'CC Scale';
-  const t = isZh ? '产品中心' : 'Products';
+  const t = isZh ? '浜у搧涓績' : 'Products';
 
   const title = isZh
-    ? `专业衡器产品列表 - ${siteName}厂家直供`
+    ? `涓撲笟琛″櫒浜у搧鍒楄〃 - ${siteName}鍘傚鐩翠緵`
     : `Professional Weighing Scales Catalog - ${siteName} Direct Manufacturer`;
 
   const description = isZh
-    ? `浏览${siteName}的全系列衡器产品，包括体重秤、吊秤、厨房秤、婴儿秤等。提供OEM/ODM定制服务，厂家直供，价格优惠。`
+    ? `娴忚${siteName}鐨勫叏绯诲垪琛″櫒浜у搧锛屽寘鎷綋閲嶇Г銆佸悐绉ゃ€佸帹鎴跨Г銆佸┐鍎跨Г绛夈€傛彁渚汷EM/ODM瀹氬埗鏈嶅姟锛屽巶瀹剁洿渚涳紝浠锋牸浼樻儬銆俙
     : `Browse ${siteName}'s full range of weighing scales including body scales, hanging scales, kitchen scales, baby scales and more. OEM/ODM available, direct from manufacturer.`;
 
   // Build hreflang alternates
@@ -68,10 +68,10 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
       locale: locale === 'en' ? 'en_US' : 'zh_CN',
       images: [
         {
-          url: 'https://www.ccscale.com/products-og.svg',
+          url: 'https://www.zzscale.com/products-og.svg',
           width: 1200,
           height: 630,
-          alt: isZh ? `${siteName}产品列表` : `${siteName} Products Catalog`,
+          alt: isZh ? `${siteName}浜у搧鍒楄〃` : `${siteName} Products Catalog`,
         },
       ],
     },
@@ -79,9 +79,9 @@ export async function generateMetadata({ params: { locale } }: Props): Promise<M
       card: 'summary_large_image',
       title,
       description,
-      site: '@CCScale',
-      creator: '@CCScale',
-      images: ['https://www.ccscale.com/products-og.svg'],
+      site: '@ZZScale',
+      creator: '@ZZScale',
+      images: ['https://www.zzscale.com/products-og.svg'],
     },
     alternates,
   };

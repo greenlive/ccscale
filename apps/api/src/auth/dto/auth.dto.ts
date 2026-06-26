@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsOptional, IsIn, IsEnum } from 'class-validator';
+﻿import { IsEmail, IsString, MinLength, IsOptional, IsIn, IsEnum } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export const USER_ROLES = ['ADMIN', 'EDITOR', 'VIEWER'] as const;
@@ -6,7 +6,7 @@ export type UserRole = typeof USER_ROLES[number];
 export const UserRoleEnum = { ADMIN: 'ADMIN', EDITOR: 'EDITOR', VIEWER: 'VIEWER' } as const;
 
 export class LoginDto {
-  @ApiProperty({ example: 'admin@ccscale.com' })
+  @ApiProperty({ example: 'admin@zzscale.com' })
   @IsEmail()
   email: string;
 
@@ -17,7 +17,7 @@ export class LoginDto {
 }
 
 export class RegisterDto {
-  @ApiProperty({ example: 'admin@ccscale.com' })
+  @ApiProperty({ example: 'admin@zzscale.com' })
   @IsEmail()
   email: string;
 

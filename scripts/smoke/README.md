@@ -1,4 +1,4 @@
-# Smoke Test
+﻿# Smoke Test
 
 `scripts/smoke/smoke.mjs` - zero-dep E2E smoke (Node 20+).
 
@@ -31,8 +31,8 @@ pnpm dev &                                     # in another terminal
 node scripts/smoke/smoke.mjs
 
 # with env overrides
-SMOKE_WEB=https://staging.ccscale.com \
-SMOKE_API=https://api.staging.ccscale.com \
+SMOKE_WEB=https://staging.zzscale.com \
+SMOKE_API=https://api.staging.zzscale.com \
   node scripts/smoke/smoke.mjs
 
 # skip web checks (api only)
@@ -63,7 +63,7 @@ jobs:
         with: { node-version: 20 }
       - name: API smoke (production)
         env:
-          SMOKE_WEB: https://www.ccscale.com
-          SMOKE_API: https://api.ccscale.com
+          SMOKE_WEB: https://www.zzscale.com
+          SMOKE_API: https://api.zzscale.com
         run: node scripts/smoke/smoke.mjs
 ```

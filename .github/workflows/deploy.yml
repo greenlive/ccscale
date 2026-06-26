@@ -1,4 +1,4 @@
-name: Deploy Production
+﻿name: Deploy Production
 
 on:
   push:
@@ -76,7 +76,7 @@ jobs:
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
     environment:
       name: production-web
-      url: https://www.ccscale.com
+      url: https://www.zzscale.com
 
   # ---------------------------------------------------------------------------
   # 3. Admin -> Vercel (independent project)
@@ -106,7 +106,7 @@ jobs:
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
     environment:
       name: production-admin
-      url: https://admin.ccscale.com
+      url: https://admin.zzscale.com
 
   # ---------------------------------------------------------------------------
   # 4. API -> Railway (triggered via webhook)
@@ -144,8 +144,8 @@ jobs:
         with: { node-version: 20 }
       - name: Smoke test against production
         env:
-          SMOKE_API: https://api.ccscale.com
-          SMOKE_WEB: https://www.ccscale.com
+          SMOKE_API: https://api.zzscale.com
+          SMOKE_WEB: https://www.zzscale.com
         run: |
           # Allow DNS / edge cache to settle
           sleep 30

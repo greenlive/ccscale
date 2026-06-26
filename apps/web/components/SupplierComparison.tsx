@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, XCircle } from 'lucide-react';
@@ -8,17 +8,17 @@ const comparisonItems = [
   {
     categoryKey: 'paymentMethod',
     normalKey: 'paymentMethodNormal',
-    ccScaleKey: 'paymentMethodCc',
+    zzScaleKey: 'paymentMethodCc',
   },
   {
     categoryKey: 'qualityAssurance2',
     normalKey: 'qualityAssuranceNormal',
-    ccScaleKey: 'qualityAssuranceCc',
+    zzScaleKey: 'qualityAssuranceCc',
   },
   {
     categoryKey: 'deliveryPromise',
     normalKey: 'deliveryPromiseNormal',
-    ccScaleKey: 'deliveryPromiseCc',
+    zzScaleKey: 'deliveryPromiseCc',
   },
 ];
 
@@ -56,7 +56,7 @@ export default function SupplierComparison() {
                 <div className="p-6 bg-gradient-to-r from-accent to-accent/80 text-center">
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-200" />
-                    <span className="text-lg font-bold">{t('ccScale')}</span>
+                    <span className="text-lg font-bold">{t('zzScale')}</span>
                   </div>
                 </div>
               </div>
@@ -78,7 +78,7 @@ export default function SupplierComparison() {
                     {t(item.normalKey)}
                   </div>
                   <div className="p-6 bg-accent/5 text-primary font-medium">
-                    {t(item.ccScaleKey)}
+                    {t(item.zzScaleKey)}
                   </div>
                 </div>
               ))}

@@ -1,4 +1,4 @@
-name: ci
+﻿name: ci
 
 on:
   push:
@@ -26,9 +26,9 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: ccscale
-          POSTGRES_PASSWORD: ccscale123
-          POSTGRES_DB: ccscale
+          POSTGRES_USER: zzscale
+          POSTGRES_PASSWORD: zzscale123
+          POSTGRES_DB: zzscale
         ports: ["5432:5432"]
         options: >-
           --health-cmd pg_isready
@@ -36,7 +36,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://ccscale:ccscale123@localhost:5432/ccscale
+      DATABASE_URL: postgresql://zzscale:zzscale123@localhost:5432/zzscale
       REDIS_URL: redis://localhost:6379
       JWT_SECRET: ci-only-jwt-secret-32-characters-minimum-xxxx
       NODE_ENV: test

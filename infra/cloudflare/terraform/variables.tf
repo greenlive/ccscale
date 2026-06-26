@@ -1,4 +1,4 @@
-# variables.tf - placeholder; values are passed via terraform.tfvars or -var flags
+﻿# variables.tf - placeholder; values are passed via terraform.tfvars or -var flags
 
 variable "cloudflare_api_token" {
   type        = string
@@ -8,7 +8,7 @@ variable "cloudflare_api_token" {
 
 variable "zone_id" {
   type        = string
-  description = "Cloudflare Zone ID for ccscale.com"
+  description = "Cloudflare Zone ID for zzscale.com"
 }
 
 variable "vercel_web_cname" {
@@ -28,5 +28,5 @@ variable "railway_cname" {
 
 variable "r2_public_cname" {
   type    = string
-  default = "media.ccscale.com.cdn.cloudflare.net"
+  default = "media.zzscale.com.cdn.cloudflare.net"
 }

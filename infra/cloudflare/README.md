@@ -1,4 +1,4 @@
-# Cloudflare IaC + dashboard imports
+﻿# Cloudflare IaC + dashboard imports
 
 Two ways to apply the same config:
 
@@ -23,7 +23,7 @@ terraform apply tfplan
 Provisions:
 - DNS: apex, www, admin, api, media, mail MX, SPF, DMARC, DKIM
 - Zone settings: SSL=full_strict, TLS 1.2+, HSTS preload, Brotli, HTTP/3, 0-RTT
-- Redirect rule: ccscale.com -> www.ccscale.com (301)
+- Redirect rule: zzscale.com -> www.zzscale.com (301)
 - Cache rules: R2 media (30d), _next/static (1y immutable)
 - WAF: Bot Fight Mode
 - Rate limit: 10 POST /api/inquiries per 60s per IP
@@ -57,15 +57,15 @@ Provisions:
 
 ```bash
 # DNS
-dig +short www.ccscale.com
-dig +short api.ccscale.com
-dig +short media.ccscale.com
+dig +short www.zzscale.com
+dig +short api.zzscale.com
+dig +short media.zzscale.com
 
 # SSL
-curl -I https://www.ccscale.com 2>&1 | grep -i "strict-transport-security|x-frame|x-content"
+curl -I https://www.zzscale.com 2>&1 | grep -i "strict-transport-security|x-frame|x-content"
 
 # HSTS preload
-curl -sI https://www.ccscale.com | grep -i "strict-transport-security"
+curl -sI https://www.zzscale.com | grep -i "strict-transport-security"
 
 # Performance
 # https://gtmetrix.com or https://www.webpagetest.org

@@ -1,11 +1,11 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
 import ProductCategories from '@/components/ProductCategories';
 import TrustBadges from '@/components/TrustBadges';
 import Advantages from '@/components/Advantages';
 import { OrganizationSchema, WebSiteSchema } from '@/components/SchemaOrg';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ccscale.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.zzscale.com';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const isZh = locale === 'zh';
   const title = isZh
-    ? '专业衡器制造商与出口商 - CC Scale | OEM/ODM 衡器定制'
+    ? '涓撲笟琛″櫒鍒堕€犲晢涓庡嚭鍙ｅ晢 - CC Scale | OEM/ODM 琛″櫒瀹氬埗'
     : 'Professional Weighing Scale Manufacturer & Exporter | CC Scale';
   const description = isZh
-    ? 'CC Scale 永康专业衡器制造商,20+ 年行业经验,出口 100+ 国家。提供体重秤、吊秤、厨房秤、婴儿秤等 OEM/ODM 定制服务。'
+    ? 'CC Scale 姘稿悍涓撲笟琛″櫒鍒堕€犲晢,20+ 骞磋涓氱粡楠?鍑哄彛 100+ 鍥藉銆傛彁渚涗綋閲嶇Г銆佸悐绉ゃ€佸帹鎴跨Г銆佸┐鍎跨Г绛?OEM/ODM 瀹氬埗鏈嶅姟銆?
     : 'CC Scale is a professional weighing scale manufacturer with 20+ years of experience, exporting to 100+ countries. OEM/ODM services for body scales, hanging scales, kitchen scales, baby scales, and more.';
   return {
     title,

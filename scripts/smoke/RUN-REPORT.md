@@ -1,11 +1,11 @@
-# Smoke test run report — 2026-06-25
+﻿# Smoke test run report 鈥?2026-06-25
 
 ## Environment
 
 - API: NestJS @ localhost:8000 (PID booted in background)
-- DB: Postgres @ localhost:5432, schema `ccscale`
+- DB: Postgres @ localhost:5432, schema `zzscale`
   - User: 2, Product: 5, Inquiry: 26, ProductCategory: 8
-- Web: skipped (`SMOKE_SKIP_BROWSER=1`) — would need `pnpm dev` first
+- Web: skipped (`SMOKE_SKIP_BROWSER=1`) 鈥?would need `pnpm dev` first
 - Node: v25.8.1
 - Smoke script: `scripts/smoke/smoke.mjs` v2 (fixed step() API)
 
@@ -70,7 +70,7 @@ CC Scale smoke test
 
 ### 4. Smoke script itself was broken: `step()` API misuse
 
-**Root cause**: The first version of `scripts/smoke/smoke.mjs` used `await step(name)(); await (fn)();` — but `step()` returns a thunk that, when called with no argument, threw `fn is not a function`. Every test in the run was failing on the harness, not the actual endpoint.
+**Root cause**: The first version of `scripts/smoke/smoke.mjs` used `await step(name)(); await (fn)();` 鈥?but `step()` returns a thunk that, when called with no argument, threw `fn is not a function`. Every test in the run was failing on the harness, not the actual endpoint.
 
 **Fix**: Rewrote `step()` to take `(name, fn)` and `await` the test directly. Now `await step("name", async () => { ... })`.
 
@@ -94,15 +94,15 @@ CC Scale smoke test
 
 ### 7. sortBy test pointed at wrong endpoint
 
-**Root cause**: `ProductListQueryDto` (used by `GET /api/products`) does not accept `sortBy` — that param is silently ignored, returning 200. The `sortBy` enum validation is only on `ProductSearchQueryDto` (used by `GET /api/products/search`).
+**Root cause**: `ProductListQueryDto` (used by `GET /api/products`) does not accept `sortBy` 鈥?that param is silently ignored, returning 200. The `sortBy` enum validation is only on `ProductSearchQueryDto` (used by `GET /api/products/search`).
 
-**Fix**: Smoke now tests the `/search` endpoint which actually validates sortBy. (Note: this is a real product gap — list endpoint should also accept sortBy; added `dto/list-product.dto.ts` with `ListProductsQueryDto` for future use, but did not wire it in to avoid scope creep.)
+**Fix**: Smoke now tests the `/search` endpoint which actually validates sortBy. (Note: this is a real product gap 鈥?list endpoint should also accept sortBy; added `dto/list-product.dto.ts` with `ListProductsQueryDto` for future use, but did not wire it in to avoid scope creep.)
 
 ## Discovered issues (not fixed, to follow up)
 
-1. **`/api/products` (list) does not validate `sortBy`** — no `@IsIn` on the query. Smoke workaround tests `/search` instead. **Severity: low** (no security impact because the param is ignored, but a future developer could add a sort handler that uses an unsanitized column name).
-2. **Inquiry POST `turnstileToken` is in DTO but not enforced** — DTO accepts the field but `TurnstileService.verify()` is not called in the controller (inquiries controller does inject TurnstileService though). **Severity: medium** — current production deployments without Turnstile env var will not fail closed.
-3. **No web smoke** — `SMOKE_SKIP_BROWSER=1` was set because the web dev server was not running. To run web checks: `pnpm dev` first, then `node scripts/smoke/smoke.mjs` without the env var.
+1. **`/api/products` (list) does not validate `sortBy`** 鈥?no `@IsIn` on the query. Smoke workaround tests `/search` instead. **Severity: low** (no security impact because the param is ignored, but a future developer could add a sort handler that uses an unsanitized column name).
+2. **Inquiry POST `turnstileToken` is in DTO but not enforced** 鈥?DTO accepts the field but `TurnstileService.verify()` is not called in the controller (inquiries controller does inject TurnstileService though). **Severity: medium** 鈥?current production deployments without Turnstile env var will not fail closed.
+3. **No web smoke** 鈥?`SMOKE_SKIP_BROWSER=1` was set because the web dev server was not running. To run web checks: `pnpm dev` first, then `node scripts/smoke/smoke.mjs` without the env var.
 
 ## How to reproduce
 

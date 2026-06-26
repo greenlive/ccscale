@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Hreflang Tags Component
  * Generates comprehensive hreflang tags for international SEO
  * 
@@ -10,7 +10,7 @@
  */
 import { locales } from '@/i18n/routing';
 
-const baseUrl = 'https://www.ccscale.com';
+const baseUrl = 'https://www.zzscale.com';
 
 export interface HreflangConfig {
   locale: string;

@@ -1,53 +1,51 @@
-# CC Scale 媒体资源托管策略
+﻿# CC Scale 濯掍綋璧勬簮鎵樼绛栫暐
 
-## 问题分析
+## 闂鍒嗘瀽
 
-当前架构中，产品图片、博客图片、PDF下载都放在 Vercel 上：
+褰撳墠鏋舵瀯涓紝浜у搧鍥剧墖銆佸崥瀹㈠浘鐗囥€丳DF涓嬭浇閮芥斁鍦?Vercel 涓婏細
 
-❌ **成本高**：Vercel 超流量 .40/GB
-❌ **性能差**：用户从单一服务器下载
-❌ **无CDN**：跨国访问慢
+鉂?**鎴愭湰楂?*锛歏ercel 瓒呮祦閲?.40/GB
+鉂?**鎬ц兘宸?*锛氱敤鎴蜂粠鍗曚竴鏈嶅姟鍣ㄤ笅杞?鉂?**鏃燙DN**锛氳法鍥借闂參
 
 ---
 
-## 推荐方案：Cloudflare R2 + Images
+## 鎺ㄨ崘鏂规锛欳loudflare R2 + Images
 
-### 为什么选 R2？
-
-| 优势 | 说明 |
+### 涓轰粈涔堥€?R2锛?
+| 浼樺娍 | 璇存槑 |
 |------|------|
-| **流量免费** | R2 到 Cloudflare CDN 流量完全免费 |
-| **CDN 内嵌** | Cloudflare 全球 300+ 边缘节点 |
-| **Workers 集成** | 可做图片压缩、格式转换、水印 |
-| **API 兼容 S3** | 现有 SDK 只需改端点 |
+| **娴侀噺鍏嶈垂** | R2 鍒?Cloudflare CDN 娴侀噺瀹屽叏鍏嶈垂 |
+| **CDN 鍐呭祵** | Cloudflare 鍏ㄧ悆 300+ 杈圭紭鑺傜偣 |
+| **Workers 闆嗘垚** | 鍙仛鍥剧墖鍘嬬缉銆佹牸寮忚浆鎹€佹按鍗?|
+| **API 鍏煎 S3** | 鐜版湁 SDK 鍙渶鏀圭鐐?|
 
-### 成本对比
+### 鎴愭湰瀵规瘮
 
-| 场景 | 原方案 | R2 方案 |
+| 鍦烘櫙 | 鍘熸柟妗?| R2 鏂规 |
 |------|--------|---------|
-| 500GB 图片流量 | /月 | **** |
-| 100GB PDF 下载 | /月 | **** |
-| 图片处理 Workers | N/A | ~/月 |
-| **总计** | **~/月** | **~/月** |
+| 500GB 鍥剧墖娴侀噺 | /鏈?| **** |
+| 100GB PDF 涓嬭浇 | /鏈?| **** |
+| 鍥剧墖澶勭悊 Workers | N/A | ~/鏈?|
+| **鎬昏** | **~/鏈?* | **~/鏈?* |
 
 ---
 
-## 实施步骤
+## 瀹炴柦姝ラ
 
-### 第一步：创建 R2 Bucket
+### 绗竴姝ワ細鍒涘缓 R2 Bucket
 
-1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. 进入 R2 Object Storage
-3. 创建 Bucket：ccscale-media
-4. 添加自定义域名：media.ccscale.com
+1. 鐧诲綍 [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. 杩涘叆 R2 Object Storage
+3. 鍒涘缓 Bucket锛歝cscale-media
+4. 娣诲姞鑷畾涔夊煙鍚嶏細media.zzscale.com
 
-### 第二步：配置 R2 API Token
+### 绗簩姝ワ細閰嶇疆 R2 API Token
 
-1. My Profile → API Tokens
-2. 创建自定义 Token
-3. 权限：Edit Cloudflare R2
+1. My Profile 鈫?API Tokens
+2. 鍒涘缓鑷畾涔?Token
+3. 鏉冮檺锛欵dit Cloudflare R2
 
-### 第三步：更新代码
+### 绗笁姝ワ細鏇存柊浠ｇ爜
 
 `	ypescript
 // lib/storage/r2.ts
@@ -69,7 +67,7 @@ export async function uploadProductImage(
   contentType: string
 ) {
   const command = new PutObjectCommand({
-    Bucket: 'ccscale-media',
+    Bucket: 'zzscale-media',
     Key: products/,
     Body: body,
     ContentType: contentType,
@@ -77,13 +75,13 @@ export async function uploadProductImage(
   
   await r2.send(command);
   
-  // 返回 Cloudflare CDN URL
-  return https://media.ccscale.com/products/;
+  // 杩斿洖 Cloudflare CDN URL
+  return https://media.zzscale.com/products/;
 }
 
 export async function getSignedDownloadUrl(key: string) {
   const command = new GetObjectCommand({
-    Bucket: 'ccscale-media',
+    Bucket: 'zzscale-media',
     Key: key,
   });
   
@@ -91,7 +89,7 @@ export async function getSignedDownloadUrl(key: string) {
 }
 `
 
-### 第四步：图片处理 Workers
+### 绗洓姝ワ細鍥剧墖澶勭悊 Workers
 
 `	ypescript
 // workers/image-processor/index.ts
@@ -100,17 +98,17 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     
-    // 从 R2 获取原图
+    // 浠?R2 鑾峰彇鍘熷浘
     const originUrl = https://.r2.dev;
     const origin = await fetch(originUrl);
     
-    // 使用 Cloudflare Image Resizing
+    // 浣跨敤 Cloudflare Image Resizing
     const params = new URL(request.url);
     params.searchParams.set('width', url.searchParams.get('w') || '800');
     params.searchParams.set('format', 'auto');
     params.searchParams.set('quality', '80');
     
-    // 返回优化后的图片
+    // 杩斿洖浼樺寲鍚庣殑鍥剧墖
     return new Response(origin.body, {
       headers: {
         'Cache-Control': 'public, max-age=31536000, immutable',
@@ -121,44 +119,42 @@ export default {
 };
 `
 
-### 第五步：更新上传 API
+### 绗簲姝ワ細鏇存柊涓婁紶 API
 
 `	ypescript
 // apps/api/src/upload/upload.controller.ts
 @Post('product-image')
 @UseInterceptors(FileInterceptor('file'))
 async uploadProductImage(@UploadedFile() file: Express.MulterFile) {
-  // 1. 上传到 R2
+  // 1. 涓婁紶鍒?R2
   const key = products/-;
   await uploadToR2(key, file.buffer, file.mimetype);
   
-  // 2. 生成 CDN URL
-  const cdnUrl = https://media.ccscale.com/;
+  // 2. 鐢熸垚 CDN URL
+  const cdnUrl = https://media.zzscale.com/;
   
-  // 3. 更新数据库
-  return { url: cdnUrl, key };
+  // 3. 鏇存柊鏁版嵁搴?  return { url: cdnUrl, key };
 }
 `
 
 ---
 
-## PDF 下载优化
+## PDF 涓嬭浇浼樺寲
 
-### 使用 Signed URL
+### 浣跨敤 Signed URL
 
 `	ypescript
-// 生成有时限的下载链接
+// 鐢熸垚鏈夋椂闄愮殑涓嬭浇閾炬帴
 export async function generateDownloadUrl(pdfKey: string): Promise<string> {
   const url = await getSignedDownloadUrl(downloads/);
-  return url; // 1小时后过期
-}
+  return url; // 1灏忔椂鍚庤繃鏈?}
 
-// 在产品详情页使用
+// 鍦ㄤ骇鍝佽鎯呴〉浣跨敤
 const downloadUrl = await generateDownloadUrl('catalog-2024.pdf');
-// <a href={downloadUrl}>下载产品手册 (PDF)</a>
+// <a href={downloadUrl}>涓嬭浇浜у搧鎵嬪唽 (PDF)</a>
 `
 
-### Cloudflare Workers 代理（可选）
+### Cloudflare Workers 浠ｇ悊锛堝彲閫夛級
 
 `	ypescript
 // workers/pdf-proxy/index.ts
@@ -167,12 +163,11 @@ export default {
     const url = new URL(request.url);
     const file = url.searchParams.get('file');
     
-    // 从 R2 获取
+    // 浠?R2 鑾峰彇
     const r2Url = https://.r2.dev/downloads/;
     const response = await fetch(r2Url);
     
-    // 设置下载头
-    const headers = new Headers(response.headers);
+    // 璁剧疆涓嬭浇澶?    const headers = new Headers(response.headers);
     headers.set('Content-Disposition', ttachment; filename=\${file}\`);
     headers.set('Content-Type', 'application/pdf');
     
@@ -183,9 +178,9 @@ export default {
 
 ---
 
-## 迁移现有资源
+## 杩佺Щ鐜版湁璧勬簮
 
-### 脚本：批量迁移到 R2
+### 鑴氭湰锛氭壒閲忚縼绉诲埌 R2
 
 `	ypescript
 // scripts/migrate-to-r2.ts
@@ -195,18 +190,17 @@ const sourceClient = new S3Client({ region: 'us-east-1' });
 const destClient = new R2Client;
 
 async function migrate() {
-  // 列出所有现有图片
-  const listCommand = new ListObjectsV2Command({
+  // 鍒楀嚭鎵€鏈夌幇鏈夊浘鐗?  const listCommand = new ListObjectsV2Command({
     Bucket: 'existing-bucket',
     Prefix: 'products/',
   });
   
   const objects = await sourceClient.send(listCommand);
   
-  // 批量复制到 R2
+  // 鎵归噺澶嶅埗鍒?R2
   for (const obj of objects.Contents || []) {
     await destClient.send(new CopyObjectCommand({
-      Bucket: 'ccscale-media',
+      Bucket: 'zzscale-media',
       Key: obj.Key,
       CopySource: existing-bucket/,
     }));
@@ -220,42 +214,20 @@ migrate();
 
 ---
 
-## 最终架构
-
+## 鏈€缁堟灦鏋?
 `
-┌─────────────────────────────────────────────────────────────────┐
-│                        Cloudflare CDN                            │
-│                     (全球 300+ 边缘节点)                          │
-│                     免费 SSL + HTTP/3                            │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-         ┌────────────────────┼────────────────────┐
-         │                    │                    │
-         ▼                    ▼                    ▼
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   Vercel        │  │   R2 Storage    │  │   Workers       │
-│   Next.js       │  │   产品图片       │  │   图片处理      │
-│   (代码)         │  │   博客图片       │  │   PDF 代理      │
-│   ~10GB/月      │  │   PDF 下载      │  │   签名URL      │
-└─────────────────┘  └─────────────────┘  └─────────────────┘
-                              │
-                              ▼
-                     ┌─────────────────┐
-                     │   Railway       │
-                     │   API + DB      │
-                     └─────────────────┘
-`
+鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?鈹?                       Cloudflare CDN                            鈹?鈹?                    (鍏ㄧ悆 300+ 杈圭紭鑺傜偣)                          鈹?鈹?                    鍏嶈垂 SSL + HTTP/3                            鈹?鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?                              鈹?         鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹尖攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?         鈹?                   鈹?                   鈹?         鈻?                   鈻?                   鈻?鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹? 鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹? 鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?鈹?  Vercel        鈹? 鈹?  R2 Storage    鈹? 鈹?  Workers       鈹?鈹?  Next.js       鈹? 鈹?  浜у搧鍥剧墖       鈹? 鈹?  鍥剧墖澶勭悊      鈹?鈹?  (浠ｇ爜)         鈹? 鈹?  鍗氬鍥剧墖       鈹? 鈹?  PDF 浠ｇ悊      鈹?鈹?  ~10GB/鏈?     鈹? 鈹?  PDF 涓嬭浇      鈹? 鈹?  绛惧悕URL      鈹?鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹? 鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹? 鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?                              鈹?                              鈻?                     鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?                     鈹?  Railway       鈹?                     鈹?  API + DB      鈹?                     鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?`
 
 ---
 
-## 成本总结
+## 鎴愭湰鎬荤粨
 
-| 资源类型 | 存储 | 流量 | 处理 | 月费用 |
+| 璧勬簮绫诲瀷 | 瀛樺偍 | 娴侀噺 | 澶勭悊 | 鏈堣垂鐢?|
 |----------|------|------|------|--------|
-| 产品图片 (100GB) |  |  | .1 | **.1** |
-| 博客图片 (50GB) |  |  | .05 | **.05** |
-| PDF 下载 (20GB) |  |  | .02 | **.02** |
-| Workers 请求 | - | - | 100万次 | **.5** |
-| **总计** | | | | **~.7/月** |
+| 浜у搧鍥剧墖 (100GB) |  |  | .1 | **.1** |
+| 鍗氬鍥剧墖 (50GB) |  |  | .05 | **.05** |
+| PDF 涓嬭浇 (20GB) |  |  | .02 | **.02** |
+| Workers 璇锋眰 | - | - | 100涓囨 | **.5** |
+| **鎬昏** | | | | **~.7/鏈?* |
 
-> 相比原方案 **/月**，节省 **99.7%**！
+> 鐩告瘮鍘熸柟妗?**/鏈?*锛岃妭鐪?**99.7%**锛

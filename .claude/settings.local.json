@@ -1,4 +1,4 @@
-{
+﻿{
   "permissions": {
     "allow": [
       "Bash(npm run:*)",
@@ -55,9 +55,9 @@
       "Bash(rm -rf node_modules/.cache)",
       "Bash(taskkill //F //PID 22884)",
       "Bash(npx prisma *)",
-      "Bash(set DATABASE_URL=\"postgresql://ccscale:ccscale123@localhost:5432/ccscale?schema=public\")",
-      "Bash(set DATABASE_URL=postgresql://ccscale:ccscale123@localhost:5432/ccscale?schema=public)",
-      "Bash(export DATABASE_URL=\"postgresql://ccscale:ccscale123@localhost:5432/ccscale?schema=public\")",
+      "Bash(set DATABASE_URL=\"postgresql://zzscale:zzscale123@localhost:5432/zzscale?schema=public\")",
+      "Bash(set DATABASE_URL=postgresql://zzscale:zzscale123@localhost:5432/zzscale?schema=public)",
+      "Bash(export DATABASE_URL=\"postgresql://zzscale:zzscale123@localhost:5432/zzscale?schema=public\")",
       "Bash(curl -s http://localhost:8000/api/products/categories)",
       "mcp__playwright-local__browser_evaluate",
       "mcp__playwright-local__browser_take_screenshot"

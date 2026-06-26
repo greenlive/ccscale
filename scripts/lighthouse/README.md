@@ -1,4 +1,4 @@
-# Lighthouse runner
+﻿# Lighthouse runner
 
 `scripts/lighthouse/run.mjs` runs Lighthouse against one or more URLs and asserts score thresholds.
 
@@ -22,26 +22,26 @@ You also need a Chrome / Chromium binary:
 
 ```bash
 # single URL
-node scripts/lighthouse/run.mjs https://www.ccscale.com
+node scripts/lighthouse/run.mjs https://www.zzscale.com
 
 # multiple URLs (en + zh, home + product)
 node scripts/lighthouse/run.mjs \
-  https://www.ccscale.com/en \
-  https://www.ccscale.com/zh \
-  https://www.ccscale.com/en/products
+  https://www.zzscale.com/en \
+  https://www.zzscale.com/zh \
+  https://www.zzscale.com/en/products
 
 # use global lighthouse binary
-LH_USE_GLOBAL=1 node scripts/lighthouse/run.mjs https://www.ccscale.com
+LH_USE_GLOBAL=1 node scripts/lighthouse/run.mjs https://www.zzscale.com
 
 # custom thresholds (default: perf 0.90, a11y 0.95, bp 0.95, seo 0.95)
 LH_THRESHOLD_PERF=0.95 \
 LH_THRESHOLD_A11Y=0.95 \
 LH_THRESHOLD_BP=0.95 \
 LH_THRESHOLD_SEO=0.95 \
-  node scripts/lighthouse/run.mjs https://www.ccscale.com
+  node scripts/lighthouse/run.mjs https://www.zzscale.com
 
 # specify chrome path
-LH_CHROME_PATH=/usr/bin/google-chrome node scripts/lighthouse/run.mjs https://www.ccscale.com
+LH_CHROME_PATH=/usr/bin/google-chrome node scripts/lighthouse/run.mjs https://www.zzscale.com
 ```
 
 ## Output
@@ -79,9 +79,9 @@ jobs:
           LH_THRESHOLD_SEO:   "0.95"
         run: |
           node scripts/lighthouse/run.mjs \
-            https://www.ccscale.com/en \
-            https://www.ccscale.com/zh \
-            https://www.ccscale.com/en/products
+            https://www.zzscale.com/en \
+            https://www.zzscale.com/zh \
+            https://www.zzscale.com/en/products
       - uses: actions/upload-artifact@v4
         with:
           name: lighthouse-reports

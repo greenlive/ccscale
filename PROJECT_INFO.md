@@ -1,8 +1,8 @@
-# CC Scale B2B Platform
+﻿# CC Scale B2B Platform
 
 A comprehensive B2B weighing scales e-commerce platform with multi-language support, SEO optimization, and AI-powered features.
 
-## 🚀 Quick Start
+## 馃殌 Quick Start
 
 ### Option 1: Use the Start Script (Recommended)
 ```batch
@@ -21,7 +21,7 @@ cd apps/admin && npm run dev
 cd apps/api && npm run dev
 ```
 
-## 🌐 Service URLs
+## 馃寪 Service URLs
 
 | Service | URL | Description |
 |---------|-----|-------------|
@@ -30,63 +30,63 @@ cd apps/api && npm run dev
 | API Server | http://localhost:8000 | REST API |
 | API Docs | http://localhost:8000/api/docs | Swagger documentation |
 
-## 📁 Project Structure
+## 馃搧 Project Structure
 
 ```
 cc-scale/
-├── apps/
-│   ├── web/          # Next.js frontend (public website)
-│   ├── admin/         # Next.js admin dashboard
-│   └── api/           # NestJS REST API
-├── packages/
-│   └── ui/            # Shared UI components
-└── prisma/            # Database schema
+鈹溾攢鈹€ apps/
+鈹?  鈹溾攢鈹€ web/          # Next.js frontend (public website)
+鈹?  鈹溾攢鈹€ admin/         # Next.js admin dashboard
+鈹?  鈹斺攢鈹€ api/           # NestJS REST API
+鈹溾攢鈹€ packages/
+鈹?  鈹斺攢鈹€ ui/            # Shared UI components
+鈹斺攢鈹€ prisma/            # Database schema
 ```
 
-## 🗄️ Database
+## 馃梽锔?Database
 
 - PostgreSQL (running on port 5432)
-- Database: ccscale
+- Database: zzscale
 - Tables: 18 tables including Products, Categories, Users, etc.
 
-## ✅ Tested & Verified
+## 鉁?Tested & Verified
 
 All 27 tests passed (100% success rate):
 
 ### Frontend Pages
-- ✅ Homepage EN
-- ✅ Products Page
-- ✅ Product Detail Page
-- ✅ About Page
-- ✅ Contact Page
-- ✅ Blog Page
-- ✅ Cases Page
-- ✅ Downloads Page
-- ✅ OEM Page
-- ✅ Chinese Homepage
+- 鉁?Homepage EN
+- 鉁?Products Page
+- 鉁?Product Detail Page
+- 鉁?About Page
+- 鉁?Contact Page
+- 鉁?Blog Page
+- 鉁?Cases Page
+- 鉁?Downloads Page
+- 鉁?OEM Page
+- 鉁?Chinese Homepage
 
 ### Admin Dashboard
-- ✅ Login Page
-- ✅ Dashboard
-- ✅ Products Management
-- ✅ Batch Products Import
-- ✅ New Product Form
-- ✅ Categories Management
-- ✅ Inquiries Management
-- ✅ Blog Management
-- ✅ Downloads Management
-- ✅ Users Management
-- ✅ Settings
-- ✅ Analytics
+- 鉁?Login Page
+- 鉁?Dashboard
+- 鉁?Products Management
+- 鉁?Batch Products Import
+- 鉁?New Product Form
+- 鉁?Categories Management
+- 鉁?Inquiries Management
+- 鉁?Blog Management
+- 鉁?Downloads Management
+- 鉁?Users Management
+- 鉁?Settings
+- 鉁?Analytics
 
 ### API Endpoints
-- ✅ Products List
-- ✅ Categories List
-- ✅ Product by Slug
-- ✅ Product Search
-- ✅ Swagger Docs
+- 鉁?Products List
+- 鉁?Categories List
+- 鉁?Product by Slug
+- 鉁?Product Search
+- 鉁?Swagger Docs
 
-## 🔧 Key Features
+## 馃敡 Key Features
 
 1. **Multi-language Support**: English and Chinese
 2. **SEO Optimized**: Meta tags, sitemap, robots.txt
@@ -95,7 +95,7 @@ All 27 tests passed (100% success rate):
 5. **Batch Import**: CSV-based product bulk import
 6. **Real-time Analytics**: Traffic and inquiry tracking
 
-## 📦 Deployment
+## 馃摝 Deployment
 
 ### Vercel (Recommended for Frontend)
 ```bash
@@ -110,7 +110,7 @@ Deploy the NestJS API to Railway or Render
 - Use Cloudflare Pages for frontend
 - Use Cloudflare Workers for edge functions
 
-## 📊 Media Storage Costs
+## 馃搳 Media Storage Costs
 
 For high-traffic scenarios with many images, videos, and PDFs:
 
@@ -123,7 +123,7 @@ For high-traffic scenarios with many images, videos, and PDFs:
 
 **Recommendation**: Use Cloudflare R2 with Images for cost-effective media storage.
 
-## 🛠️ Troubleshooting
+## 馃洜锔?Troubleshooting
 
 ### Port Already in Use
 ```bash
@@ -138,7 +138,7 @@ rmdir /s /q apps\admin\.next
 npm run dev
 ```
 
-## 📝 Batch Product Import
+## 馃摑 Batch Product Import
 
 1. Go to: http://localhost:3001/products/batch
 2. Download the CSV template
@@ -158,4 +158,4 @@ npm run dev
 
 ---
 
-Built with ❤️ for the global B2B weighing scales market.
+Built with 鉂わ笍 for the global B2B weighing scales market.

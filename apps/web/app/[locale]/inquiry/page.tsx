@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import InquiryPageContent from '@/components/InquiryPageContent'
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       type: 'website',
     },
     alternates: {
-      canonical: `https://www.ccscale.com/${params.locale}/inquiry`,
+      canonical: `https://www.zzscale.com/${params.locale}/inquiry`,
     },
     robots: { index: true, follow: true },
   };

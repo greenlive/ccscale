@@ -1,26 +1,24 @@
-# CC Scale 部署架构(B2B 外贸独立站 · ≤ 1000 SKU)
+﻿# CC Scale 閮ㄧ讲鏋舵瀯(B2B 澶栬锤鐙珛绔?路 鈮?1000 SKU)
 
-> 本文档基于工程级 Code Review 后的代码基线(vercel.json / apps/api/railway.toml / .github/workflows/deploy.yml / Prisma 22 个索引)给出生产级部署架构。目标:全球 B2B 买家访问、海外询盘转化、运营成本可控(< $50/月起步,<$300/月成长阶段)。
-
+> 鏈枃妗ｅ熀浜庡伐绋嬬骇 Code Review 鍚庣殑浠ｇ爜鍩虹嚎(vercel.json / apps/api/railway.toml / .github/workflows/deploy.yml / Prisma 22 涓储寮?缁欏嚭鐢熶骇绾ч儴缃叉灦鏋勩€傜洰鏍?鍏ㄧ悆 B2B 涔板璁块棶銆佹捣澶栬鐩樿浆鍖栥€佽繍钀ユ垚鏈彲鎺?< $50/鏈堣捣姝?<$300/鏈堟垚闀块樁娈?銆?
 ---
 
-## 1. 架构总览
+## 1. 鏋舵瀯鎬昏
 
-### 1.1 流量与组件
-
+### 1.1 娴侀噺涓庣粍浠?
 ```mermaid
 flowchart TB
-  Visitor((海外买家<br/>欧美/中东/东南亚))
+  Visitor((娴峰涔板<br/>娆х編/涓笢/涓滃崡浜?)
   CF[Cloudflare<br/>DNS + CDN + WAF + Turnstile]
-  VercelWeb[Vercel · Next.js<br/>www.ccscale.com<br/>fra1 region]
-  VercelAdmin[Vercel · Next.js Admin<br/>admin.ccscale.com]
-  Railway[Railway · NestJS API<br/>api.ccscale.com]
-  Neon[(Neon Postgres<br/>分支 + Scale-to-Zero)]
-  Upstash[(Upstash Redis<br/>限流 + Session)]
-  R2[Cloudflare R2<br/>产品图 / 证书 / 视频]
-  Resend[Resend<br/>询盘事务邮件]
-  Sentry[Sentry<br/>错误追踪]
-  GA[GA4 + GSC<br/>SEO 监控]
+  VercelWeb[Vercel 路 Next.js<br/>www.zzscale.com<br/>fra1 region]
+  VercelAdmin[Vercel 路 Next.js Admin<br/>admin.zzscale.com]
+  Railway[Railway 路 NestJS API<br/>api.zzscale.com]
+  Neon[(Neon Postgres<br/>鍒嗘敮 + Scale-to-Zero)]
+  Upstash[(Upstash Redis<br/>闄愭祦 + Session)]
+  R2[Cloudflare R2<br/>浜у搧鍥?/ 璇佷功 / 瑙嗛]
+  Resend[Resend<br/>璇㈢洏浜嬪姟閭欢]
+  Sentry[Sentry<br/>閿欒杩借釜]
+  GA[GA4 + GSC<br/>SEO 鐩戞帶]
 
   Visitor -->|HTTPS| CF
   CF -->|/en /zh /products/*| VercelWeb
@@ -36,137 +34,122 @@ flowchart TB
   VercelWeb --> GA
 ```
 
-### 1.2 域名规划
+### 1.2 鍩熷悕瑙勫垝
 
-| 域名 | 用途 | 部署目标 | 备注 |
+| 鍩熷悕 | 鐢ㄩ€?| 閮ㄧ讲鐩爣 | 澶囨敞 |
 |---|---|---|---|
-| ccscale.com | 根域 | Cloudflare 301 → www | 主品牌 |
-| www.ccscale.com | 营销站 | Vercel | Next.js + next-intl |
-| admin.ccscale.com | 后台 | Vercel 独立项目 | Next.js admin 路由 |
-| api.ccscale.com | 后端 API | Railway | NestJS + Prisma |
-| media.ccscale.com | 静态资源 | Cloudflare R2 公开桶 | 产品图、PDF 证书 |
-| mail.ccscale.com | MX | Resend / Cloudflare Email Routing | noreply@ |
+| zzscale.com | 鏍瑰煙 | Cloudflare 301 鈫?www | 涓诲搧鐗?|
+| www.zzscale.com | 钀ラ攢绔?| Vercel | Next.js + next-intl |
+| admin.zzscale.com | 鍚庡彴 | Vercel 鐙珛椤圭洰 | Next.js admin 璺敱 |
+| api.zzscale.com | 鍚庣 API | Railway | NestJS + Prisma |
+| media.zzscale.com | 闈欐€佽祫婧?| Cloudflare R2 鍏紑妗?| 浜у搧鍥俱€丳DF 璇佷功 |
+| mail.zzscale.com | MX | Resend / Cloudflare Email Routing | noreply@ |
 
 ---
 
-## 2. 选型理由
+## 2. 閫夊瀷鐞嗙敱
 
-### 2.1 前端:Vercel(fra1 区域)
+### 2.1 鍓嶇:Vercel(fra1 鍖哄煙)
 
-- Next.js 原生:ISR、generateStaticParams、Edge Runtime、Image Optimization 全部开箱即用
-- 欧洲边缘节点(fra1):核心客户群在德国、意大利、法国、英国、荷兰,延迟 < 50ms
-- 零运维:无服务器、PR Preview、自带 CDN、HTTPS 证书自动续期
-- 价格:Hobby 免费,Pro $20/seat(含团队 Analytics);流量中等(< 1TB/月)不加费
-
-> Vercel 不适合长驻 API(Node 函数冷启动 + 单 region),所以 API 拆出。
-
+- Next.js 鍘熺敓:ISR銆乬enerateStaticParams銆丒dge Runtime銆両mage Optimization 鍏ㄩ儴寮€绠卞嵆鐢?- 娆ф床杈圭紭鑺傜偣(fra1):鏍稿績瀹㈡埛缇ゅ湪寰峰浗銆佹剰澶у埄銆佹硶鍥姐€佽嫳鍥姐€佽嵎鍏?寤惰繜 < 50ms
+- 闆惰繍缁?鏃犳湇鍔″櫒銆丳R Preview銆佽嚜甯?CDN銆丠TTPS 璇佷功鑷姩缁湡
+- 浠锋牸:Hobby 鍏嶈垂,Pro $20/seat(鍚洟闃?Analytics);娴侀噺涓瓑(< 1TB/鏈?涓嶅姞璐?
+> Vercel 涓嶉€傚悎闀块┗ API(Node 鍑芥暟鍐峰惎鍔?+ 鍗?region),鎵€浠?API 鎷嗗嚭銆?
 ### 2.2 API:Railway(Docker / Nixpacks)
 
-- 常驻进程:NestJS + Prisma + BullMQ worker,长连接、文件流上传
-- 欧洲区域:Railway 部署到 europe-west4(阿姆斯特丹),与 Vercel fra1 同洲
-- 零配置 Dockerfile:已有 apps/api/railway.toml + Nixpacks 自动 build
-- 价格:Hobby $5/月(500 小时 + $0.000231/GB-min),生产 ~$15-25/月(1GB RAM 常驻)
+- 甯搁┗杩涚▼:NestJS + Prisma + BullMQ worker,闀胯繛鎺ャ€佹枃浠舵祦涓婁紶
+- 娆ф床鍖哄煙:Railway 閮ㄧ讲鍒?europe-west4(闃垮鏂壒涓?,涓?Vercel fra1 鍚屾床
+- 闆堕厤缃?Dockerfile:宸叉湁 apps/api/railway.toml + Nixpacks 鑷姩 build
+- 浠锋牸:Hobby $5/鏈?500 灏忔椂 + $0.000231/GB-min),鐢熶骇 ~$15-25/鏈?1GB RAM 甯搁┗)
 
-### 2.3 数据库:Neon Serverless Postgres
+### 2.3 鏁版嵁搴?Neon Serverless Postgres
 
-- Scale-to-Zero:无访问时 0 成本,适合 B2B 询盘低频场景(白天欧美高峰,夜间东南亚,凌晨空闲)
-- 分支功能:main ← preview ← feature/*,PR 自动创建分支库
-- 与 Prisma 完美兼容:DATABASE_URL 直连,支持连接池(?pgbouncer=true&connection_limit=1)
-- 价格:Free 0.5GB(开发用),Launch $19/月(10GB 存储 + 191.9 小时 compute)
+- Scale-to-Zero:鏃犺闂椂 0 鎴愭湰,閫傚悎 B2B 璇㈢洏浣庨鍦烘櫙(鐧藉ぉ娆х編楂樺嘲,澶滈棿涓滃崡浜?鍑屾櫒绌洪棽)
+- 鍒嗘敮鍔熻兘:main 鈫?preview 鈫?feature/*,PR 鑷姩鍒涘缓鍒嗘敮搴?- 涓?Prisma 瀹岀編鍏煎:DATABASE_URL 鐩磋繛,鏀寔杩炴帴姹??pgbouncer=true&connection_limit=1)
+- 浠锋牸:Free 0.5GB(寮€鍙戠敤),Launch $19/鏈?10GB 瀛樺偍 + 191.9 灏忔椂 compute)
 
 ### 2.4 Redis:Upstash Redis
 
-- 全球低延迟:HTTP / REST API,无 TCP 长连接(适合 Serverless)
-- 按请求计费:$0.2/100K 请求,起步 < $1/月
-- 用途:NestJS Throttler 限流计数器、Session、Cache(产品列表 5 分钟缓存)
+- 鍏ㄧ悆浣庡欢杩?HTTP / REST API,鏃?TCP 闀胯繛鎺?閫傚悎 Serverless)
+- 鎸夎姹傝璐?$0.2/100K 璇锋眰,璧锋 < $1/鏈?- 鐢ㄩ€?NestJS Throttler 闄愭祦璁℃暟鍣ㄣ€丼ession銆丆ache(浜у搧鍒楄〃 5 鍒嗛挓缂撳瓨)
 
-### 2.5 对象存储:Cloudflare R2
+### 2.5 瀵硅薄瀛樺偍:Cloudflare R2
 
-- 零出口流量费:media.ccscale.com 通过 Cloudflare CDN 边缘返回,没有 AWS S3 那种 $0.09/GB 出口费
-- S3 兼容 API:Prisma 之外,可用 @aws-sdk/client-s3 直传
-- 用途:产品图(原图 + 缩略图)、PDF 证书(CE / RoHS / ISO)、客户案例视频 MP4
+- 闆跺嚭鍙ｆ祦閲忚垂:media.zzscale.com 閫氳繃 Cloudflare CDN 杈圭紭杩斿洖,娌℃湁 AWS S3 閭ｇ $0.09/GB 鍑哄彛璐?- S3 鍏煎 API:Prisma 涔嬪,鍙敤 @aws-sdk/client-s3 鐩翠紶
+- 鐢ㄩ€?浜у搧鍥?鍘熷浘 + 缂╃暐鍥?銆丳DF 璇佷功(CE / RoHS / ISO)銆佸鎴锋渚嬭棰?MP4
 
-### 2.6 邮件:Resend
+### 2.6 閭欢:Resend
 
-- 开发者友好:React Email 模板、SPF/DKIM 自动配置
-- 送达率:欧美主要邮箱(Gmail / Outlook)送达率 > 99%
-- 价格:Free 100 封/天,$20/月 50K 封,满足 ≤1000 SKU B2B 询盘量(预估月询盘 200-500 封)
-- 配合 apps/api/src/notifications/email.service.ts(已修复 HTML 注入)
+- 寮€鍙戣€呭弸濂?React Email 妯℃澘銆丼PF/DKIM 鑷姩閰嶇疆
+- 閫佽揪鐜?娆х編涓昏閭(Gmail / Outlook)閫佽揪鐜?> 99%
+- 浠锋牸:Free 100 灏?澶?$20/鏈?50K 灏?婊¤冻 鈮?000 SKU B2B 璇㈢洏閲?棰勪及鏈堣鐩?200-500 灏?
+- 閰嶅悎 apps/api/src/notifications/email.service.ts(宸蹭慨澶?HTML 娉ㄥ叆)
 
-### 2.7 CAPTCHA:Cloudflare Turnstile(已集成)
+### 2.7 CAPTCHA:Cloudflare Turnstile(宸查泦鎴?
 
-- 隐私友好:不收集用户指纹,GDPR 合规(欧洲买家必看)
-- 免费:不限量
-- 已接入:apps/api/src/common/turnstile.service.ts + apps/web/components/Turnstile.tsx
+- 闅愮鍙嬪ソ:涓嶆敹闆嗙敤鎴锋寚绾?GDPR 鍚堣(娆ф床涔板蹇呯湅)
+- 鍏嶈垂:涓嶉檺閲?- 宸叉帴鍏?apps/api/src/common/turnstile.service.ts + apps/web/components/Turnstile.tsx
 
-### 2.8 监控:Sentry + GA4 + Google Search Console
+### 2.8 鐩戞帶:Sentry + GA4 + Google Search Console
 
-- Sentry:@sentry/nextjs 已配置,@sentry/nestjs 需加
-- GA4:B2B 关键指标:询盘提交数、热门产品、国家分布、跳出率
-- GSC:https://www.ccscale.com/sitemap.xml 提交,监控收录与 hreflang 错误
+- Sentry:@sentry/nextjs 宸查厤缃?@sentry/nestjs 闇€鍔?- GA4:B2B 鍏抽敭鎸囨爣:璇㈢洏鎻愪氦鏁般€佺儹闂ㄤ骇鍝併€佸浗瀹跺垎甯冦€佽烦鍑虹巼
+- GSC:https://www.zzscale.com/sitemap.xml 鎻愪氦,鐩戞帶鏀跺綍涓?hreflang 閿欒
 
 ---
 
-## 3. ≤ 1000 SKU 优化策略
+## 3. 鈮?1000 SKU 浼樺寲绛栫暐
 
-B2B 外贸独立站的特点:SKU 数量稳定、流量集中在工作日欧美时段、夜间/周末低负载。架构针对这个曲线做了缩容到 0 设计。
+B2B 澶栬锤鐙珛绔欑殑鐗圭偣:SKU 鏁伴噺绋冲畾銆佹祦閲忛泦涓湪宸ヤ綔鏃ユ缇庢椂娈点€佸闂?鍛ㄦ湯浣庤礋杞姐€傛灦鏋勯拡瀵硅繖涓洸绾垮仛浜嗙缉瀹瑰埌 0 璁捐銆?
+### 3.1 鏁版嵁灞?
+- **Postgres**:Neon Launch plan,鏃犺繛鎺?5 鍒嗛挓鍚庢寕璧?鍐峰惎鍔?~500ms
+- **Redis**:Upstash Pay-as-you-go,绌洪棽 0 鎴愭湰
+- **闈欐€佽祫婧?*:鍏ㄩ儴璧?R2 + CDN,浜у搧鍥炬噿鍔犺浇(<img loading="lazy" decoding="async" />)
+- **璇㈢洏璁板綍**:杩?90 澶?Neon,鍘嗗彶褰掓。 R2 Parquet(灏嗘潵)
 
-### 3.1 数据层
+### 3.2 璁＄畻灞?
+- **Vercel ISR**:revalidate = 3600(浜у搧璇︽儏)銆乺evalidate = 600(棣栭〉),姣忓皬鏃舵渶澶?1 娆￠噸鏂版覆鏌?- **generateStaticParams**:鍙娓叉煋 top 100 娲昏穬浜у搧(宸插疄鐜?,鍏朵綑鎸夐渶 ISR
+- **Railway 缂╁**:Hobby plan 1 instance $5/鏈堝父椹?鐢熶骇 plan 鐢?autoscale(1-3 instance)
+- **鍥剧墖浼樺寲**:next/image 鑷姩 WebP/AVIF 杞崲 + 鍝嶅簲寮?srcset,Vercel 鍏ㄧ悆 CDN 杈圭紭缂撳瓨
 
-- **Postgres**:Neon Launch plan,无连接 5 分钟后挂起,冷启动 ~500ms
-- **Redis**:Upstash Pay-as-you-go,空闲 0 成本
-- **静态资源**:全部走 R2 + CDN,产品图懒加载(<img loading="lazy" decoding="async" />)
-- **询盘记录**:近 90 天 Neon,历史归档 R2 Parquet(将来)
+### 3.3 浜у搧鏁版嵁瑙勬ā鍋囪
 
-### 3.2 计算层
+- 娲昏穬浜у搧:鈮?1000
+- 绫诲埆:鈮?20
+- 鍗曚骇鍝佸浘:骞冲潎 5 寮?鍏?~5000 寮?- 鍗曚骇鍝佽鎯呴〉澶у皬:200KB(鍚浘),CDN 缂撳瓨鍚?0KB 鍑虹珯
+- 鏈堣鐩橀噺:200-500 灏?- 鏈堢嫭绔嬭瀹?5K-50K
 
-- **Vercel ISR**:revalidate = 3600(产品详情)、revalidate = 600(首页),每小时最多 1 次重新渲染
-- **generateStaticParams**:只预渲染 top 100 活跃产品(已实现),其余按需 ISR
-- **Railway 缩容**:Hobby plan 1 instance $5/月常驻,生产 plan 用 autoscale(1-3 instance)
-- **图片优化**:next/image 自动 WebP/AVIF 转换 + 响应式 srcset,Vercel 全球 CDN 边缘缓存
+### 3.4 鎬ц兘棰勭畻
 
-### 3.3 产品数据规模假设
-
-- 活跃产品:≤ 1000
-- 类别:≤ 20
-- 单产品图:平均 5 张,共 ~5000 张
-- 单产品详情页大小:200KB(含图),CDN 缓存后 0KB 出站
-- 月询盘量:200-500 封
-- 月独立访客:5K-50K
-
-### 3.4 性能预算
-
-- **LCP** < 2.0s(目标 1.5s,产品详情页)
+- **LCP** < 2.0s(鐩爣 1.5s,浜у搧璇︽儏椤?
 - **INP** < 150ms
 - **CLS** < 0.05
-- **TTFB** < 300ms(欧洲边缘)
-- **JS bundle** < 180KB gzipped(首页)
+- **TTFB** < 300ms(娆ф床杈圭紭)
+- **JS bundle** < 180KB gzipped(棣栭〉)
 
 ---
 
-## 4. 环境与配置
-
-### 4.1 环境变量(API · Railway)
+## 4. 鐜涓庨厤缃?
+### 4.1 鐜鍙橀噺(API 路 Railway)
 
 ```bash
 NODE_ENV=production
 PORT=8000
-SITE_URL=https://www.ccscale.com
-API_URL=https://api.ccscale.com
+SITE_URL=https://www.zzscale.com
+API_URL=https://api.zzscale.com
 
 JWT_SECRET=<openssl rand -base64 48>
 COOKIE_SECRET=<openssl rand -base64 48>
-COOKIE_DOMAIN=.ccscale.com
+COOKIE_DOMAIN=.zzscale.com
 COOKIE_SECURE=true
 
-DATABASE_URL=postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/ccscale?sslmode=require&pgbouncer=true&connection_limit=1
-DIRECT_URL=postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/ccscale?sslmode=require
+DATABASE_URL=postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/zzscale?sslmode=require&pgbouncer=true&connection_limit=1
+DIRECT_URL=postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/zzscale?sslmode=require
 
 REDIS_URL=rediss://default:xxx@xxx.upstash.io:6379
 
 RESEND_API_KEY=re_xxx
-EMAIL_FROM=noreply@mail.ccscale.com
-ADMIN_EMAIL=sales@ccscale.com
+EMAIL_FROM=noreply@mail.zzscale.com
+ADMIN_EMAIL=sales@zzscale.com
 
 TURNSTILE_SITE_KEY=0x4AAAA...
 TURNSTILE_SECRET_KEY=0x4AAAA...
@@ -174,124 +157,122 @@ TURNSTILE_SECRET_KEY=0x4AAAA...
 R2_ACCOUNT_ID=xxx
 R2_ACCESS_KEY_ID=xxx
 R2_SECRET_ACCESS_KEY=xxx
-R2_BUCKET=ccscale-media
-R2_PUBLIC_URL=https://media.ccscale.com
+R2_BUCKET=zzscale-media
+R2_PUBLIC_URL=https://media.zzscale.com
 
 UPLOAD_MAX_SIZE_MB=20
-CORS_ORIGIN=https://www.ccscale.com,https://admin.ccscale.com
+CORS_ORIGIN=https://www.zzscale.com,https://admin.zzscale.com
 RATE_LIMIT_TTL=60
 RATE_LIMIT_MAX=100
 SENTRY_DSN=https://xxx@sentry.io/xxx
 ```
 
-### 4.2 环境变量(Web · Vercel)
+### 4.2 鐜鍙橀噺(Web 路 Vercel)
 
 ```bash
-NEXT_PUBLIC_API_URL=https://api.ccscale.com
-NEXT_PUBLIC_SITE_URL=https://www.ccscale.com
-NEXT_PUBLIC_MEDIA_URL=https://media.ccscale.com
+NEXT_PUBLIC_API_URL=https://api.zzscale.com
+NEXT_PUBLIC_SITE_URL=https://www.zzscale.com
+NEXT_PUBLIC_MEDIA_URL=https://media.zzscale.com
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAA...
 NEXT_PUBLIC_WHATSAPP_NUMBER=+8613800000000
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 SENTRY_DSN=https://xxx@sentry.io/xxx
 ```
 
-### 4.3 环境变量(Admin · Vercel)
+### 4.3 鐜鍙橀噺(Admin 路 Vercel)
 
 ```bash
-NEXT_PUBLIC_API_URL=https://api.ccscale.com
-NEXT_PUBLIC_SITE_URL=https://admin.ccscale.com
-COOKIE_DOMAIN=.ccscale.com
+NEXT_PUBLIC_API_URL=https://api.zzscale.com
+NEXT_PUBLIC_SITE_URL=https://admin.zzscale.com
+COOKIE_DOMAIN=.zzscale.com
 ```
 
 ---
 
-## 5. 部署步骤(2 周落地)
+## 5. 閮ㄧ讲姝ラ(2 鍛ㄨ惤鍦?
 
-### 第 1 周:基础设施
+### 绗?1 鍛?鍩虹璁炬柦
 
-| 天 | 任务 | 责任 |
+| 澶?| 浠诲姟 | 璐ｄ换 |
 |---|---|---|
-| D1 | 注册 Cloudflare / Vercel / Railway / Neon / Upstash / R2 / Resend / Sentry 账号,绑定 GitHub | DevOps |
-| D1 | 域名 ccscale.com 转入 Cloudflare,配置 DNS 记录(A / CNAME / MX) | DevOps |
-| D2 | Neon 创建 ccscale 项目,main + preview 分支 | DevOps |
-| D2 | Upstash 创建 Global Redis(欧洲区域) | DevOps |
-| D3 | R2 创建 ccscale-media 公开桶,绑定 media.ccscale.com 自定义域 | DevOps |
-| D3 | Resend 域名验证,配置 SPF / DKIM / DMARC | DevOps |
-| D4 | Cloudflare Turnstile 站点创建,获得 site key + secret | DevOps |
-| D4 | Sentry 项目 cc-scale-web / cc-scale-api 创建 | DevOps |
-| D5 | 数据库迁移:railway run npx prisma migrate deploy(22 个索引) | Backend |
+| D1 | 娉ㄥ唽 Cloudflare / Vercel / Railway / Neon / Upstash / R2 / Resend / Sentry 璐﹀彿,缁戝畾 GitHub | DevOps |
+| D1 | 鍩熷悕 zzscale.com 杞叆 Cloudflare,閰嶇疆 DNS 璁板綍(A / CNAME / MX) | DevOps |
+| D2 | Neon 鍒涘缓 zzscale 椤圭洰,main + preview 鍒嗘敮 | DevOps |
+| D2 | Upstash 鍒涘缓 Global Redis(娆ф床鍖哄煙) | DevOps |
+| D3 | R2 鍒涘缓 zzscale-media 鍏紑妗?缁戝畾 media.zzscale.com 鑷畾涔夊煙 | DevOps |
+| D3 | Resend 鍩熷悕楠岃瘉,閰嶇疆 SPF / DKIM / DMARC | DevOps |
+| D4 | Cloudflare Turnstile 绔欑偣鍒涘缓,鑾峰緱 site key + secret | DevOps |
+| D4 | Sentry 椤圭洰 cc-scale-web / cc-scale-api 鍒涘缓 | DevOps |
+| D5 | 鏁版嵁搴撹縼绉?railway run npx prisma migrate deploy(22 涓储寮? | Backend |
 
-### 第 2 周:代码部署
+### 绗?2 鍛?浠ｇ爜閮ㄧ讲
 
-| 天 | 任务 | 责任 |
+| 澶?| 浠诲姟 | 璐ｄ换 |
 |---|---|---|
-| D6 | API 上 Railway:连接 GitHub main 分支,设置环境变量,健康检查 /api/health | Backend |
-| D7 | Seed 管理员账号:ALLOW_SEED=1 railway run npx prisma db seed(生产守卫已加) | Backend |
-| D7 | API 烟雾测试:curl https://api.ccscale.com/api/health + /api/products?locale=en | Backend |
-| D8 | Web 上 Vercel:import GitHub repo,Root Directory = apps/web,region fra1 | Frontend |
-| D8 | 绑定域名 www.ccscale.com(Vercel 自动 TLS) | DevOps |
-| D9 | Admin 上 Vercel(独立 project / 同一 repo 不同 root) | Frontend |
-| D9 | vercel.json 验证:API rewrite → api.ccscale.com,uploads → media.ccscale.com | DevOps |
-| D10 | Cloudflare 配置:SSL = Full Strict,Brotli,Always HTTPS,HSTS 1年 | DevOps |
-| D10 | 缓存规则:/uploads/* Cache Standard,/_next/static/* Cache Immutable | DevOps |
-| D11 | SEO 提交:Google Search Console 提交 sitemap, Bing Webmaster, Yandex | SEO |
-| D11 | GSC 验证:https://www.ccscale.com 域验证(DNS TXT) | SEO |
-| D12 | E2E 测试:Playwright 跑 apps/web/e2e/ 全套(询盘提交、登录、WhatsApp 浮窗) | QA |
-| D12 | 性能验证:PageSpeed Insights / WebPageTest 全球节点,目标 LCP < 2s | QA |
-| D13 | 监控告警:Sentry 告警 → Slack,Neon / Upstash storage 告警 → Email | DevOps |
-| D14 | 灰度发布:Cloudflare Workers 5% → 50% → 100%(可选) | DevOps |
+| D6 | API 涓?Railway:杩炴帴 GitHub main 鍒嗘敮,璁剧疆鐜鍙橀噺,鍋ュ悍妫€鏌?/api/health | Backend |
+| D7 | Seed 绠＄悊鍛樿处鍙?ALLOW_SEED=1 railway run npx prisma db seed(鐢熶骇瀹堝崼宸插姞) | Backend |
+| D7 | API 鐑熼浘娴嬭瘯:curl https://api.zzscale.com/api/health + /api/products?locale=en | Backend |
+| D8 | Web 涓?Vercel:import GitHub repo,Root Directory = apps/web,region fra1 | Frontend |
+| D8 | 缁戝畾鍩熷悕 www.zzscale.com(Vercel 鑷姩 TLS) | DevOps |
+| D9 | Admin 涓?Vercel(鐙珛 project / 鍚屼竴 repo 涓嶅悓 root) | Frontend |
+| D9 | vercel.json 楠岃瘉:API rewrite 鈫?api.zzscale.com,uploads 鈫?media.zzscale.com | DevOps |
+| D10 | Cloudflare 閰嶇疆:SSL = Full Strict,Brotli,Always HTTPS,HSTS 1骞?| DevOps |
+| D10 | 缂撳瓨瑙勫垯:/uploads/* Cache Standard,/_next/static/* Cache Immutable | DevOps |
+| D11 | SEO 鎻愪氦:Google Search Console 鎻愪氦 sitemap, Bing Webmaster, Yandex | SEO |
+| D11 | GSC 楠岃瘉:https://www.zzscale.com 鍩熼獙璇?DNS TXT) | SEO |
+| D12 | E2E 娴嬭瘯:Playwright 璺?apps/web/e2e/ 鍏ㄥ(璇㈢洏鎻愪氦銆佺櫥褰曘€乄hatsApp 娴獥) | QA |
+| D12 | 鎬ц兘楠岃瘉:PageSpeed Insights / WebPageTest 鍏ㄧ悆鑺傜偣,鐩爣 LCP < 2s | QA |
+| D13 | 鐩戞帶鍛婅:Sentry 鍛婅 鈫?Slack,Neon / Upstash storage 鍛婅 鈫?Email | DevOps |
+| D14 | 鐏板害鍙戝竷:Cloudflare Workers 5% 鈫?50% 鈫?100%(鍙€? | DevOps |
 
-### 2 周后的日常运营
-
-- 代码合并:main → Vercel 自动 + Railway 自动(GitHub Actions 仅做迁移)
-- 新功能:feature/* → Vercel Preview + Neon Branch
-- 回滚:Vercel / Railway 各自 dashboard 一键 rollback
-- 数据备份:Neon 自动每日 backup(7 天保留),WAL 归档到 R2(可选)
+### 2 鍛ㄥ悗鐨勬棩甯歌繍钀?
+- 浠ｇ爜鍚堝苟:main 鈫?Vercel 鑷姩 + Railway 鑷姩(GitHub Actions 浠呭仛杩佺Щ)
+- 鏂板姛鑳?feature/* 鈫?Vercel Preview + Neon Branch
+- 鍥炴粴:Vercel / Railway 鍚勮嚜 dashboard 涓€閿?rollback
+- 鏁版嵁澶囦唤:Neon 鑷姩姣忔棩 backup(7 澶╀繚鐣?,WAL 褰掓。鍒?R2(鍙€?
 
 ---
 
-## 6. CI/CD 流程
+## 6. CI/CD 娴佺▼
 
-已存在的 .github/workflows/deploy.yml(本仓库):
+宸插瓨鍦ㄧ殑 .github/workflows/deploy.yml(鏈粨搴?:
 
 ```yaml
-# Web → Vercel CLI(自动)
-# API → Railway Webhook(GitHub push 触发)
-# DB → 手动或 prisma migrate deploy via Railway shell
+# Web 鈫?Vercel CLI(鑷姩)
+# API 鈫?Railway Webhook(GitHub push 瑙﹀彂)
+# DB 鈫?鎵嬪姩鎴?prisma migrate deploy via Railway shell
 ```
 
-建议加 3 个 GitHub Actions:
+寤鸿鍔?3 涓?GitHub Actions:
 
-1. **CI Lint/Test**(每次 PR):pnpm install / pnpm turbo run lint test / node scripts/check-bom.mjs
-2. **CD Deploy**(merge to main):Web Vercel 自动 / API Railway webhook
-3. **DB Migration**(手动 dispatch):railway run npx prisma migrate deploy
+1. **CI Lint/Test**(姣忔 PR):pnpm install / pnpm turbo run lint test / node scripts/check-bom.mjs
+2. **CD Deploy**(merge to main):Web Vercel 鑷姩 / API Railway webhook
+3. **DB Migration**(鎵嬪姩 dispatch):railway run npx prisma migrate deploy
 
 ---
 
-## 7. 成本估算(USD · 月)
+## 7. 鎴愭湰浼扮畻(USD 路 鏈?
 
-### 7.1 起步阶段(< 1 万 PV / 月,≤ 1000 SKU)
+### 7.1 璧锋闃舵(< 1 涓?PV / 鏈?鈮?1000 SKU)
 
-| 服务 | 计划 | 月费用 |
+| 鏈嶅姟 | 璁″垝 | 鏈堣垂鐢?|
 |---|---|---|
 | Vercel Web | Hobby | $0 |
 | Vercel Admin | Hobby | $0 |
 | Railway API | Hobby 1 instance | $5 |
 | Neon Postgres | Free(0.5GB) | $0 |
 | Upstash Redis | Pay-as-you-go | $0(~ 100K req) |
-| Cloudflare R2 | Free(10GB + 1K 万次读) | $0 |
+| Cloudflare R2 | Free(10GB + 1K 涓囨璇? | $0 |
 | Cloudflare CDN / DNS | Free | $0 |
-| Resend | Free(100 封/天) | $0 |
+| Resend | Free(100 灏?澶? | $0 |
 | Cloudflare Turnstile | Free | $0 |
-| Sentry | Developer(5K 事件/月) | $0 |
-| **小计** | | **≈ $5 / 月**(纯 Free) |
+| Sentry | Developer(5K 浜嬩欢/鏈? | $0 |
+| **灏忚** | | **鈮?$5 / 鏈?*(绾?Free) |
 
-> **生产推荐预算 ~$36/月**:Vercel Pro $20 + Railway $5 + Neon Launch $19 的安全余量。Free plan 在生产不推荐(冷启动慢、SLA 无保证)。
+> **鐢熶骇鎺ㄨ崘棰勭畻 ~$36/鏈?*:Vercel Pro $20 + Railway $5 + Neon Launch $19 鐨勫畨鍏ㄤ綑閲忋€侳ree plan 鍦ㄧ敓浜т笉鎺ㄨ崘(鍐峰惎鍔ㄦ參銆丼LA 鏃犱繚璇?銆?
+### 7.2 鎴愰暱闃舵(10 涓?PV / 鏈?
 
-### 7.2 成长阶段(10 万 PV / 月)
-
-| 服务 | 计划 | 月费用 |
+| 鏈嶅姟 | 璁″垝 | 鏈堣垂鐢?|
 |---|---|---|
 | Vercel Web | Pro | $20 |
 | Vercel Admin | Pro | $20 |
@@ -299,14 +280,14 @@ COOKIE_DOMAIN=.ccscale.com
 | Neon Postgres | Launch(10GB) | $19 |
 | Upstash Redis | Pay-as-you-go | $10 |
 | Cloudflare R2 | Pay-as-you-go(100GB) | $3 |
-| Cloudflare Pro | Pro(更细 WAF 规则) | $20 |
-| Resend | Pro(50K 封) | $20 |
-| Sentry | Team(50K 事件) | $26 |
-| **小计** | | **≈ $163 / 月** |
+| Cloudflare Pro | Pro(鏇寸粏 WAF 瑙勫垯) | $20 |
+| Resend | Pro(50K 灏? | $20 |
+| Sentry | Team(50K 浜嬩欢) | $26 |
+| **灏忚** | | **鈮?$163 / 鏈?* |
 
-### 7.3 规模化阶段(100 万 PV / 月)
+### 7.3 瑙勬ā鍖栭樁娈?100 涓?PV / 鏈?
 
-| 服务 | 计划 | 月费用 |
+| 鏈嶅姟 | 璁″垝 | 鏈堣垂鐢?|
 |---|---|---|
 | Vercel Web + Admin | Enterprise | $250+ |
 | Railway API | 3 instance autoscale | $75 |
@@ -316,113 +297,106 @@ COOKIE_DOMAIN=.ccscale.com
 | Cloudflare Pro | Pro | $20 |
 | Resend | Scale | $90 |
 | Sentry | Business | $80 |
-| **小计** | | **≈ $630 / 月** |
+| **灏忚** | | **鈮?$630 / 鏈?* |
 
 ---
 
-## 8. 安全清单(部署后必检)
+## 8. 瀹夊叏娓呭崟(閮ㄧ讲鍚庡繀妫€)
 
-- [x] JWT_SECRET ≥ 32 字符且不提交到 Git(apps/api/src/config/configuration.ts 已强制)
-- [x] Cookie httpOnly + secure + sameSite=none(生产)
-- [x] Cloudflare Turnstile 启用(询盘 / 登录)
-- [x] Rate limiting:Throttler 短窗 30 req/min、Login 5 req/min
-- [x] Magic bytes 二次校验(图片 / PDF / 视频)
-- [x] HTML escape 邮件模板
+- [x] JWT_SECRET 鈮?32 瀛楃涓斾笉鎻愪氦鍒?Git(apps/api/src/config/configuration.ts 宸插己鍒?
+- [x] Cookie httpOnly + secure + sameSite=none(鐢熶骇)
+- [x] Cloudflare Turnstile 鍚敤(璇㈢洏 / 鐧诲綍)
+- [x] Rate limiting:Throttler 鐭獥 30 req/min銆丩ogin 5 req/min
+- [x] Magic bytes 浜屾鏍￠獙(鍥剧墖 / PDF / 瑙嗛)
+- [x] HTML escape 閭欢妯℃澘
 - [x] HSTS / X-Frame-Options / X-Content-Type-Options(vercel.json headers)
-- [ ] CSP(Content-Security-Policy)— 待加,见 Code Review Medium 项
-- [x] CORS 白名单(只允许 ccscale.com 域)
-- [x] Prisma 22 个索引(防慢查询 DoS)
-- [x] 文件路径遍历防护(/^[A-Za-z0-9._-]{1,200}$/)
-- [x] Seed 生产守卫(NODE_ENV=production && ALLOW_SEED!=1 抛错)
+- [ ] CSP(Content-Security-Policy)鈥?寰呭姞,瑙?Code Review Medium 椤?- [x] CORS 鐧藉悕鍗?鍙厑璁?zzscale.com 鍩?
+- [x] Prisma 22 涓储寮?闃叉參鏌ヨ DoS)
+- [x] 鏂囦欢璺緞閬嶅巻闃叉姢(/^[A-Za-z0-9._-]{1,200}$/)
+- [x] Seed 鐢熶骇瀹堝崼(NODE_ENV=production && ALLOW_SEED!=1 鎶涢敊)
 
 ---
 
-## 9. 灾备与监控
+## 9. 鐏惧涓庣洃鎺?
+### 9.1 澶囦唤
 
-### 9.1 备份
+- **Neon**:鑷姩姣忔棩 backup(7 澶╀繚鐣?,鍙竴閿?PITR
+- **R2**:寮€鍚?versioning,璇垹鍙仮澶?- **浠ｇ爜**:GitHub main + PR 姘镐箙淇濈暀
+- **閰嶇疆**:1Password / Bitwarden 鍥㈤槦淇濋櫓搴撳瓨鎵€鏈夌幆澧冨彉閲?+ 鏈嶅姟鍑嵁
 
-- **Neon**:自动每日 backup(7 天保留),可一键 PITR
-- **R2**:开启 versioning,误删可恢复
-- **代码**:GitHub main + PR 永久保留
-- **配置**:1Password / Bitwarden 团队保险库存所有环境变量 + 服务凭据
+### 9.2 鐩戞帶鍛婅
 
-### 9.2 监控告警
-
-| 指标 | 阈值 | 通知渠道 |
+| 鎸囨爣 | 闃堝€?| 閫氱煡娓犻亾 |
 |---|---|---|
-| API 5xx 错误率 | > 1% | Sentry → Slack #alerts |
-| API p95 延迟 | > 1s | Sentry → Slack |
-| Neon 连接数 | > 80% | Neon dashboard → Email |
-| Railway CPU | > 80% 持续 5min | Railway → Slack |
-| Cloudflare 5xx | > 0.1% | Cloudflare → Email |
-| Sentry 新 issue | 立即 | Slack #frontend |
-| 询盘数 / 天 | < 5(下跌 50%) | Email sales@ |
+| API 5xx 閿欒鐜?| > 1% | Sentry 鈫?Slack #alerts |
+| API p95 寤惰繜 | > 1s | Sentry 鈫?Slack |
+| Neon 杩炴帴鏁?| > 80% | Neon dashboard 鈫?Email |
+| Railway CPU | > 80% 鎸佺画 5min | Railway 鈫?Slack |
+| Cloudflare 5xx | > 0.1% | Cloudflare 鈫?Email |
+| Sentry 鏂?issue | 绔嬪嵆 | Slack #frontend |
+| 璇㈢洏鏁?/ 澶?| < 5(涓嬭穼 50%) | Email sales@ |
 
-### 9.3 Runbook(出问题时)
+### 9.3 Runbook(鍑洪棶棰樻椂)
 
-- **API 5xx 飙升**:Sentry 看 issue → Railway rollback → 查 Neon 连接池
-- **Web 502**:Vercel status → check vercel.json rewrites → curl api.ccscale.com/api/health
-- **询盘收不到**:Resend dashboard → 检查 spam → 检查 SPF/DKIM
-- **图片 404**:R2 dashboard → 检查 bucket policy → 检查 R2_PUBLIC_URL env
+- **API 5xx 椋欏崌**:Sentry 鐪?issue 鈫?Railway rollback 鈫?鏌?Neon 杩炴帴姹?- **Web 502**:Vercel status 鈫?check vercel.json rewrites 鈫?curl api.zzscale.com/api/health
+- **璇㈢洏鏀朵笉鍒?*:Resend dashboard 鈫?妫€鏌?spam 鈫?妫€鏌?SPF/DKIM
+- **鍥剧墖 404**:R2 dashboard 鈫?妫€鏌?bucket policy 鈫?妫€鏌?R2_PUBLIC_URL env
 
 ---
 
-## 10. 上线前必检清单(Go-Live Checklist)
+## 10. 涓婄嚎鍓嶅繀妫€娓呭崟(Go-Live Checklist)
 
-### Critical(必须 0 问题)
+### Critical(蹇呴』 0 闂)
 
-- [ ] JWT_SECRET + COOKIE_SECRET 在 Railway 强密码生成并保存
-- [ ] Neon prisma migrate deploy 成功(22 个索引创建)
-- [ ] R2 bucket 公共读权限开启,media.ccscale.com 解析正确
-- [ ] Cloudflare SSL = Full Strict(不是 Flexible)
-- [ ] DNS:www → Vercel,api → Railway,media → R2
-- [ ] HTTPS 重定向:HTTP → 301 → HTTPS
+- [ ] JWT_SECRET + COOKIE_SECRET 鍦?Railway 寮哄瘑鐮佺敓鎴愬苟淇濆瓨
+- [ ] Neon prisma migrate deploy 鎴愬姛(22 涓储寮曞垱寤?
+- [ ] R2 bucket 鍏叡璇绘潈闄愬紑鍚?media.zzscale.com 瑙ｆ瀽姝ｇ‘
+- [ ] Cloudflare SSL = Full Strict(涓嶆槸 Flexible)
+- [ ] DNS:www 鈫?Vercel,api 鈫?Railway,media 鈫?R2
+- [ ] HTTPS 閲嶅畾鍚?HTTP 鈫?301 鈫?HTTPS
 - [ ] HSTS header(Strict-Transport-Security: max-age=31536000; includeSubDomains; preload)
 
-### High(必须完成)
+### High(蹇呴』瀹屾垚)
 
-- [ ] Resend 域名验证 + SPF/DKIM/DMARC
-- [ ] Turnstile site key + secret 在 web / api 环境变量都有
-- [ ] Sentry DSN web + api 都有,Source Map 上传
-- [ ] GA4 + GSC 验证通过
-- [ ] Sitemap(/sitemap.xml) 包含所有产品页 + 博客,无 404
-- [ ] Hreflang 标签正确(en/zh 互相指向)
-- [ ] robots.txt 不阻止 /api/ 或 /_next/
-- [ ] WhatsApp 浮窗 NEXT_PUBLIC_WHATSAPP_NUMBER 配好
+- [ ] Resend 鍩熷悕楠岃瘉 + SPF/DKIM/DMARC
+- [ ] Turnstile site key + secret 鍦?web / api 鐜鍙橀噺閮芥湁
+- [ ] Sentry DSN web + api 閮芥湁,Source Map 涓婁紶
+- [ ] GA4 + GSC 楠岃瘉閫氳繃
+- [ ] Sitemap(/sitemap.xml) 鍖呭惈鎵€鏈変骇鍝侀〉 + 鍗氬,鏃?404
+- [ ] Hreflang 鏍囩姝ｇ‘(en/zh 浜掔浉鎸囧悜)
+- [ ] robots.txt 涓嶉樆姝?/api/ 鎴?/_next/
+- [ ] WhatsApp 娴獥 NEXT_PUBLIC_WHATSAPP_NUMBER 閰嶅ソ
 
-### Medium(尽量完成)
+### Medium(灏介噺瀹屾垚)
 
 - [ ] Cloudflare Page Rules:/uploads/* Cache Everything
-- [ ] prisma generate 在 CI 跑通
-- [ ] E2E 测试通过(询盘 → 邮件到达)
-- [ ] Lighthouse 分数:Performance > 90, SEO > 95, Accessibility > 95, Best Practices > 95
-- [ ] Core Web Vitals 全部 Good(75th percentile)
+- [ ] prisma generate 鍦?CI 璺戦€?- [ ] E2E 娴嬭瘯閫氳繃(璇㈢洏 鈫?閭欢鍒拌揪)
+- [ ] Lighthouse 鍒嗘暟:Performance > 90, SEO > 95, Accessibility > 95, Best Practices > 95
+- [ ] Core Web Vitals 鍏ㄩ儴 Good(75th percentile)
 
-### Low(可后续优化)
+### Low(鍙悗缁紭鍖?
 
-- [ ] Cloudflare Workers 灰度发布
-- [ ] CSP header 加 nonce
-- [ ] 多语言扩展(德 / 法 / 西班牙)
-- [ ] 询盘 AI 智能分发(按区域)
-- [ ] PWA / Offline 模式
+- [ ] Cloudflare Workers 鐏板害鍙戝竷
+- [ ] CSP header 鍔?nonce
+- [ ] 澶氳瑷€鎵╁睍(寰?/ 娉?/ 瑗跨彮鐗?
+- [ ] 璇㈢洏 AI 鏅鸿兘鍒嗗彂(鎸夊尯鍩?
+- [ ] PWA / Offline 妯″紡
 
 ---
 
-## 11. 风险与回滚
-
-| 风险 | 概率 | 影响 | 缓解 |
+## 11. 椋庨櫓涓庡洖婊?
+| 椋庨櫓 | 姒傜巼 | 褰卞搷 | 缂撹В |
 |---|---|---|---|
-| Neon 区域故障 | 极低 | 数据库不可用 | Neon 自动 PITR + Read Replica(Scale 计划) |
-| Railway instance 挂掉 | 低 | API 503 | Railway 自动 restart + autoscale(1-3 instance) |
-| Vercel 部署失败 | 低 | Web 503 | Vercel 自动 rollback 到上一个成功部署 |
-| Cloudflare 故障 | 极低 | CDN / DNS 不可用 | 切到 Cloudflare 备用账号 / 临时用 NS 直指 Vercel |
-| 询盘邮件丢 | 低 | 客户流失 | Resend 失败重试 + 备份通道 Slack Webhook |
-| R2 桶删除 | 极低 | 静态资源全挂 | R2 versioning + Neon 存原始文件 hash |
+| Neon 鍖哄煙鏁呴殰 | 鏋佷綆 | 鏁版嵁搴撲笉鍙敤 | Neon 鑷姩 PITR + Read Replica(Scale 璁″垝) |
+| Railway instance 鎸傛帀 | 浣?| API 503 | Railway 鑷姩 restart + autoscale(1-3 instance) |
+| Vercel 閮ㄧ讲澶辫触 | 浣?| Web 503 | Vercel 鑷姩 rollback 鍒颁笂涓€涓垚鍔熼儴缃?|
+| Cloudflare 鏁呴殰 | 鏋佷綆 | CDN / DNS 涓嶅彲鐢?| 鍒囧埌 Cloudflare 澶囩敤璐﹀彿 / 涓存椂鐢?NS 鐩存寚 Vercel |
+| 璇㈢洏閭欢涓?| 浣?| 瀹㈡埛娴佸け | Resend 澶辫触閲嶈瘯 + 澶囦唤閫氶亾 Slack Webhook |
+| R2 妗跺垹闄?| 鏋佷綆 | 闈欐€佽祫婧愬叏鎸?| R2 versioning + Neon 瀛樺師濮嬫枃浠?hash |
 
 ---
 
-## 12. 文档与链接
-
+## 12. 鏂囨。涓庨摼鎺?
 - Cloudflare Dashboard:https://dash.cloudflare.com
 - Vercel Dashboard:https://vercel.com/dashboard
 - Railway Dashboard:https://railway.app/dashboard
@@ -441,6 +415,6 @@ COOKIE_DOMAIN=.ccscale.com
 
 ---
 
-> **最后更新**:与代码基线同步(vercel.json / railway.toml / Prisma 22 索引 / Turnstile 集成)
-> **维护者**:DevOps + Backend
-> **审查周期**:每次架构变更后 1 周内 review
+> **鏈€鍚庢洿鏂?*:涓庝唬鐮佸熀绾垮悓姝?vercel.json / railway.toml / Prisma 22 绱㈠紩 / Turnstile 闆嗘垚)
+> **缁存姢鑰?*:DevOps + Backend
+> **瀹℃煡鍛ㄦ湡**:姣忔鏋舵瀯鍙樻洿鍚?1 鍛ㄥ唴 review

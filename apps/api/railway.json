@@ -1,4 +1,4 @@
-{
+﻿{
   """": ""https://railway.app/railway.schema.json"",
   ""build"": {
     ""builder"": ""NIXPACKS"",
@@ -12,7 +12,7 @@
   },
   ""domains"": [
     {
-      ""hostname"": ""api-ccscale"",
+      ""hostname"": ""api-zzscale"",
       ""path"": """"
     }
   ]

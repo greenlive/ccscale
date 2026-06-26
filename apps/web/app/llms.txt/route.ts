@@ -1,8 +1,8 @@
-import { routing } from '@/i18n/routing';
+﻿import { routing } from '@/i18n/routing';
 
-const baseUrl = 'https://www.ccscale.com';
+const baseUrl = 'https://www.zzscale.com';
 
-// Short-form llms.txt — recommended by https://llmstxt.org
+// Short-form llms.txt 鈥?recommended by https://llmstxt.org
 // Provides a concise entry point for LLM crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.)
 const llmsTxt = `# CC Scale
 
@@ -40,11 +40,11 @@ const llmsTxt = `# CC Scale
 ## Languages
 
 - [English version](${baseUrl}/en)
-- [中文版本](${baseUrl}/zh)
+- [涓枃鐗堟湰](${baseUrl}/zh)
 
 ## Contact
 
-- Email: sales@ccscale.com
+- Email: sales@zzscale.com
 - Phone: +86 123 4567 8900
 - WhatsApp: Available
 - Working Hours: Monday - Friday, 9:00 AM - 6:00 PM (GMT+8)

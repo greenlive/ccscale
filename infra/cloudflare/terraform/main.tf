@@ -1,4 +1,4 @@
-# Cloudflare IaC for CC Scale
+﻿# Cloudflare IaC for CC Scale
 # Apply with:
 #   cd infra/cloudflare/terraform
 #   terraform init
@@ -6,7 +6,7 @@
 #   terraform apply tfplan
 #
 # Requires:
-#   - CLOUDFLARE_API_TOKEN env var (scoped to zone:ccscale.com)
+#   - CLOUDFLARE_API_TOKEN env var (scoped to zone:zzscale.com)
 #   - terraform >= 1.5
 
 terraform {
@@ -19,7 +19,7 @@ terraform {
   }
   # Recommended: store state in Cloudflare R2 or Terraform Cloud
   # backend "s3" {
-  #   bucket                      = "ccscale-tfstate"
+  #   bucket                      = "zzscale-tfstate"
   #   key                         = "cloudflare/terraform.tfstate"
   #   region                      = "auto"
   #   endpoint                    = "https://<ACCOUNT_ID>.r2.cloudflarestorage.com"
@@ -42,7 +42,7 @@ variable "cloudflare_api_token" {
 
 variable "zone_id" {
   type        = string
-  description = "Cloudflare Zone ID for ccscale.com"
+  description = "Cloudflare Zone ID for zzscale.com"
 }
 
 variable "vercel_web_cname" {
@@ -65,15 +65,15 @@ variable "railway_cname" {
 
 variable "r2_public_cname" {
   type        = string
-  default     = "media.ccscale.com.cdn.cloudflare.net"
+  default     = "media.zzscale.com.cdn.cloudflare.net"
   description = "Cloudflare-provided CNAME for R2 public bucket"
 }
 
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 # 1. DNS records
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 locals {
-  zone_name = "ccscale.com"
+  zone_name = "zzscale.com"
 }
 
 # Root: 301 -> www
@@ -150,7 +150,7 @@ resource "cloudflare_record" "dmarc" {
   zone_id = var.zone_id
   name    = "_dmarc"
   type    = "TXT"
-  content = "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@ccscale.com; pct=100"
+  content = "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@zzscale.com; pct=100"
   comment = "DMARC policy"
 }
 
@@ -164,9 +164,9 @@ resource "cloudflare_record" "dkim_resend" {
   comment  = "DKIM (replace content with Resend-provided value)"
 }
 
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 # 2. Zone settings
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 resource "cloudflare_zone_setting" "ssl" {
   zone_id    = var.zone_id
   setting_id = "ssl"
@@ -229,9 +229,9 @@ resource "cloudflare_zone_setting" "security_header" {
   }
 }
 
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 # 3. Redirect Rules (root -> www)
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 resource "cloudflare_ruleset" "root_redirect" {
   zone_id = var.zone_id
   name    = "redirect-root-to-www"
@@ -244,20 +244,20 @@ resource "cloudflare_ruleset" "root_redirect" {
       from_value {
         status_code = 301
         target_url {
-          value = "https://www.ccscale.com${uri}"
+          value = "https://www.zzscale.com${uri}"
         }
         preserve_query_string = true
       }
     }
-    expression  = "(http.host eq \"ccscale.com\")"
+    expression  = "(http.host eq \"zzscale.com\")"
     description = "Redirect apex to www"
     enabled     = true
   }
 }
 
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 # 4. Cache rules
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 resource "cloudflare_ruleset" "cache_uploads" {
   zone_id = var.zone_id
   name    = "cache-uploads"
@@ -278,7 +278,7 @@ resource "cloudflare_ruleset" "cache_uploads" {
       }
       serve_stale = { enable = true }
     }
-    expression  = "(http.host eq \"media.ccscale.com\")"
+    expression  = "(http.host eq \"media.zzscale.com\")"
     description = "Aggressively cache R2 media"
     enabled     = true
   }
@@ -303,15 +303,15 @@ resource "cloudflare_ruleset" "cache_next_static" {
         value = 31536000
       }
     }
-    expression  = "(http.host eq \"www.ccscale.com\" and http.request.uri.path starts_with \"/_next/static/\")"
+    expression  = "(http.host eq \"www.zzscale.com\" and http.request.uri.path starts_with \"/_next/static/\")"
     description = "Cache _next/static forever (immutable)"
     enabled     = true
   }
 }
 
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 # 5. WAF / Bot Fight / Rate limit
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 resource "cloudflare_ruleset" "bot_fight" {
   zone_id = var.zone_id
   name    = "bot-fight-mode"
@@ -351,15 +351,15 @@ resource "cloudflare_ruleset" "rate_limit_inquiry" {
       requests_per_period = 10
       mitigation_timeout  = 600
     }
-    expression  = "(http.host eq \"api.ccscale.com\" and http.request.uri.path eq \"/api/inquiries\" and http.request.method eq \"POST\")"
+    expression  = "(http.host eq \"api.zzscale.com\" and http.request.uri.path eq \"/api/inquiries\" and http.request.method eq \"POST\")"
     description = "Inquiry POST 10/min/IP"
     enabled     = true
   }
 }
 
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 # 6. Output
-# ─────────────────────────────────────────
+# 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 output "nameservers" {
   value = cloudflare_record.root_apex.zone_id # not actually NS list; use data source
 }
@@ -369,7 +369,7 @@ output "config_summary" {
     ssl            = cloudflare_zone_setting.ssl.value
     min_tls        = cloudflare_zone_setting.min_tls_version.value
     hsts_preload   = true
-    apex_redirect  = "ccscale.com -> https://www.ccscale.com"
+    apex_redirect  = "zzscale.com -> https://www.zzscale.com"
     www_target     = var.vercel_web_cname
     admin_target   = var.vercel_admin_cname
     api_target     = var.railway_cname

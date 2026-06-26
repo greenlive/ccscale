@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 
 export interface GeoData {
   country: string | null;
@@ -29,7 +29,7 @@ export class GeoService {
     try {
       const response = await fetch(`http://ip-api.com/json/${ipAddress}?fields=status,country,regionName,city`, {
         headers: {
-          'User-Agent': 'CCScale-API/1.0',
+          'User-Agent': 'ZZScale-API/1.0',
         },
       });
 

@@ -1,46 +1,27 @@
-# CC Scale 部署指南
+﻿# CC Scale 閮ㄧ讲鎸囧崡
 
-## 部署架构
+## 閮ㄧ讲鏋舵瀯
 
 `
 Cloudflare (CDN/DNS)
-    │
-    ▼
-┌───────────────────────────────────────────────┐
-│  Vercel - Web 前端                           │
-│  https://www.ccscale.com                      │
-│  - Next.js SSR/ISR                            │
-│  - 全球边缘分发                                │
-│  - next-intl 多语言                            │
-└───────────────────────────────────────────────┘
-    │
-    │ API 请求
-    ▼
-┌───────────────────────────────────────────────┐
-│  Railway - API 后端                           │
-│  https://api-ccscale.up.railway.app           │
-│  - NestJS REST API                           │
-│  - Prisma ORM                                │
-│  - JWT 认证                                   │
-└───────────────────────────────────────────────┘
-    │
-    ├── PostgreSQL (Railway 托管)
-    ├── Redis (Railway 托管)
-    └── Meilisearch (可选 Railway 插件)
+    鈹?    鈻?鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?鈹? Vercel - Web 鍓嶇                           鈹?鈹? https://www.zzscale.com                      鈹?鈹? - Next.js SSR/ISR                            鈹?鈹? - 鍏ㄧ悆杈圭紭鍒嗗彂                                鈹?鈹? - next-intl 澶氳瑷€                            鈹?鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?    鈹?    鈹?API 璇锋眰
+    鈻?鈹屸攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?鈹? Railway - API 鍚庣                           鈹?鈹? https://api-zzscale.up.railway.app           鈹?鈹? - NestJS REST API                           鈹?鈹? - Prisma ORM                                鈹?鈹? - JWT 璁よ瘉                                   鈹?鈹斺攢鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹?    鈹?    鈹溾攢鈹€ PostgreSQL (Railway 鎵樼)
+    鈹溾攢鈹€ Redis (Railway 鎵樼)
+    鈹斺攢鈹€ Meilisearch (鍙€?Railway 鎻掍欢)
 `
 
-## 前置准备
+## 鍓嶇疆鍑嗗
 
-### 1. 注册账号
+### 1. 娉ㄥ唽璐﹀彿
 
-- [Vercel](https://vercel.com) - GitHub 登录
-- [Railway](https://railway.app) - GitHub 登录
-- [Cloudflare](https://cloudflare.com) - 免费账号
+- [Vercel](https://vercel.com) - GitHub 鐧诲綍
+- [Railway](https://railway.app) - GitHub 鐧诲綍
+- [Cloudflare](https://cloudflare.com) - 鍏嶈垂璐﹀彿
 
-### 2. Fork 项目到 GitHub
+### 2. Fork 椤圭洰鍒?GitHub
 
 `ash
-# 如果还没有 GitHub 仓库
+# 濡傛灉杩樻病鏈?GitHub 浠撳簱
 git init
 git add .
 git commit -m ""Initial commit: CC Scale B2B platform""
@@ -50,23 +31,22 @@ git push -u origin main
 
 ---
 
-## 部署步骤
+## 閮ㄧ讲姝ラ
 
-### 第一阶段：部署后端 API (Railway)
+### 绗竴闃舵锛氶儴缃插悗绔?API (Railway)
 
-#### 1. 创建 Railway 项目
+#### 1. 鍒涘缓 Railway 椤圭洰
 
-1. 登录 [Railway](https://railway.app)
-2. 点击 ""New Project"" → ""Deploy from GitHub repo""
-3. 选择 cc-scale 仓库
-4. 选择 pps/api 作为根目录
+1. 鐧诲綍 [Railway](https://railway.app)
+2. 鐐瑰嚮 ""New Project"" 鈫?""Deploy from GitHub repo""
+3. 閫夋嫨 cc-scale 浠撳簱
+4. 閫夋嫨 pps/api 浣滀负鏍圭洰褰?
+#### 2. 閰嶇疆鐜鍙橀噺
 
-#### 2. 配置环境变量
-
-在 Railway 项目设置中添加以下环境变量：
+鍦?Railway 椤圭洰璁剧疆涓坊鍔犱互涓嬬幆澧冨彉閲忥細
 
 `
-DATABASE_URL=postgresql://user:password@host:5432/ccscale
+DATABASE_URL=postgresql://user:password@host:5432/zzscale
 REDIS_URL=redis://host:6379
 JWT_SECRET=your-super-secret-jwt-key-min-32-characters
 NODE_ENV=production
@@ -76,41 +56,38 @@ PORT=8000
 RATE_LIMIT_TTL=60
 RATE_LIMIT_MAX=100
 
-# CORS (Vercel 部署后的URL)
-CORS_ORIGIN=https://www.ccscale.com,https://ccscale.vercel.app
+# CORS (Vercel 閮ㄧ讲鍚庣殑URL)
+CORS_ORIGIN=https://www.zzscale.com,https://zzscale.vercel.app
 `
 
-#### 3. 添加数据库
-
-1. Railway Dashboard → Add Plugin → PostgreSQL
-2. Railway 会自动设置 DATABASE_URL
-3. 运行数据库迁移：
+#### 3. 娣诲姞鏁版嵁搴?
+1. Railway Dashboard 鈫?Add Plugin 鈫?PostgreSQL
+2. Railway 浼氳嚜鍔ㄨ缃?DATABASE_URL
+3. 杩愯鏁版嵁搴撹縼绉伙細
    `ash
    cd apps/api
    npx prisma migrate deploy
-   npx prisma db seed  # 种子数据
+   npx prisma db seed  # 绉嶅瓙鏁版嵁
    `
 
-#### 4. 添加 Redis (可选)
+#### 4. 娣诲姞 Redis (鍙€?
 
-1. Railway Dashboard → Add Plugin → Upstash Redis
-2. 或使用 Railway 自带的 Redis 插件
+1. Railway Dashboard 鈫?Add Plugin 鈫?Upstash Redis
+2. 鎴栦娇鐢?Railway 鑷甫鐨?Redis 鎻掍欢
 
-#### 5. 获取 API URL
+#### 5. 鑾峰彇 API URL
 
-部署成功后，Railway 会提供类似 https://api-ccscale.up.railway.app 的 URL。
-
+閮ㄧ讲鎴愬姛鍚庯紝Railway 浼氭彁渚涚被浼?https://api-zzscale.up.railway.app 鐨?URL銆?
 ---
 
-### 第二阶段：部署前端 (Vercel)
+### 绗簩闃舵锛氶儴缃插墠绔?(Vercel)
 
-#### 1. 创建 Vercel 项目
+#### 1. 鍒涘缓 Vercel 椤圭洰
 
-1. 登录 [Vercel](https://vercel.com)
-2. 点击 ""Add New"" → ""Project""
-3. 选择 cc-scale 仓库
-4. 配置构建设置：
-
+1. 鐧诲綍 [Vercel](https://vercel.com)
+2. 鐐瑰嚮 ""Add New"" 鈫?""Project""
+3. 閫夋嫨 cc-scale 浠撳簱
+4. 閰嶇疆鏋勫缓璁剧疆锛?
 `
 Framework Preset: Next.js
 Root Directory: apps/web
@@ -119,31 +96,29 @@ Output Directory: .next
 Install Command: npm ci
 `
 
-#### 2. 配置环境变量
+#### 2. 閰嶇疆鐜鍙橀噺
 
 `
-NEXT_PUBLIC_API_URL=https://api-ccscale.up.railway.app
-NEXT_PUBLIC_WEB_URL=https://www.ccscale.com
+NEXT_PUBLIC_API_URL=https://api-zzscale.up.railway.app
+NEXT_PUBLIC_WEB_URL=https://www.zzscale.com
 NODE_ENV=production
 `
 
-#### 3. 添加自定义域名
-
-1. 项目 Settings → Domains
-2. 添加 www.ccscale.com
-3. 添加 ccscale.com (重定向到 www)
+#### 3. 娣诲姞鑷畾涔夊煙鍚?
+1. 椤圭洰 Settings 鈫?Domains
+2. 娣诲姞 www.zzscale.com
+3. 娣诲姞 zzscale.com (閲嶅畾鍚戝埌 www)
 
 ---
 
-### 第三阶段：配置 Cloudflare
+### 绗笁闃舵锛氶厤缃?Cloudflare
 
-#### 1. 添加域名
+#### 1. 娣诲姞鍩熷悕
 
-1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. 添加 ccscale.com 域名
-3. 更新域名注册商的 NS 服务器
-
-#### 2. 配置 DNS
+1. 鐧诲綍 [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. 娣诲姞 zzscale.com 鍩熷悕
+3. 鏇存柊鍩熷悕娉ㄥ唽鍟嗙殑 NS 鏈嶅姟鍣?
+#### 2. 閰嶇疆 DNS
 
 `
 Type    Name    Content                 Proxy Status
@@ -152,68 +127,60 @@ A       api     [Railway IP]           DNS Only
 CNAME   www     c-scale-web.vercel.app CDN
 `
 
-#### 3. 设置页面规则
+#### 3. 璁剧疆椤甸潰瑙勫垯
 
-1. 强制 HTTPS
-2. 缓存优化
-3. 安全设置
+1. 寮哄埗 HTTPS
+2. 缂撳瓨浼樺寲
+3. 瀹夊叏璁剧疆
 
 ---
 
-## 验证部署
+## 楠岃瘉閮ㄧ讲
 
-### 检查清单
-
-- [ ] 前端 https://www.ccscale.com/en 可访问
-- [ ] 中文版 https://www.ccscale.com/zh 可访问
-- [ ] API https://api-ccscale.up.railway.app/api/health 返回 200
-- [ ] 产品页面正确加载
-- [ ] 图片正常显示
-- [ ] 多语言切换正常
-- [ ] Schema.org 结构化数据有效
-- [ ] robots.txt 可访问
-
-### SEO 验证
+### 妫€鏌ユ竻鍗?
+- [ ] 鍓嶇 https://www.zzscale.com/en 鍙闂?- [ ] 涓枃鐗?https://www.zzscale.com/zh 鍙闂?- [ ] API https://api-zzscale.up.railway.app/api/health 杩斿洖 200
+- [ ] 浜у搧椤甸潰姝ｇ‘鍔犺浇
+- [ ] 鍥剧墖姝ｅ父鏄剧ず
+- [ ] 澶氳瑷€鍒囨崲姝ｅ父
+- [ ] Schema.org 缁撴瀯鍖栨暟鎹湁鏁?- [ ] robots.txt 鍙闂?
+### SEO 楠岃瘉
 
 `ash
-# 检查 sitemap
-curl https://www.ccscale.com/en/sitemap.xml
+# 妫€鏌?sitemap
+curl https://www.zzscale.com/en/sitemap.xml
 
-# 检查 robots.txt
-curl https://www.ccscale.com/robots.txt
+# 妫€鏌?robots.txt
+curl https://www.zzscale.com/robots.txt
 
-# 检查 hreflang
-curl -I https://www.ccscale.com/en | grep -i link
+# 妫€鏌?hreflang
+curl -I https://www.zzscale.com/en | grep -i link
 `
 
 ---
 
-## 监控和维护
-
+## 鐩戞帶鍜岀淮鎶?
 ### Vercel Analytics
 
-1. 项目 Settings → Analytics
-2. 查看 Core Web Vitals 数据
+1. 椤圭洰 Settings 鈫?Analytics
+2. 鏌ョ湅 Core Web Vitals 鏁版嵁
 
-### Railway 监控
+### Railway 鐩戞帶
 
-1. Railway Dashboard → 项目 → Metrics
-2. 查看请求量、响应时间、错误率
+1. Railway Dashboard 鈫?椤圭洰 鈫?Metrics
+2. 鏌ョ湅璇锋眰閲忋€佸搷搴旀椂闂淬€侀敊璇巼
 
-### 错误追踪
+### 閿欒杩借釜
 
-- Sentry 已配置在 Next.js 中
-- 设置 Sentry DSN 环境变量
+- Sentry 宸查厤缃湪 Next.js 涓?- 璁剧疆 Sentry DSN 鐜鍙橀噺
 
 ---
 
-## 更新部署
+## 鏇存柊閮ㄧ讲
 
-### 自动部署
+### 鑷姩閮ㄧ讲
 
-Vercel 和 Railway 都支持 GitHub 集成，代码推送到 main 分支后自动部署。
-
-### 手动部署
+Vercel 鍜?Railway 閮芥敮鎸?GitHub 闆嗘垚锛屼唬鐮佹帹閫佸埌 main 鍒嗘敮鍚庤嚜鍔ㄩ儴缃层€?
+### 鎵嬪姩閮ㄧ讲
 
 `ash
 # Vercel
@@ -226,49 +193,46 @@ railway up
 
 ---
 
-## 成本估算
+## 鎴愭湰浼扮畻
 
-| 服务 | 方案 | 月费用 |
+| 鏈嶅姟 | 鏂规 | 鏈堣垂鐢?|
 |------|------|--------|
 | Vercel | Hobby |  |
-| Railway | Starter |  (1000 小时) |
+| Railway | Starter |  (1000 灏忔椂) |
 | Cloudflare | Free |  |
-| **总计** | | **/月** |
+| **鎬昏** | | **/鏈?* |
 
-> 如果流量不大，Railway 的免费额度（500小时/月）通常够用。
-
+> 濡傛灉娴侀噺涓嶅ぇ锛孯ailway 鐨勫厤璐归搴︼紙500灏忔椂/鏈堬級閫氬父澶熺敤銆?
 ---
 
-## 故障排除
+## 鏁呴殰鎺掗櫎
 
-### 前端构建失败
+### 鍓嶇鏋勫缓澶辫触
 
 `ash
-# 本地测试构建
+# 鏈湴娴嬭瘯鏋勫缓
 npm run build --filter=@cc-scale/web
 `
 
-### API 连接失败
+### API 杩炴帴澶辫触
 
-1. 检查 NEXT_PUBLIC_API_URL 是否正确
-2. 检查 Railway 的 CORS 配置
-3. 查看 Railway 日志
+1. 妫€鏌?NEXT_PUBLIC_API_URL 鏄惁姝ｇ‘
+2. 妫€鏌?Railway 鐨?CORS 閰嶇疆
+3. 鏌ョ湅 Railway 鏃ュ織
 
-### 数据库连接问题
-
+### 鏁版嵁搴撹繛鎺ラ棶棰?
 `ash
-# Railway 中连接数据库
+# Railway 涓繛鎺ユ暟鎹簱
 railway run psql 
 
-# 运行迁移
+# 杩愯杩佺Щ
 railway run npx prisma migrate deploy
 `
 
 ---
 
-## 快速链接
-
-- [Vercel 文档](https://vercel.com/docs)
-- [Railway 文档](https://docs.railway.app)
-- [Cloudflare Pages 文档](https://developers.cloudflare.com/pages)
-- [Next.js 部署文档](https://nextjs.org/docs/deployment)
+## 蹇€熼摼鎺?
+- [Vercel 鏂囨。](https://vercel.com/docs)
+- [Railway 鏂囨。](https://docs.railway.app)
+- [Cloudflare Pages 鏂囨。](https://developers.cloudflare.com/pages)
+- [Next.js 閮ㄧ讲鏂囨。](https://nextjs.org/docs/deployment)

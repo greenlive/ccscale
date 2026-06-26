@@ -1,4 +1,4 @@
-{
+﻿{
   "a11y": {
     "skipToContent": "Skip to main content",
     "switchLanguage": "Switch language",
@@ -6,7 +6,7 @@
     "closeMenu": "Close menu",
     "languageLabel": "Language",
     "englishOption": "English",
-    "chineseOption": "中文"
+    "chineseOption": "涓枃"
   },
   "nav": {
     "home": "Home",
@@ -49,7 +49,7 @@
     "socialTitle": "Follow Us on Social Media",
     "socialDesc": "Stay connected for the latest updates, product news, and exclusive content.",
     "socialCta": "Click any platform above to visit our profiles",
-    "trustRibbon": "Trusted by teams worldwide — real factory, real people"
+    "trustRibbon": "Trusted by teams worldwide 鈥?real factory, real people"
   },
   "advantages": {
     "factoryStrength": "Factory Strength",
@@ -112,7 +112,7 @@
     "newsletterEmailPlaceholder": "Your email",
     "newsletterButtonSubscribe": "Subscribe",
     "newsletterSuccess": "Subscribed successfully!",
-    "copyright": "© 2024 CC Scale. All rights reserved.",
+    "copyright": "漏 2024 CC Scale. All rights reserved.",
     "allRightsReserved": "All rights reserved.",
     "columnQuickLinks": "Quick Links",
     "columnProducts": "Products",
@@ -236,7 +236,7 @@
     "comparisonTitle": "Why Choose CC Scale?",
     "comparisonSubtitle": "See the difference between us and ordinary suppliers",
     "normalSupplier": "Ordinary Supplier",
-    "ccScale": "CC Scale",
+    "zzScale": "CC Scale",
     "paymentMethod": "Payment Method",
     "paymentMethodNormal": "100% upfront payment",
     "paymentMethodCc": "30% deposit + 70% against B/L",
@@ -269,7 +269,7 @@
       "warrantyDesc": "Full after-sales support included"
     },
     "advantages": {
-      "factorySize": "20,000 m²",
+      "factorySize": "20,000 m虏",
       "factorySizeDesc": "Modern Production Facility",
       "equipment": "50+ Sets",
       "equipmentDesc": "Professional Equipment",

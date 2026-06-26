@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
 import HreflangTags from "@/components/HreflangTags";
 import "./globals.css";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ccscale.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.zzscale.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

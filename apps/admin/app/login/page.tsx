@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Scale, Eye, EyeOff, AlertCircle } from 'lucide-react';
@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '登录失败，请检查邮箱和密码');
+      setError(err instanceof Error ? err.message : '鐧诲綍澶辫触锛岃妫€鏌ラ偖绠卞拰瀵嗙爜');
     } finally {
       setIsLoading(false);
     }
@@ -38,7 +38,7 @@ export default function LoginPage() {
               <Scale className="h-8 w-8 text-ivory" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-serif font-medium">管理后台登录</CardTitle>
+          <CardTitle className="text-2xl font-serif font-medium">绠＄悊鍚庡彴鐧诲綍</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -50,7 +50,7 @@ export default function LoginPage() {
             )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-olive-gray mb-2">
-                邮箱
+                閭
               </label>
               <Input
                 id="email"
@@ -58,12 +58,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="admin@ccscale.com"
+                placeholder="admin@zzscale.com"
               />
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-olive-gray mb-2">
-                密码
+                瀵嗙爜
               </label>
               <div className="relative">
                 <Input
@@ -73,7 +73,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="pr-10"
-                  placeholder="••••••••"
+                  placeholder="鈥⑩€⑩€⑩€⑩€⑩€⑩€⑩€?
                 />
                 <button
                   type="button"
@@ -94,7 +94,7 @@ export default function LoginPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? '登录中...' : '登录'}
+              {isLoading ? '鐧诲綍涓?..' : '鐧诲綍'}
             </Button>
           </form>
         </CardContent>

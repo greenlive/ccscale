@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+﻿import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { escapeHtml, escapeUrl } from '../common/html-escape';
 
@@ -27,7 +27,7 @@ export class EmailService {
   async sendEmail(to: string, subject: string, html: string): Promise<void> {
     try {
       await this.transporter.sendMail({
-        from: process.env.SMTP_FROM || '"CC Scale" <noreply@ccscale.com>',
+        from: process.env.SMTP_FROM || '"CC Scale" <noreply@zzscale.com>',
         to,
         subject,
         html,
@@ -70,7 +70,7 @@ export class EmailService {
         <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
         <p style="color: #666; font-size: 12px;">
           CC Scale Co., Ltd.<br/>
-          sales@ccscale.com | +86 123 4567 8900
+          sales@zzscale.com | +86 123 4567 8900
         </p>
       </div>
     `;
@@ -86,7 +86,7 @@ export class EmailService {
     message?: string;
     items?: Array<{ productNameEn?: string; productNameZh?: string; quantity?: number }>;
   }): Promise<void> {
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ccscale.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@zzscale.com';
     const safeName = escapeHtml(inquiry.fullName);
     const safeEmail = escapeHtml(inquiry.email);
     const safePhone = inquiry.phone ? escapeHtml(inquiry.phone) : '';

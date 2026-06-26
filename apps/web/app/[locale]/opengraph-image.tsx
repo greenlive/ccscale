@@ -1,4 +1,4 @@
-import { ImageResponse } from "next/og";
+﻿import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt = "CC Scale - Professional Weighing Scale Manufacturer";
@@ -69,7 +69,7 @@ export default function HomeOpenGraphImage({ params }: Props) {
             letterSpacing: "-0.025em",
           }}
         >
-          {isZh ? "专业称重产品源头工厂" : "Professional Weighing Scale Manufacturer"}
+          {isZh ? "涓撲笟绉伴噸浜у搧婧愬ご宸ュ巶" : "Professional Weighing Scale Manufacturer"}
         </div>
 
         {/* Subhead */}
@@ -84,8 +84,8 @@ export default function HomeOpenGraphImage({ params }: Props) {
           }}
         >
           {isZh
-            ? "20+ 年出口经验 · 100+ 国家 · CE/FCC/ROHS 认证 · OEM/ODM 一站式"
-            : "20+ years export experience · 100+ countries · CE/FCC/ROHS certified · OEM/ODM one-stop"}
+            ? "20+ 骞村嚭鍙ｇ粡楠?路 100+ 鍥藉 路 CE/FCC/ROHS 璁よ瘉 路 OEM/ODM 涓€绔欏紡"
+            : "20+ years export experience 路 100+ countries 路 CE/FCC/ROHS certified 路 OEM/ODM one-stop"}
         </div>
 
         {/* Bottom row */}
@@ -106,7 +106,7 @@ export default function HomeOpenGraphImage({ params }: Props) {
             <div>Baby Scales</div>
             <div>Crane Scales</div>
           </div>
-          <div style={{ display: "flex" }}>ccscale.com</div>
+          <div style={{ display: "flex" }}>zzscale.com</div>
         </div>
       </div>
     ),

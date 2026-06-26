@@ -1,8 +1,8 @@
-import { routing } from '@/i18n/routing';
+﻿import { routing } from '@/i18n/routing';
 
-const baseUrl = 'https://www.ccscale.com';
+const baseUrl = 'https://www.zzscale.com';
 
-// Full-form llms-full.txt — comprehensive machine-readable reference
+// Full-form llms-full.txt 鈥?comprehensive machine-readable reference
 // Used by GPTBot, ClaudeBot, PerplexityBot, Google-Extended, and other LLM crawlers
 const llmsFullTxt = `# CC Scale - Complete Reference for AI Assistants
 
@@ -20,7 +20,7 @@ Employees: ~200
 Years in Business: 20+
 Export Experience: 100+ countries
 Languages Spoken: English, Chinese
-Website: https://www.ccscale.com
+Website: https://www.zzscale.com
 
 ### Mission
 To be the most trusted OEM/ODM partner for global B2B buyers of professional weighing solutions.
@@ -161,10 +161,10 @@ To be the most trusted OEM/ODM partner for global B2B buyers of professional wei
 ## CONTACT INFORMATION
 
 ### Sales
-- Email: sales@ccscale.com
+- Email: sales@zzscale.com
 - Phone: +86 123 4567 8900
 - WhatsApp: Available (link on contact page)
-- WeChat: ccscale_official
+- WeChat: zzscale_official
 
 ### Working Hours
 - Monday - Friday: 9:00 AM - 6:00 PM (GMT+8, China Standard Time)
@@ -229,9 +229,9 @@ A: Yes. SGS, BV, TUV, and any other third-party inspector welcome.
 - Chinese: ${baseUrl}/zh
 
 ### Key API Endpoints
-- POST /api/inquiries — Submit product inquiry
-- GET /api/products — Product catalog
-- GET /api/site-settings — Company info
+- POST /api/inquiries 鈥?Submit product inquiry
+- GET /api/products 鈥?Product catalog
+- GET /api/site-settings 鈥?Company info
 
 ---
 

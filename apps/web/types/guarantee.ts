@@ -1,4 +1,4 @@
-export interface GuaranteeSection {
+﻿export interface GuaranteeSection {
   id: string
   icon: string
   titleEn: string
@@ -23,8 +23,8 @@ export interface ComparisonItem {
   categoryZh: string
   normalSupplierEn: string
   normalSupplierZh: string
-  ccScaleEn: string
-  ccScaleZh: string
+  zzScaleEn: string
+  zzScaleZh: string
 }
 
 export interface TrustBadge {

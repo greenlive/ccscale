@@ -1,4 +1,4 @@
-; BIND zone file for ccscale.com
+﻿; BIND zone file for zzscale.com
 ; Import: Cloudflare Dashboard > DNS > Records > Advanced > Import BIND zone file
 ; Replace placeholders with real values before importing.
 
@@ -9,7 +9,7 @@
 www     IN  3600  CNAME cname.vercel-dns.com.
 admin   IN  3600  CNAME cname.vercel-dns.com.
 api     IN  3600  CNAME <railway-cname>.up.railway.app.
-media   IN  3600  CNAME media.ccscale.com.cdn.cloudflare.net.
+media   IN  3600  CNAME media.zzscale.com.cdn.cloudflare.net.
 
 ; 3. MX
 @       IN  3600  MX    10 feedback-smtp.us-east-1.amazonses.com.
@@ -18,7 +18,7 @@ media   IN  3600  CNAME media.ccscale.com.cdn.cloudflare.net.
 @       IN  3600  TXT   "v=spf1 include:amazonses.com ~all"
 
 ; 5. DMARC
-_dmarc  IN  3600  TXT   "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@ccscale.com; pct=100"
+_dmarc  IN  3600  TXT   "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@zzscale.com; pct=100"
 
 ; 6. Resend DKIM (replace with value from Resend dashboard)
 resend._domainkey IN 3600 CNAME resend._domainkey.amazonses.com.

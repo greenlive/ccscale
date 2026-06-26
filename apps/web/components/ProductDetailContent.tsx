@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
@@ -32,7 +32,7 @@ const mockProduct = {
   slug: 'digital-body-scale-bs-200',
   sku: 'BS-200',
   nameEn: 'Digital Body Scale BS-200',
-  nameZh: '数字体重秤 BS-200',
+  nameZh: '鏁板瓧浣撻噸绉?BS-200',
   category: { slug: 'body-scales', name: 'Body Scales' },
   mainImage: 'https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800',
   mainImages: JSON.stringify(['https://images.unsplash.com/photo-1576659531892-8f5b3d7e86f5?w=800']),
@@ -47,7 +47,7 @@ const mockProduct = {
   ],
   videoUrl: '',
   descriptionEn: 'High-precision digital body scale with advanced weighing technology.',
-  descriptionZh: '高精度数字体重秤，采用先进的称重技术。',
+  descriptionZh: '楂樼簿搴︽暟瀛椾綋閲嶇Г锛岄噰鐢ㄥ厛杩涚殑绉伴噸鎶€鏈€?,
   priceMin: 15,
   priceMax: 25,
   moq: 100,
@@ -60,9 +60,9 @@ const mockProduct = {
   factoryDescription: 'Professional weighing equipment manufacturer with complete R&D, production, and sales system.',
   seoKeywordsEn: 'Digital Scale, Body Scale, Bathroom Scale, Weighing Scale, Health Scale, Precision Scale',
   specs: [
-    { id: 1, keyEn: 'Capacity', keyZh: '最大称重', valueEn: '180kg / 400lb', valueZh: '180公斤 / 400磅', order: 0 },
-    { id: 2, keyEn: 'Division', keyZh: '分度值', valueEn: '100g', valueZh: '100克', order: 1 },
-    { id: 3, keyEn: 'Display', keyZh: '显示', valueEn: 'LCD, 3.5"', valueZh: '液晶显示屏, 3.5英寸', order: 2 },
+    { id: 1, keyEn: 'Capacity', keyZh: '鏈€澶хО閲?, valueEn: '180kg / 400lb', valueZh: '180鍏枻 / 400纾?, order: 0 },
+    { id: 2, keyEn: 'Division', keyZh: '鍒嗗害鍊?, valueEn: '100g', valueZh: '100鍏?, order: 1 },
+    { id: 3, keyEn: 'Display', keyZh: '鏄剧ず', valueEn: 'LCD, 3.5"', valueZh: '娑叉櫠鏄剧ず灞? 3.5鑻卞', order: 2 },
   ],
 };
 
@@ -130,10 +130,10 @@ export function ProductDetailContent({ slug }: { slug: string }) {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">
-            {isZh ? '加载产品失败' : 'Failed to load product'}
+            {isZh ? '鍔犺浇浜у搧澶辫触' : 'Failed to load product'}
           </p>
           <Button onClick={() => window.location.reload()} variant="outline">
-            {isZh ? '重试' : 'Try Again'}
+            {isZh ? '閲嶈瘯' : 'Try Again'}
           </Button>
         </div>
       </div>
@@ -160,7 +160,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
           price: priceMin?.toString() || '0',
           priceCurrency: 'USD',
           availability: 'https://schema.org/InStock',
-          url: `https://www.ccscale.com/${locale}/products/${product.slug}`,
+          url: `https://www.zzscale.com/${locale}/products/${product.slug}`,
         }}
         additionalProperty={displaySpecs.map(spec => ({
           name: spec.keyEn,
@@ -173,11 +173,11 @@ export function ProductDetailContent({ slug }: { slug: string }) {
         <div className="container mx-auto px-4 py-3">
           <nav className="text-sm text-gray-500">
             <Link href="/" className="hover:text-primary transition-colors">
-              {isZh ? '首页' : 'Home'}
+              {isZh ? '棣栭〉' : 'Home'}
             </Link>
             <span className="mx-2">/</span>
             <Link href="/products" className="hover:text-primary transition-colors">
-              {isZh ? '产品中心' : 'Products'}
+              {isZh ? '浜у搧涓績' : 'Products'}
             </Link>
             <span className="mx-2">/</span>
             <span className="text-primary">{name}</span>
@@ -210,7 +210,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               />
             )}
 
-            {/* === FEATURE: 产品展示 === */}
+            {/* === FEATURE: 浜у搧灞曠ず === */}
             {/* Key Specifications Cards */}
             {(() => {
               const keySpecKeys = ['Capacity', 'Division', 'Platform Size', 'Power'];
@@ -252,19 +252,19 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               <ProductAttributes
                 specs={displaySpecs}
                 titleEn="Specifications"
-                titleZh="规格参数"
+                titleZh="瑙勬牸鍙傛暟"
               />
             )}
 
-            {/* === ADVANTAGE: 产品优势 === */}
+            {/* === ADVANTAGE: 浜у搧浼樺娍 === */}
             {/* Product Description */}
             <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
               <div className="bg-primary text-white px-4 py-3 font-semibold">
-                {isZh ? '产品描述' : 'Description'}
+                {isZh ? '浜у搧鎻忚堪' : 'Description'}
               </div>
               <div className="p-4">
                 <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                  {description || (isZh ? '暂无详细描述' : 'No description available')}
+                  {description || (isZh ? '鏆傛棤璇︾粏鎻忚堪' : 'No description available')}
                 </p>
               </div>
             </div>
@@ -282,14 +282,14 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             <div className="bg-gradient-to-r from-green-50 via-white to-green-50 border border-green-200 rounded-xl p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Award className="w-5 h-5 text-green-600" />
-                <h3 className="font-bold text-green-700">{isZh ? '为什么选择我们' : 'Why Choose Us'}</h3>
+                <h3 className="font-bold text-green-700">{isZh ? '涓轰粈涔堥€夋嫨鎴戜滑' : 'Why Choose Us'}</h3>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { icon: Factory, title: isZh ? '源头工厂' : 'Manufacturer', desc: product.factoryYears ? `${product.factoryYears}+ ${isZh ? '年' : 'Years'} ${isZh ? '专业生产经验' : 'Professional Experience'}` : '15 Years Professional Experience' },
-                  { icon: Globe, title: isZh ? '全球出口' : 'Global Export', desc: product.factoryCountries ? `${isZh ? '出口到' : 'Export to '}${product.factoryCountries}+ ${isZh ? '国家' : 'Countries'}` : 'Export to 50+ Countries' },
-                  { icon: Leaf, title: isZh ? '环保认证' : 'Eco Certified', desc: isZh ? 'RoHS/REACH合规' : 'RoHS/REACH Compliant' },
-                  { icon: Users, title: isZh ? 'OEM/ODM' : 'OEM/ODM Service', desc: isZh ? '支持定制生产' : 'Custom Production Support' },
+                  { icon: Factory, title: isZh ? '婧愬ご宸ュ巶' : 'Manufacturer', desc: product.factoryYears ? `${product.factoryYears}+ ${isZh ? '骞? : 'Years'} ${isZh ? '涓撲笟鐢熶骇缁忛獙' : 'Professional Experience'}` : '15 Years Professional Experience' },
+                  { icon: Globe, title: isZh ? '鍏ㄧ悆鍑哄彛' : 'Global Export', desc: product.factoryCountries ? `${isZh ? '鍑哄彛鍒? : 'Export to '}${product.factoryCountries}+ ${isZh ? '鍥藉' : 'Countries'}` : 'Export to 50+ Countries' },
+                  { icon: Leaf, title: isZh ? '鐜繚璁よ瘉' : 'Eco Certified', desc: isZh ? 'RoHS/REACH鍚堣' : 'RoHS/REACH Compliant' },
+                  { icon: Users, title: isZh ? 'OEM/ODM' : 'OEM/ODM Service', desc: isZh ? '鏀寔瀹氬埗鐢熶骇' : 'Custom Production Support' },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-3 p-3 bg-white rounded-lg">
                     <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -308,19 +308,19 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             <div className="bg-gradient-to-r from-primary/5 to-transparent border border-gray-200 rounded-xl p-6">
               <h3 className="font-bold text-primary mb-2 flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                {isZh ? 'OEM/ODM 定制服务' : 'OEM/ODM Customization'}
+                {isZh ? 'OEM/ODM 瀹氬埗鏈嶅姟' : 'OEM/ODM Customization'}
               </h3>
               <p className="text-gray-600 text-sm mb-3">
                 {isZh
-                  ? '我们提供全面的OEM/ODM服务，支持Logo定制、包装定制、功能定制等。'
+                  ? '鎴戜滑鎻愪緵鍏ㄩ潰鐨凮EM/ODM鏈嶅姟锛屾敮鎸丩ogo瀹氬埗銆佸寘瑁呭畾鍒躲€佸姛鑳藉畾鍒剁瓑銆?
                   : 'We provide full OEM/ODM services including logo customization, packaging design, and feature modifications.'}
               </p>
               <Link href="/oem-odm" className="text-primary text-sm font-medium hover:underline">
-                {isZh ? '查看定制流程 →' : 'View Customization Process →'}
+                {isZh ? '鏌ョ湅瀹氬埗娴佺▼ 鈫? : 'View Customization Process 鈫?}
               </Link>
             </div>
 
-            {/* === TRUST: 信任背书 === */}
+            {/* === TRUST: 淇′换鑳屼功 === */}
             {/* Certifications */}
             {(product as any).certifications ? (
               <ProductCertifications certifications={(product as any).certifications} />
@@ -330,24 +330,24 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             <div className="bg-gradient-to-r from-blue-50 via-white to-blue-50 border border-blue-200 rounded-xl p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Factory className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-blue-700">{isZh ? '工厂实力' : 'Factory Capabilities'}</h3>
+                <h3 className="font-bold text-blue-700">{isZh ? '宸ュ巶瀹炲姏' : 'Factory Capabilities'}</h3>
               </div>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center p-3 bg-white rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{product.factoryYears || 15}+</div>
-                  <div className="text-xs text-gray-500">{isZh ? '年行业经验' : 'Years Experience'}</div>
+                  <div className="text-xs text-gray-500">{isZh ? '骞磋涓氱粡楠? : 'Years Experience'}</div>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{product.factoryCapacity || '50K+'}</div>
-                  <div className="text-xs text-gray-500">{isZh ? '年产能(台)' : 'Annual Capacity'}</div>
+                  <div className="text-xs text-gray-500">{isZh ? '骞翠骇鑳?鍙?' : 'Annual Capacity'}</div>
                 </div>
                 <div className="text-center p-3 bg-white rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{product.factoryCountries || 50}+</div>
-                  <div className="text-xs text-gray-500">{isZh ? '出口国家' : 'Export Countries'}</div>
+                  <div className="text-xs text-gray-500">{isZh ? '鍑哄彛鍥藉' : 'Export Countries'}</div>
                 </div>
               </div>
               <div className="text-sm text-gray-600">
-                <p>{product.factoryDescription || (isZh ? '专业衡器制造商，拥有完整的研发、生产、销售体系。产品远销欧洲、北美、东南亚等地区。' : 'Professional weighing equipment manufacturer with complete R&D, production, and sales system. Products exported to Europe, North America, Southeast Asia, and more.')}</p>
+                <p>{product.factoryDescription || (isZh ? '涓撲笟琛″櫒鍒堕€犲晢锛屾嫢鏈夊畬鏁寸殑鐮斿彂銆佺敓浜с€侀攢鍞綋绯汇€備骇鍝佽繙閿€娆ф床銆佸寳缇庛€佷笢鍗椾簹绛夊湴鍖恒€? : 'Professional weighing equipment manufacturer with complete R&D, production, and sales system. Products exported to Europe, North America, Southeast Asia, and more.')}</p>
               </div>
             </div>
 
@@ -356,7 +356,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
               cases={(product as any).customerCases}
             />
 
-            {/* === TRANSACTION: 交易条件 === */}
+            {/* === TRANSACTION: 浜ゆ槗鏉′欢 === */}
             {/* Trade Info */}
             <ProductTradeInfo
               hsCode={(product as any).hsCode}
@@ -369,7 +369,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Globe className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold text-primary text-sm">{isZh ? '热门搜索词' : 'Trade Keywords'}</h3>
+                <h3 className="font-semibold text-primary text-sm">{isZh ? '鐑棬鎼滅储璇? : 'Trade Keywords'}</h3>
               </div>
               <div className="flex flex-wrap gap-2">
                 {(product.seoKeywordsEn ? product.seoKeywordsEn.split(',').map(k => k.trim()) : ['Digital Scale', 'Body Scale', 'Bathroom Scale', 'Weighing Scale', 'Health Scale', 'Precision Scale', 'Electronic Scale', 'Smart Scale']).map((keyword) => (
@@ -388,11 +388,11 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             <div className="bg-gradient-to-r from-green-50 to-transparent border border-green-200 rounded-xl p-6">
               <h3 className="font-bold text-green-700 mb-2 flex items-center gap-2">
                 <Shield className="w-5 h-5" />
-                {isZh ? '质量控制' : 'Quality Control Process'}
+                {isZh ? '璐ㄩ噺鎺у埗' : 'Quality Control Process'}
               </h3>
               <p className="text-gray-600 text-sm">
                 {isZh
-                  ? '每个产品在包装前都会经过全量程校准(Full Calibration)和72小时老化测试(Aging Test)，确保产品性能稳定。'
+                  ? '姣忎釜浜у搧鍦ㄥ寘瑁呭墠閮戒細缁忚繃鍏ㄩ噺绋嬫牎鍑?Full Calibration)鍜?2灏忔椂鑰佸寲娴嬭瘯(Aging Test)锛岀‘淇濅骇鍝佹€ц兘绋冲畾銆?
                   : 'Every product undergoes Full Calibration and 72-hour Aging Test before packaging to ensure stable performance.'}
               </p>
             </div>
@@ -401,11 +401,11 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             <div className="bg-gradient-to-r from-blue-50 to-transparent border border-blue-200 rounded-xl p-6">
               <h3 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
                 <Truck className="w-5 h-5" />
-                {isZh ? '物流与包装' : 'Shipping & Packaging'}
+                {isZh ? '鐗╂祦涓庡寘瑁? : 'Shipping & Packaging'}
               </h3>
               <p className="text-gray-600 text-sm">
                 {isZh
-                  ? '采用加固出口包装（多层泡沫保护+强化纸箱），适合长途海运和空运，有效防损。'
+                  ? '閲囩敤鍔犲浐鍑哄彛鍖呰锛堝灞傛场娌繚鎶?寮哄寲绾哥锛夛紝閫傚悎闀块€旀捣杩愬拰绌鸿繍锛屾湁鏁堥槻鎹熴€?
                   : 'Reinforced export packaging with multi-layer foam protection and reinforced cartons, suitable for long-distance sea and air freight.'}
               </p>
             </div>
@@ -426,7 +426,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             {relatedProducts && relatedProducts.length > 0 && (
               <div className="mt-8 pt-8 border-t border-gray-200">
                 <h2 className="text-lg font-bold text-primary mb-4">
-                  {isZh ? '其他产品推荐' : 'You May Also Like'}
+                  {isZh ? '鍏朵粬浜у搧鎺ㄨ崘' : 'You May Also Like'}
                 </h2>
                 <div className="grid grid-cols-4 gap-2">
                   {relatedProducts.map((related) => {
@@ -481,7 +481,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             <div className="bg-white border border-gray-200 rounded-xl p-6">
               <div className="text-sm text-gray-500 mb-2">
                 {(isZh
-                  ? ((product.category as any)?.nameZh || (product.category as any)?.name || '产品分类')
+                  ? ((product.category as any)?.nameZh || (product.category as any)?.name || '浜у搧鍒嗙被')
                   : ((product.category as any)?.nameEn || (product.category as any)?.name || 'Product')
                 )}
               </div>
@@ -492,7 +492,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                 <span>SKU: {product.sku}</span>
                 {product.isFeatured && (
                   <span className="bg-primary text-white px-2 py-0.5 rounded text-xs">
-                    {isZh ? '精选' : 'Featured'}
+                    {isZh ? '绮鹃€? : 'Featured'}
                   </span>
                 )}
               </div>
@@ -500,16 +500,16 @@ export function ProductDetailContent({ slug }: { slug: string }) {
 
             {/* Quick Price Info */}
             <div className="bg-primary text-white rounded-xl p-6">
-              <div className="text-sm mb-2 opacity-80">{isZh ? 'FOB 价格' : 'FOB Price'}</div>
+              <div className="text-sm mb-2 opacity-80">{isZh ? 'FOB 浠锋牸' : 'FOB Price'}</div>
               <div className="text-3xl font-bold mb-1">{priceDisplay}</div>
-              <div className="text-sm opacity-80">/ {isZh ? '件 (USD)' : 'pc (USD)'}</div>
+              <div className="text-sm opacity-80">/ {isZh ? '浠?(USD)' : 'pc (USD)'}</div>
               <div className="mt-3 pt-3 border-t border-white/20">
                 <div className="flex justify-between text-sm">
-                  <span>{isZh ? '最小起订量' : 'MOQ'}:</span>
-                  <span className="font-semibold">{product.moq} {isZh ? '件' : 'pcs'}</span>
+                  <span>{isZh ? '鏈€灏忚捣璁㈤噺' : 'MOQ'}:</span>
+                  <span className="font-semibold">{product.moq} {isZh ? '浠? : 'pcs'}</span>
                 </div>
                 <div className="flex justify-between text-sm mt-1">
-                  <span>{isZh ? '交期' : 'Lead Time'}:</span>
+                  <span>{isZh ? '浜ゆ湡' : 'Lead Time'}:</span>
                   <span className="font-semibold">{product.leadTime}</span>
                 </div>
               </div>
@@ -540,7 +540,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   className="relative w-full bg-gradient-to-r from-primary to-primary/90 text-white font-bold py-4 px-6 rounded-xl hover:from-primary/90 hover:to-primary/80 shadow-lg hover:shadow-xl transition-all duration-300 text-base"
                 />
               </div>
-              <p className="text-xs text-center text-gray-500">{isZh ? '通常在2小时内回复' : 'Typically replies within 2 hours'}</p>
+              <p className="text-xs text-center text-gray-500">{isZh ? '閫氬父鍦?灏忔椂鍐呭洖澶? : 'Typically replies within 2 hours'}</p>
 
               <div className="grid grid-cols-3 gap-3">
                 <button
@@ -552,11 +552,11 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                   }`}
                 >
                   <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
-                  <span className="text-sm">{isZh ? '收藏' : 'Favorite'}</span>
+                  <span className="text-sm">{isZh ? '鏀惰棌' : 'Favorite'}</span>
                 </button>
                 <button className="flex items-center justify-center gap-2 py-3 rounded-lg border border-gray-300 hover:border-primary text-gray-600 hover:text-primary transition-colors">
                   <Share2 className="w-4 h-4" />
-                  <span className="text-sm">{isZh ? '分享' : 'Share'}</span>
+                  <span className="text-sm">{isZh ? '鍒嗕韩' : 'Share'}</span>
                 </button>
                 <a
                   href={`https://wa.me/8612345678900?text=${encodeURIComponent(`${name} - ${product.sku}`)}`}
@@ -578,10 +578,10 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                 </div>
                 <div>
                   <div className="font-semibold text-gray-800 text-sm">
-                    {isZh ? '样品服务' : 'Sample Service'}
+                    {isZh ? '鏍峰搧鏈嶅姟' : 'Sample Service'}
                   </div>
                   <div className="text-xs text-gray-500 mt-0.5">
-                    {isZh ? '支持样品订单，3-5个工作日发出' : 'Sample orders available, ships in 3-5 business days'}
+                    {isZh ? '鏀寔鏍峰搧璁㈠崟锛?-5涓伐浣滄棩鍙戝嚭' : 'Sample orders available, ships in 3-5 business days'}
                   </div>
                 </div>
               </div>
@@ -591,10 +591,10 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                 </div>
                 <div>
                   <div className="font-semibold text-gray-800 text-sm">
-                    {isZh ? '质量保障' : 'Quality Assurance'}
+                    {isZh ? '璐ㄩ噺淇濋殰' : 'Quality Assurance'}
                   </div>
                   <div className="text-xs text-gray-500 mt-0.5">
-                    {isZh ? '12个月质保期，支持第三方验货' : '12-month warranty, third-party inspection supported'}
+                    {isZh ? '12涓湀璐ㄤ繚鏈燂紝鏀寔绗笁鏂归獙璐? : '12-month warranty, third-party inspection supported'}
                   </div>
                 </div>
               </div>
@@ -608,15 +608,15 @@ export function ProductDetailContent({ slug }: { slug: string }) {
                 </div>
                 <div>
                   <div className="font-semibold text-primary">{companyName}</div>
-                  <div className="text-sm text-gray-500">{isZh ? '认证制造商' : 'Verified Manufacturer'}</div>
+                  <div className="text-sm text-gray-500">{isZh ? '璁よ瘉鍒堕€犲晢' : 'Verified Manufacturer'}</div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { icon: Shield, text: isZh ? '品质保证' : 'Quality Assured' },
-                  { icon: Clock, text: isZh ? '快速响应' : 'Fast Response' },
-                  { icon: DollarSign, text: isZh ? '支持定制' : 'Customizable' },
-                  { icon: Settings, text: isZh ? '出口认证' : 'Export Ready' },
+                  { icon: Shield, text: isZh ? '鍝佽川淇濊瘉' : 'Quality Assured' },
+                  { icon: Clock, text: isZh ? '蹇€熷搷搴? : 'Fast Response' },
+                  { icon: DollarSign, text: isZh ? '鏀寔瀹氬埗' : 'Customizable' },
+                  { icon: Settings, text: isZh ? '鍑哄彛璁よ瘉' : 'Export Ready' },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-sm text-gray-600">
                     <CheckCircle className="w-4 h-4 text-green-500" />
@@ -628,11 +628,11 @@ export function ProductDetailContent({ slug }: { slug: string }) {
 
             {/* Contact */}
             <div className="bg-primary rounded-xl p-4 text-white">
-              <div className="text-sm mb-3 opacity-80">{isZh ? '有问题想咨询？' : 'Have questions?'}</div>
+              <div className="text-sm mb-3 opacity-80">{isZh ? '鏈夐棶棰樻兂鍜ㄨ锛? : 'Have questions?'}</div>
               <div className="flex flex-col gap-2">
-                <a href="mailto:sales@ccscale.com" className="flex items-center gap-2 hover:text-warm-silver transition-colors">
+                <a href="mailto:sales@zzscale.com" className="flex items-center gap-2 hover:text-warm-silver transition-colors">
                   <Mail className="w-5 h-5" />
-                  <span className="text-sm">sales@ccscale.com</span>
+                  <span className="text-sm">sales@zzscale.com</span>
                 </a>
                 <a href="tel:+8612345678900" className="flex items-center gap-2 hover:text-warm-silver transition-colors">
                   <Phone className="w-5 h-5" />
@@ -680,7 +680,7 @@ export function ProductDetailContent({ slug }: { slug: string }) {
             />
             <div>
               <div className="font-bold text-primary">{name}</div>
-              <div className="text-sm text-gray-500">{priceDisplay} / {isZh ? '件' : 'pc'}</div>
+              <div className="text-sm text-gray-500">{priceDisplay} / {isZh ? '浠? : 'pc'}</div>
             </div>
           </div>
           <div className="flex gap-3">

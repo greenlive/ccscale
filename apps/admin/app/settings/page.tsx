@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Save, Globe, Mail, Phone, MessageCircle, Facebook, Linkedin, Youtube, Instagram, Twitter, Image, Video, Heart, Building, Shield } from 'lucide-react';
@@ -129,7 +129,7 @@ export default function SettingsPage() {
     fetchSettings();
   }, []);
 
-  useEffect(() => { document.title = 'CC Scale 管理后台 - 系统设置'; }, []);
+  useEffect(() => { document.title = 'CC Scale 绠＄悊鍚庡彴 - 绯荤粺璁剧疆'; }, []);
 
   const fetchSettings = async () => {
     try {
@@ -194,8 +194,8 @@ export default function SettingsPage() {
       <AdminLayout>
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A1628]">系统设置</h1>
-            <p className="text-gray-600">管理网站配置</p>
+            <h1 className="text-3xl font-bold text-[#0A1628]">绯荤粺璁剧疆</h1>
+            <p className="text-gray-600">绠＄悊缃戠珯閰嶇疆</p>
           </div>
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-4 border-accent border-t-transparent"></div>
@@ -210,8 +210,8 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A1628]">系统设置</h1>
-            <p className="text-gray-600">管理网站配置</p>
+            <h1 className="text-3xl font-bold text-[#0A1628]">绯荤粺璁剧疆</h1>
+            <p className="text-gray-600">绠＄悊缃戠珯閰嶇疆</p>
           </div>
           <Button
             className="bg-accent hover:bg-accent/90"
@@ -219,7 +219,7 @@ export default function SettingsPage() {
             disabled={saving}
           >
             <Save className="mr-2 h-4 w-4" />
-            {saving ? '保存中...' : '保存设置'}
+            {saving ? '淇濆瓨涓?..' : '淇濆瓨璁剧疆'}
           </Button>
         </div>
 
@@ -262,11 +262,11 @@ export default function SettingsPage() {
         {activeTab === 'basic' && (
           <Card>
             <CardHeader>
-              <CardTitle>Basic Settings / 基本设置</CardTitle>
+              <CardTitle>Basic Settings / 鍩烘湰璁剧疆</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900 border-b pb-2">Company Name / 公司名称</h3>
+                <h3 className="font-medium text-gray-900 border-b pb-2">Company Name / 鍏徃鍚嶇О</h3>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Company Name (English)
@@ -279,12 +279,12 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    公司名称
+                    鍏徃鍚嶇О
                   </label>
                   <Input
                     value={settings.companyNameZh}
                     onChange={(e) => handleChange('companyNameZh', e.target.value)}
-                    placeholder="CC衡器有限公司"
+                    placeholder="CC琛″櫒鏈夐檺鍏徃"
                   />
                 </div>
               </div>
@@ -316,27 +316,27 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900 border-b pb-2">中文</h3>
+                <h3 className="font-medium text-gray-900 border-b pb-2">涓枃</h3>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    网站名称
+                    缃戠珯鍚嶇О
                   </label>
                   <Input
                     value={settings.siteNameZh}
                     onChange={(e) => handleChange('siteNameZh', e.target.value)}
-                    placeholder="CC衡器"
+                    placeholder="CC琛″櫒"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    网站描述
+                    缃戠珯鎻忚堪
                   </label>
                   <textarea
                     value={settings.siteDescriptionZh}
                     onChange={(e) => handleChange('siteDescriptionZh', e.target.value)}
                     rows={3}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent"
-                    placeholder="专业衡器制造商..."
+                    placeholder="涓撲笟琛″櫒鍒堕€犲晢..."
                   />
                 </div>
               </div>
@@ -349,7 +349,7 @@ export default function SettingsPage() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle>Company Logo & Banner / 公司Logo和横幅</CardTitle>
+                <CardTitle>Company Logo & Banner / 鍏徃Logo鍜屾í骞?/CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <ImageUploadField
@@ -374,7 +374,7 @@ export default function SettingsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Company Video / 公司介绍视频</CardTitle>
+                <CardTitle>Company Video / 鍏徃浠嬬粛瑙嗛</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
@@ -410,7 +410,7 @@ export default function SettingsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Company Photos / 公司图片</CardTitle>
+                <CardTitle>Company Photos / 鍏徃鍥剧墖</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <MultiImageUpload
@@ -430,7 +430,7 @@ export default function SettingsPage() {
         {activeTab === 'contact' && (
           <Card>
             <CardHeader>
-              <CardTitle>Contact Information / 联系方式</CardTitle>
+              <CardTitle>Contact Information / 鑱旂郴鏂瑰紡</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -443,7 +443,7 @@ export default function SettingsPage() {
                     type="email"
                     value={settings.contactEmail}
                     onChange={(e) => handleChange('contactEmail', e.target.value)}
-                    placeholder="sales@ccscale.com"
+                    placeholder="sales@zzscale.com"
                   />
                 </div>
                 <div>
@@ -471,7 +471,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900 border-b pb-2">Address / 地址</h3>
+                <h3 className="font-medium text-gray-900 border-b pb-2">Address / 鍦板潃</h3>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Address (English)
@@ -484,18 +484,18 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    地址 (中文)
+                    鍦板潃 (涓枃)
                   </label>
                   <Input
                     value={settings.contactAddressZh}
                     onChange={(e) => handleChange('contactAddressZh', e.target.value)}
-                    placeholder="深圳市工业区123号"
+                    placeholder="娣卞湷甯傚伐涓氬尯123鍙?
                   />
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900 border-b pb-2">Working Hours / 工作时间</h3>
+                <h3 className="font-medium text-gray-900 border-b pb-2">Working Hours / 宸ヤ綔鏃堕棿</h3>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Working Hours (English)
@@ -508,12 +508,12 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    工作时间 (中文)
+                    宸ヤ綔鏃堕棿 (涓枃)
                   </label>
                   <Input
                     value={settings.contactWorkingHoursZh}
                     onChange={(e) => handleChange('contactWorkingHoursZh', e.target.value)}
-                    placeholder="周一至周五 9:00-18:00"
+                    placeholder="鍛ㄤ竴鑷冲懆浜?9:00-18:00"
                   />
                 </div>
               </div>
@@ -525,7 +525,7 @@ export default function SettingsPage() {
         {activeTab === 'social' && (
           <Card>
             <CardHeader>
-              <CardTitle>Social Media Links / 社交媒体链接</CardTitle>
+              <CardTitle>Social Media Links / 绀句氦濯掍綋閾炬帴</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -587,7 +587,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="border-t pt-6 space-y-4">
-                <h3 className="font-medium text-gray-900">B2B Platforms / B2B平台</h3>
+                <h3 className="font-medium text-gray-900">B2B Platforms / B2B骞冲彴</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -616,7 +616,7 @@ export default function SettingsPage() {
               <div className="border-t pt-6 space-y-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Heart className="h-5 w-5 text-red-500" />
-                  <h3 className="font-medium text-gray-900">Social Media Content Showcase / 社交媒体内容展示</h3>
+                  <h3 className="font-medium text-gray-900">Social Media Content Showcase / 绀句氦濯掍綋鍐呭灞曠ず</h3>
                 </div>
                 <p className="text-sm text-gray-500 bg-blue-50 p-3 rounded-lg">
                   Add curated content URLs to showcase on the homepage. Only platforms with content URLs configured will be displayed. Leave empty to hide.
@@ -702,17 +702,16 @@ export default function SettingsPage() {
         {activeTab === 'legal' && (
           <Card>
             <CardHeader>
-              <CardTitle>Legal Settings / 法律信息</CardTitle>
+              <CardTitle>Legal Settings / 娉曞緥淇℃伅</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  ICP Filing Number / ICP备案号
-                </label>
+                  ICP Filing Number / ICP澶囨鍙?                </label>
                 <Input
                   value={settings.icpNumber}
                   onChange={(e) => handleChange('icpNumber', e.target.value)}
-                  placeholder="浙ICP备XXXXXXXX号"
+                  placeholder="娴橧CP澶嘪XXXXXXX鍙?
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Shown in the website footer. Chinese website ICP filing number.

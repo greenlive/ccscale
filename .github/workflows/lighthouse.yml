@@ -1,4 +1,4 @@
-name: lighthouse
+﻿name: lighthouse
 
 on:
   workflow_dispatch:
@@ -38,9 +38,9 @@ jobs:
         run: |
           mkdir -p lighthouse-reports
           node scripts/lighthouse/run.mjs \
-            https://www.ccscale.com/en \
-            https://www.ccscale.com/zh \
-            https://www.ccscale.com/en/products
+            https://www.zzscale.com/en \
+            https://www.zzscale.com/zh \
+            https://www.zzscale.com/en/products
 
       - name: Upload reports
         if: always()

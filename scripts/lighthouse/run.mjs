@@ -1,11 +1,11 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // scripts/lighthouse/run.mjs
 // Run Lighthouse on one or more URLs and assert score thresholds.
 // Requires: `lighthouse` (npm i -g lighthouse OR npx -y lighthouse)
 // Usage:
-//   node scripts/lighthouse/run.mjs https://www.ccscale.com
-//   LH_THRESHOLDS=0.95 node scripts/lighthouse/run.mjs https://www.ccscale.com https://www.ccscale.com/en/products
-//   LH_CHROME_PATH=/usr/bin/google-chrome node scripts/lighthouse/run.mjs https://www.ccscale.com
+//   node scripts/lighthouse/run.mjs https://www.zzscale.com
+//   LH_THRESHOLDS=0.95 node scripts/lighthouse/run.mjs https://www.zzscale.com https://www.zzscale.com/en/products
+//   LH_CHROME_PATH=/usr/bin/google-chrome node scripts/lighthouse/run.mjs https://www.zzscale.com
 
 import { spawn } from "node:child_process";
 import { mkdirSync, existsSync, writeFileSync } from "node:fs";

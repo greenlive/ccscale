@@ -1,4 +1,4 @@
-{
+﻿{
   \"_comment\": \"Cloudflare Rules (Lists + Rulesets) for CC Scale. Apply via API:\",
   \"_comment2\": \"  curl -X PUT -H 'Authorization: Bearer <CF_TOKEN>' -H 'Content-Type: application/json'\",
   \"_comment3\": \"  --data @dashboard-rules-import.json\",
@@ -6,11 +6,11 @@
   \"redirect_rules\": [
     {
       \"name\": \"apex-to-www\",
-      \"description\": \"301 redirect ccscale.com to www.ccscale.com\",
-      \"expression\": \"http.host eq \\\"ccscale.com\\\"\",
+      \"description\": \"301 redirect zzscale.com to www.zzscale.com\",
+      \"expression\": \"http.host eq \\\"zzscale.com\\\"\",
       \"action\": \"redirect\",
       \"status_code\": 301,
-      \"target_url\": \"https://www.ccscale.com\\\",
+      \"target_url\": \"https://www.zzscale.com\\\",
       \"preserve_query_string\": true
     },
     {
@@ -24,11 +24,11 @@
     },
     {
       \"name\": \"admin-on-www-to-subdomain\",
-      \"description\": \"Move /admin* from www to admin.ccscale.com\",
-      \"expression\": \"http.host eq \\\"www.ccscale.com\\\" and starts_with(http.request.uri.path, \\\"/admin\\\")\",
+      \"description\": \"Move /admin* from www to admin.zzscale.com\",
+      \"expression\": \"http.host eq \\\"www.zzscale.com\\\" and starts_with(http.request.uri.path, \\\"/admin\\\")\",
       \"action\": \"redirect\",
       \"status_code\": 301,
-      \"target_url\": \"https://admin.ccscale.com\\\",
+      \"target_url\": \"https://admin.zzscale.com\\\",
       \"preserve_query_string\": true
     }
   ],
@@ -36,7 +36,7 @@
     {
       \"name\": \"cache-r2-media\",
       \"description\": \"Aggressive cache for product images\",
-      \"expression\": \"http.host eq \\\"media.ccscale.com\\\"\",
+      \"expression\": \"http.host eq \\\"media.zzscale.com\\\"\",
       \"action\": \"set_cache_settings\",
       \"edge_ttl\": 2592000,
       \"browser_ttl\": 2592000,
@@ -45,7 +45,7 @@
     {
       \"name\": \"cache-next-static\",
       \"description\": \"Immutable cache for _next/static/*\",
-      \"expression\": \"http.host eq \\\"www.ccscale.com\\\" and starts_with(http.request.uri.path, \\\"/_next/static/\\\")\",
+      \"expression\": \"http.host eq \\\"www.zzscale.com\\\" and starts_with(http.request.uri.path, \\\"/_next/static/\\\")\",
       \"action\": \"set_cache_settings\",
       \"edge_ttl\": 31536000,
       \"browser_ttl\": 31536000,
@@ -56,7 +56,7 @@
     {
       \"name\": \"rate-limit-inquiry\",
       \"description\": \"Inquiry POST 10/min/IP\",
-      \"expression\": \"http.host eq \\\"api.ccscale.com\\\" and http.request.uri.path eq \\\"/api/inquiries\\\" and http.request.method eq \\\"POST\\\"\",
+      \"expression\": \"http.host eq \\\"api.zzscale.com\\\" and http.request.uri.path eq \\\"/api/inquiries\\\" and http.request.method eq \\\"POST\\\"\",
       \"action\": \"block\",
       \"status_code\": 429,
       \"characteristics\": [\"ip.src\"],
@@ -67,7 +67,7 @@
     {
       \"name\": \"rate-limit-auth\",
       \"description\": \"Auth 5/min/IP\",
-      \"expression\": \"http.host eq \\\"api.ccscale.com\\\" and starts_with(http.request.uri.path, \\\"/api/auth\\\")\",
+      \"expression\": \"http.host eq \\\"api.zzscale.com\\\" and starts_with(http.request.uri.path, \\\"/api/auth\\\")\",
       \"action\": \"block\",
       \"status_code\": 429,
       \"characteristics\": [\"ip.src\"],

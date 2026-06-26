@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "regions": [
@@ -28,7 +28,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://*.googletagmanager.com https://*.google-analytics.com https://*.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://media.ccscale.com https://*.ccscale.com https://*.google-analytics.com https://*.googletagmanager.com; media-src 'self' https://media.ccscale.com blob:; connect-src 'self' https://api.ccscale.com https://*.ccscale.com https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.sentry.io wss:; frame-src 'self' https://challenges.cloudflare.com https://www.google.com https://www.youtube.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.ccscale.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://*.googletagmanager.com https://*.google-analytics.com https://*.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://media.zzscale.com https://*.zzscale.com https://*.google-analytics.com https://*.googletagmanager.com; media-src 'self' https://media.zzscale.com blob:; connect-src 'self' https://api.zzscale.com https://*.zzscale.com https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.sentry.io wss:; frame-src 'self' https://challenges.cloudflare.com https://www.google.com https://www.youtube.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.zzscale.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
         }
       ]
     },
@@ -93,29 +93,29 @@
   "rewrites": [
     {
       "source": "/api/products",
-      "destination": "https://api.ccscale.com/api/products"
+      "destination": "https://api.zzscale.com/api/products"
     },
     {
       "source": "/api/inquiries",
-      "destination": "https://api.ccscale.com/api/inquiries"
+      "destination": "https://api.zzscale.com/api/inquiries"
     },
     {
       "source": "/api/auth/:path*",
-      "destination": "https://api.ccscale.com/api/auth/:path*"
+      "destination": "https://api.zzscale.com/api/auth/:path*"
     },
     {
       "source": "/api/upload/:path*",
-      "destination": "https://api.ccscale.com/api/upload/:path*"
+      "destination": "https://api.zzscale.com/api/upload/:path*"
     },
     {
       "source": "/uploads/:path*",
-      "destination": "https://media.ccscale.com/:path*"
+      "destination": "https://media.zzscale.com/:path*"
     }
   ],
   "redirects": [
     {
       "source": "/admin",
-      "destination": "https://admin.ccscale.com",
+      "destination": "https://admin.zzscale.com",
       "statusCode": 302,
       "permanent": false
     }

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+﻿import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 
@@ -27,10 +27,10 @@ async function main() {
     console.log(`[seed] Generated admin password (write this down): ${adminPassword}`);
   }
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@ccscale.com' },
+    where: { email: 'admin@zzscale.com' },
     update: {},
     create: {
-      email: 'admin@ccscale.com',
+      email: 'admin@zzscale.com',
       password: await bcrypt.hash(adminPassword, 12),
       name: 'Admin User',
       role: 'ADMIN',
@@ -44,7 +44,7 @@ async function main() {
     console.log(`[seed] Generated editor password (write this down): ${editorPassword}`);
   }
   const editor = await prisma.user.upsert({
-    where: { email: 'editor@ccscale.com' },
+    where: { email: 'editor@zzscale.com' },
     update: {},
     create: {
-      email: 'editor@ccscale.com',
+      email: 'editor@zzscale.com',

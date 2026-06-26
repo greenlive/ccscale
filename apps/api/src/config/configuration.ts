@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Centralized config loader with environment variable validation.
  *
  * Use `getEnv(name)` to read env vars; it throws in production if a
@@ -38,13 +38,13 @@ const configuration = () => ({
   port: getEnvNumber("PORT", 8000),
   nodeEnv: process.env.NODE_ENV || "development",
   database: {
-    url: getEnv("DATABASE_URL", isProd ? undefined : "postgresql://ccscale:ccscale123@localhost:5432/ccscale"),
+    url: getEnv("DATABASE_URL", isProd ? undefined : "postgresql://zzscale:zzscale123@localhost:5432/zzscale"),
   },
   redis: {
     url: getEnv("REDIS_URL", isProd ? undefined : "redis://localhost:6379"),
   },
   cors: {
-    origin: getEnv("CORS_ORIGIN", isProd ? "https://www.ccscale.com" : "http://localhost:3000"),
+    origin: getEnv("CORS_ORIGIN", isProd ? "https://www.zzscale.com" : "http://localhost:3000"),
   },
   jwt: {
     secret: jwtSecret,
@@ -64,7 +64,7 @@ const configuration = () => ({
   cookie: {
     secure: isProd,
     sameSite: (isProd ? "none" : "lax") as "none" | "lax",
-    domain: getEnv("COOKIE_DOMAIN", isProd ? ".ccscale.com" : undefined),
+    domain: getEnv("COOKIE_DOMAIN", isProd ? ".zzscale.com" : undefined),
   },
   turnstile: {
     siteKey: getEnv("TURNSTILE_SITE_KEY", ""),

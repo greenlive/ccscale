@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
@@ -22,12 +22,12 @@ export default function ContactPageContent() {
       <section className="bg-primary text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {locale === 'en' ? (pageData?.titleEn || 'Contact Us') : (pageData?.titleZh || '联系我们')}
+            {locale === 'en' ? (pageData?.titleEn || 'Contact Us') : (pageData?.titleZh || '鑱旂郴鎴戜滑')}
           </h1>
           <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {contactInfo?.heroSubtitle?.[locale] || (locale === 'en'
               ? 'Get in touch with us for inquiries, quotes, or technical support'
-              : '与我们联系以获取询盘、报价或技术支持')}
+              : '涓庢垜浠仈绯讳互鑾峰彇璇㈢洏銆佹姤浠锋垨鎶€鏈敮鎸?)}
           </p>
         </div>
       </section>
@@ -39,7 +39,7 @@ export default function ContactPageContent() {
             {/* Contact Information */}
             <div className="lg:col-span-1">
               <h2 className="text-2xl font-bold mb-8 text-primary">
-                {locale === 'en' ? 'Contact Information' : '联系信息'}
+                {locale === 'en' ? 'Contact Information' : '鑱旂郴淇℃伅'}
               </h2>
 
               <div className="space-y-6">
@@ -49,7 +49,7 @@ export default function ContactPageContent() {
                   </div>
                   <div className="ml-4">
                     <h3 className="font-semibold text-primary mb-1">
-                      {locale === 'en' ? 'Address' : '地址'}
+                      {locale === 'en' ? 'Address' : '鍦板潃'}
                     </h3>
                     <p className="text-gray-600">
                       {contactInfo?.address?.[locale] || (
@@ -69,13 +69,13 @@ export default function ContactPageContent() {
                   </div>
                   <div className="ml-4">
                     <h3 className="font-semibold text-primary mb-1">
-                      {locale === 'en' ? 'Email' : '邮箱'}
+                      {locale === 'en' ? 'Email' : '閭'}
                     </h3>
                     <p className="text-gray-600">
                       {contactInfo?.email?.[locale] || (
                         <>
-                          sales@ccscale.com<br />
-                          support@ccscale.com
+                          sales@zzscale.com<br />
+                          support@zzscale.com
                         </>
                       )}
                     </p>
@@ -88,7 +88,7 @@ export default function ContactPageContent() {
                   </div>
                   <div className="ml-4">
                     <h3 className="font-semibold text-primary mb-1">
-                      {locale === 'en' ? 'Phone' : '电话'}
+                      {locale === 'en' ? 'Phone' : '鐢佃瘽'}
                     </h3>
                     <p className="text-gray-600">
                       {contactInfo?.phone?.[locale] || (
@@ -107,12 +107,12 @@ export default function ContactPageContent() {
                   </div>
                   <div className="ml-4">
                     <h3 className="font-semibold text-primary mb-1">
-                      {locale === 'en' ? 'Business Hours' : '工作时间'}
+                      {locale === 'en' ? 'Business Hours' : '宸ヤ綔鏃堕棿'}
                     </h3>
                     <p className="text-gray-600">
                       {contactInfo?.hours?.[locale] || (
                         <>
-                          {locale === 'en' ? 'Monday - Friday' : '周一 - 周五'}<br />
+                          {locale === 'en' ? 'Monday - Friday' : '鍛ㄤ竴 - 鍛ㄤ簲'}<br />
                           9:00 - 18:00 (GMT+8)
                         </>
                       )}
@@ -126,7 +126,7 @@ export default function ContactPageContent() {
                 <div className="aspect-[4/3] bg-gray-100 rounded-lg flex items-center justify-center">
                   <div className="text-center text-gray-400">
                     <Globe className="h-12 w-12 mx-auto mb-2" />
-                    <p>{locale === 'en' ? 'Interactive Map' : '交互式地图'}</p>
+                    <p>{locale === 'en' ? 'Interactive Map' : '浜や簰寮忓湴鍥?}</p>
                   </div>
                 </div>
               </div>
@@ -152,18 +152,18 @@ export default function ContactPageContent() {
                   <p className="text-sm text-muted mb-4">
                     {locale === 'en'
                       ? 'Use our Request Quote feature to select products and submit an inquiry with your requirements. Our team will respond within 24 hours.'
-                      : '使用我们的"Request Quote"功能选择产品并提交询盘。我们的团队将在24小时内回复。'}
+                      : '浣跨敤鎴戜滑鐨?Request Quote"鍔熻兘閫夋嫨浜у搧骞舵彁浜よ鐩樸€傛垜浠殑鍥㈤槦灏嗗湪24灏忔椂鍐呭洖澶嶃€?}
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <Button asChild className="bg-accent hover:bg-accent/90">
                       <Link href="/inquiry">
                         <MessageSquare className="mr-2 h-4 w-4" />
-                        {locale === 'en' ? 'Go to Inquiry Cart' : '前往询价车'}
+                        {locale === 'en' ? 'Go to Inquiry Cart' : '鍓嶅線璇环杞?}
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="border-2 border-warm-sand text-primary hover:bg-white hover:text-primary">
                       <Link href="/products">
-                        {locale === 'en' ? 'Browse Products' : '浏览产品'}
+                        {locale === 'en' ? 'Browse Products' : '娴忚浜у搧'}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
@@ -177,7 +177,7 @@ export default function ContactPageContent() {
               {/* Direct Contact Form */}
               <div className="bg-primary rounded-lg p-6 mt-6 border border-white/10">
                 <h3 className="text-lg font-semibold text-white mb-4">
-                  {locale === 'en' ? 'Send a Direct Message' : '直接发送留言'}
+                  {locale === 'en' ? 'Send a Direct Message' : '鐩存帴鍙戦€佺暀瑷€'}
                 </h3>
                 <ContactForm locale={locale} />
               </div>

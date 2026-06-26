@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="CC Scale">
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="CC Scale">
   <defs>
     <linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1a1816"/>
@@ -14,9 +14,9 @@
   <g fill="#f5f0e8">
     <text x="80" y="220" font-family="Georgia, serif" font-size="84" font-weight="700">CC Scale</text>
     <text x="80" y="300" font-family="system-ui" font-size="36" fill-opacity="0.85">Professional Weighing Solutions</text>
-    <text x="80" y="360" font-family="system-ui" font-size="28" fill-opacity="0.7">Body Scales · Hanging Scales · Kitchen Scales</text>
-    <text x="80" y="400" font-family="system-ui" font-size="28" fill-opacity="0.7">OEM/ODM Manufacturer · B2B Export</text>
-    <text x="80" y="540" font-family="system-ui" font-size="22" fill-opacity="0.5">www.ccscale.com</text>
+    <text x="80" y="360" font-family="system-ui" font-size="28" fill-opacity="0.7">Body Scales 路 Hanging Scales 路 Kitchen Scales</text>
+    <text x="80" y="400" font-family="system-ui" font-size="28" fill-opacity="0.7">OEM/ODM Manufacturer 路 B2B Export</text>
+    <text x="80" y="540" font-family="system-ui" font-size="22" fill-opacity="0.5">www.zzscale.com</text>
   </g>
   <g stroke="#c97a5a" stroke-width="3" fill="none" opacity="0.6">
     <circle cx="980" cy="315" r="120"/>

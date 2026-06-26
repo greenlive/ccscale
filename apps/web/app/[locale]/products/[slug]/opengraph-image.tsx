@@ -1,4 +1,4 @@
-import { ImageResponse } from "next/og";
+﻿import { ImageResponse } from "next/og";
 import { prisma } from "@cc-scale/database";
 
 // Use Edge runtime for fastest cold start
@@ -39,7 +39,7 @@ export default async function ProductOpenGraphImage({ params }: Props) {
 
   const subtitle = product
     ? isZh
-      ? product.shortDescZh || "专业称重产品,源头工厂"
+      ? product.shortDescZh || "涓撲笟绉伴噸浜у搧,婧愬ご宸ュ巶"
       : product.shortDescEn || "Professional weighing scale, OEM/ODM factory direct"
     : "Professional weighing scale manufacturer";
 
@@ -89,7 +89,7 @@ export default async function ProductOpenGraphImage({ params }: Props) {
           >
             C
           </div>
-          CC Scale — Professional Weighing Scale Manufacturer
+          CC Scale 鈥?Professional Weighing Scale Manufacturer
         </div>
 
         {/* Spacer */}
@@ -145,7 +145,7 @@ export default async function ProductOpenGraphImage({ params }: Props) {
             <div style={{ display: "flex" }}>20+ Years | 100+ Countries</div>
           </div>
           <div style={{ display: "flex", color: "#60a5fa", fontSize: 24 }}>
-            ccscale.com/{locale}/products/{slug}
+            zzscale.com/{locale}/products/{slug}
           </div>
         </div>
       </div>

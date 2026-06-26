@@ -1,4 +1,4 @@
-name: smoke
+﻿name: smoke
 
 on:
   workflow_dispatch:
@@ -21,8 +21,8 @@ jobs:
 
       - name: Run smoke against production
         env:
-          SMOKE_API: https://api.ccscale.com
-          SMOKE_WEB: https://www.ccscale.com
+          SMOKE_API: https://api.zzscale.com
+          SMOKE_WEB: https://www.zzscale.com
         run: node scripts/smoke/smoke.mjs
 
       - name: Upload smoke log on failure
@@ -49,6 +49,6 @@ jobs:
       - name: Run smoke against Vercel preview
         env:
           # ${{ steps.deploy.outputs.url }} from a previous deploy step if used
-          SMOKE_API: ${{ vars.PREVIEW_API_URL || 'https://api-staging.ccscale.com' }}
-          SMOKE_WEB: ${{ vars.PREVIEW_WEB_URL || 'https://staging.ccscale.com' }}
+          SMOKE_API: ${{ vars.PREVIEW_API_URL || 'https://api-staging.zzscale.com' }}
+          SMOKE_WEB: ${{ vars.PREVIEW_WEB_URL || 'https://staging.zzscale.com' }}
         run: node scripts/smoke/smoke.mjs
