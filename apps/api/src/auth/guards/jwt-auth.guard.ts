@@ -14,16 +14,26 @@ export class JwtAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers.authorization;
 
-    if (!authHeader) {
-      throw new UnauthorizedException('No authorization header');
+    // Prefer the httpOnly access cookie set by the backend on login.
+    // The cookie path is the single source of truth in the browser; the
+    // Authorization header is kept as a fallback for non-browser callers.
+    const cookieToken: string | undefined = request.cookies?.cc_access;
+    const authHeader: string | undefined = request.headers.authorization;
+
+    let token: string | undefined;
+    if (cookieToken && cookieToken.length > 0) {
+      token = cookieToken;
+    } else if (authHeader) {
+      const [type, headerToken] = authHeader.split(' ');
+      if (type !== 'Bearer' || !headerToken) {
+        throw new UnauthorizedException('Invalid authorization format');
+      }
+      token = headerToken;
     }
 
-    const [type, token] = authHeader.split(' ');
-
-    if (type !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Invalid authorization format');
+    if (!token) {
+      throw new UnauthorizedException('No authentication credentials provided');
     }
 
     try {
