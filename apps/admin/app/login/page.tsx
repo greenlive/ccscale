@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Scale, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
@@ -9,6 +10,14 @@ import { useAuth } from '@/providers/AuthProvider';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const redirectTo = (() => {
+    const raw = searchParams.get('redirect');
+    if (!raw) return null;
+    // Only allow same-origin internal paths to prevent open-redirect.
+    if (!raw.startsWith('/') || raw.startsWith('//')) return null;
+    return raw;
+  })();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,7 +30,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      await login(email, password);
+      await login(email, password, redirectTo ?? undefined);
     } catch (err) {
       setError(err instanceof Error ? err.message : '登录失败，请检查邮箱和密码');
     } finally {

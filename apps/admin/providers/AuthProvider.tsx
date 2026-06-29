@@ -8,7 +8,7 @@ interface AuthContextType {
   user: AdminUser | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, redirectTo?: string) => Promise<void>;
   logout: () => void;
   isAdmin: boolean;
   refreshToken: () => Promise<void>;
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(refreshInterval);
   }, [token]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, redirectTo?: string) => {
     const { login: apiLogin } = await import('@/lib/auth');
     const response = await apiLogin(email, password);
 
@@ -63,7 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStoredAuth(response.accessToken, userData, response.refreshToken);
     setToken(response.accessToken);
     setUser(userData);
-    router.push('/dashboard');
+    // Only honour internal paths (defence in depth; login page also sanitises).
+    const safeRedirect = redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+      ? redirectTo
+      : '/dashboard';
+    router.push(safeRedirect);
   };
 
   const logout = () => {
