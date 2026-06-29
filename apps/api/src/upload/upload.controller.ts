@@ -20,6 +20,8 @@ import { extname, join } from 'path';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { ALLOWED_MIME_TYPES, MAX_BYTES_BY_TYPE, sniffMimeType } from '../common/magic-bytes';
 
 @ApiTags('upload')
@@ -72,7 +74,8 @@ export class UploadController {
   }
 
   @Post(':uploadType')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload a single file' })
   @ApiConsumes('multipart/form-data')
@@ -115,7 +118,8 @@ export class UploadController {
   }
 
   @Post(':uploadType/multiple')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload multiple files' })
   @ApiConsumes('multipart/form-data')
@@ -163,7 +167,8 @@ export class UploadController {
   }
 
   @Delete(':uploadType/:filename')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a file' })
   @ApiResponse({ status: 200, description: 'File deleted successfully' })
@@ -172,7 +177,10 @@ export class UploadController {
     @Param('uploadType') uploadType: string,
     @Param('filename') filename: string,
   ) {
-    // Sanitize filename to prevent path traversal: only allow [A-Za-z0-9._-]
+    // Sanitize both path segments: only allow [A-Za-z0-9._-]
+    if (!/^[A-Za-z0-9._-]{1,100}$/.test(uploadType)) {
+      throw new BadRequestException('Invalid upload type');
+    }
     if (!/^[A-Za-z0-9._-]{1,200}$/.test(filename)) {
       throw new BadRequestException('Invalid filename');
     }
