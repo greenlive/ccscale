@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '鐧诲綍澶辫触锛岃妫€鏌ラ偖绠卞拰瀵嗙爜');
+      setError(err instanceof Error ? err.message : '登录失败，请检查邮箱和密码');
     } finally {
       setIsLoading(false);
     }
@@ -38,7 +38,7 @@ export default function LoginPage() {
               <Scale className="h-8 w-8 text-ivory" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-serif font-medium">绠＄悊鍚庡彴鐧诲綍</CardTitle>
+          <CardTitle className="text-2xl font-serif font-medium">管理后台登录</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -50,7 +50,7 @@ export default function LoginPage() {
             )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-olive-gray mb-2">
-                閭
+                邮箱
               </label>
               <Input
                 id="email"
@@ -63,7 +63,7 @@ export default function LoginPage() {
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-olive-gray mb-2">
-                瀵嗙爜
+                密码
               </label>
               <div className="relative">
                 <Input
@@ -73,7 +73,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="pr-10"
-                  placeholder="鈥⑩€⑩€⑩€⑩€⑩€⑩€⑩€?
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"
@@ -94,7 +94,7 @@ export default function LoginPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? '鐧诲綍涓?..' : '鐧诲綍'}
+              {isLoading ? '登录中...' : '登录'}
             </Button>
           </form>
         </CardContent>

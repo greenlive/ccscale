@@ -24,38 +24,38 @@ interface DownloadItem {
 const faqs = [
   {
     questionEn: 'How do I calibrate my scale?',
-    questionZh: '濡備綍鏍″噯鎴戠殑绉わ紵',
+    questionZh: '如何校准我的秤？',
     answerEn: 'Please refer to the user manual for detailed calibration instructions specific to your model. Most scales can be calibrated using standard weights following the step-by-step guide provided.',
-    answerZh: '璇峰弬鑰冪敤鎴锋墜鍐岃幏鍙栭拡瀵规偍鍨嬪彿鐨勮缁嗘牎鍑嗚鏄庛€傚ぇ澶氭暟绉ゅ彲浠ヤ娇鐢ㄦ爣鍑嗙牆鐮佹寜鐓ф彁渚涚殑鍒嗘鎸囧崡杩涜鏍″噯銆?,
+    answerZh: '请参考用户手册获取针对您型号的详细校准说明。大多数秤可以使用标准砝码按照提供的分步指南进行校准。',
   },
   {
     questionEn: 'What is the warranty period?',
-    questionZh: '淇濅慨鏈熸槸澶氶暱锛?,
+    questionZh: '保修期是多久？',
     answerEn: 'Our standard warranty is 2 years from the date of purchase. Extended warranty options are available for commercial users.',
-    answerZh: '鎴戜滑鐨勬爣鍑嗕繚淇湡涓鸿嚜璐拱涔嬫棩璧?骞淬€傚晢涓氱敤鎴峰彲閫夋嫨寤堕暱淇濅慨鏈熴€?,
+    answerZh: '我们的标准保修期为自购买之日起2年。商业用户可选择延长保修期。',
   },
   {
     questionEn: 'How do I get technical support?',
-    questionZh: '濡備綍鑾峰緱鎶€鏈敮鎸侊紵',
+    questionZh: '如何获得技术支持？',
     answerEn: 'You can reach our technical support team via email at support@zzscale.com or by phone during business hours. We typically respond within 24 hours.',
-    answerZh: '鎮ㄥ彲浠ラ€氳繃鐢靛瓙閭欢support@zzscale.com鎴栧湪宸ヤ綔鏃堕棿鑷寸數鑱旂郴鎴戜滑鐨勬妧鏈敮鎸佸洟闃熴€傛垜浠€氬父鍦?4灏忔椂鍐呭洖澶嶃€?,
+    answerZh: '您可以通过电子邮件support@zzscale.com或在工作时间致电联系我们的技术支持团队。我们通常在24小时内回复。',
   },
   {
     questionEn: 'Can I download the user manual?',
-    questionZh: '鎴戝彲浠ヤ笅杞界敤鎴锋墜鍐屽悧锛?,
+    questionZh: '我可以下载用户手册吗？',
     answerEn: 'Yes! All our user manuals are available for download in the Downloads section below. Simply find your product model and click the download button.',
-    answerZh: '鏄殑锛佹垜浠墍鏈夌殑鐢ㄦ埛鎵嬪唽閮藉彲浠ュ湪涓嬮潰鐨勪笅杞介儴鍒嗕笅杞姐€傚彧闇€鎵惧埌鎮ㄧ殑浜у搧鍨嬪彿骞剁偣鍑讳笅杞芥寜閽€?,
+    answerZh: '是的！我们所有的用户手册都可以在下面的下载部分下载。只需找到您的产品型号并点击下载按钮。',
   },
 ];
 
 const categories = [
-  { value: 'all', labelEn: 'All Files', labelZh: '鍏ㄩ儴鏂囦欢' },
-  { value: 'manual', labelEn: 'User Manuals', labelZh: '鐢ㄦ埛鎵嬪唽' },
-  { value: 'specs', labelEn: 'Specifications', labelZh: '鎶€鏈鏍? },
-  { value: 'software', labelEn: 'Software', labelZh: '杞欢' },
-  { value: 'catalog', labelEn: 'Catalogs', labelZh: '浜у搧鐩綍' },
-  { value: 'cert', labelEn: 'Certificates', labelZh: '璁よ瘉鏂囦欢' },
-  { value: 'video', labelEn: 'Videos', labelZh: '瑙嗛鏁欑▼' },
+  { value: 'all', labelEn: 'All Files', labelZh: '全部文件' },
+  { value: 'manual', labelEn: 'User Manuals', labelZh: '用户手册' },
+  { value: 'specs', labelEn: 'Specifications', labelZh: '技术规格' },
+  { value: 'software', labelEn: 'Software', labelZh: '软件' },
+  { value: 'catalog', labelEn: 'Catalogs', labelZh: '产品目录' },
+  { value: 'cert', labelEn: 'Certificates', labelZh: '认证文件' },
+  { value: 'video', labelEn: 'Videos', labelZh: '视频教程' },
 ];
 
 // Default downloads when API is not available
@@ -63,7 +63,7 @@ const defaultDownloads: DownloadItem[] = [
   {
     id: 1,
     titleEn: 'Body Scale BS-200 User Manual',
-    titleZh: '浣撻噸绉?BS-200 鐢ㄦ埛鎵嬪唽',
+    titleZh: '体重秤 BS-200 用户手册',
     fileUrl: '#',
     fileType: 'PDF',
     category: 'manual',
@@ -74,7 +74,7 @@ const defaultDownloads: DownloadItem[] = [
   {
     id: 2,
     titleEn: 'Product Catalog 2024',
-    titleZh: '2024骞翠骇鍝佺洰褰?,
+    titleZh: '2024年产品目录',
     fileUrl: '#',
     fileType: 'PDF',
     category: 'catalog',
@@ -134,7 +134,7 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
           <p className="text-xl text-warm-silver max-w-2xl mx-auto">
             {locale === 'en'
               ? 'Find manuals, software, and answers to your questions'
-              : '鏌ユ壘鎵嬪唽銆佽蒋浠跺拰鎮ㄩ棶棰樼殑绛旀'}
+              : '查找手册、软件和您问题的答案'}
           </p>
         </div>
       </section>
@@ -149,11 +149,11 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
                   <Phone className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-xl mb-2 text-primary">
-                  {locale === 'en' ? 'Call Us' : '鑷寸數鎴戜滑'}
+                  {locale === 'en' ? 'Call Us' : '致电我们'}
                 </h3>
                 <p className="text-gray-600">+86 123 4567 8900</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  {locale === 'en' ? 'Mon-Fri: 9:00-18:00' : '鍛ㄤ竴鑷冲懆浜? 9:00-18:00'}
+                  {locale === 'en' ? 'Mon-Fri: 9:00-18:00' : '周一至周五: 9:00-18:00'}
                 </p>
               </CardContent>
             </Card>
@@ -163,11 +163,11 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
                   <Mail className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-xl mb-2 text-primary">
-                  {locale === 'en' ? 'Email Us' : '鍙戦€侀偖浠?}
+                  {locale === 'en' ? 'Email Us' : '发送邮件'}
                 </h3>
                 <p className="text-gray-600">support@zzscale.com</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  {locale === 'en' ? 'Response within 24 hours' : '24灏忔椂鍐呭洖澶?}
+                  {locale === 'en' ? 'Response within 24 hours' : '24小时内回复'}
                 </p>
               </CardContent>
             </Card>
@@ -177,13 +177,13 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
                   <HelpCircle className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-xl mb-2 text-primary">
-                  {locale === 'en' ? 'FAQ' : '甯歌闂'}
+                  {locale === 'en' ? 'FAQ' : '常见问题'}
                 </h3>
                 <p className="text-gray-600">
-                  {locale === 'en' ? 'Check our FAQ section' : '鏌ョ湅鎴戜滑鐨勫父瑙侀棶棰?}
+                  {locale === 'en' ? 'Check our FAQ section' : '查看我们的常见问题'}
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                  {locale === 'en' ? 'Instant answers' : '鍗虫椂绛旀'}
+                  {locale === 'en' ? 'Instant answers' : '即时答案'}
                 </p>
               </CardContent>
             </Card>
@@ -196,7 +196,7 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-primary flex items-center">
             <Download className="mr-3 h-8 w-8" />
-            {locale === 'en' ? 'Download Center' : '涓嬭浇涓績'}
+            {locale === 'en' ? 'Download Center' : '下载中心'}
           </h2>
 
           {/* Search & Filter */}
@@ -205,7 +205,7 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
-                placeholder={locale === 'en' ? 'Search files...' : '鎼滅储鏂囦欢...'}
+                placeholder={locale === 'en' ? 'Search files...' : '搜索文件...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -233,7 +233,7 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
             {filteredDownloads.length === 0 ? (
               <div className="col-span-full text-center py-12 text-gray-500">
                 <File className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{locale === 'en' ? 'No downloads available' : '鏆傛棤涓嬭浇鍐呭'}</p>
+                <p>{locale === 'en' ? 'No downloads available' : '暂无下载内容'}</p>
               </div>
             ) : (
               filteredDownloads.map((item) => {
@@ -261,7 +261,7 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
                             <span>{item.fileType}</span>
                             {item.fileSize && (
                               <>
-                                <span>鈥?/span>
+                                <span>·</span>
                                 <span>{formatSize(item.fileSize)}</span>
                               </>
                             )}
@@ -271,7 +271,7 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
                       <a href={item.fileUrl} target="_blank" rel="noopener noreferrer">
                         <Button variant="outline" className="w-full mt-4">
                           <Download className="mr-2 h-4 w-4" />
-                          {locale === 'en' ? 'Download' : '涓嬭浇'}
+                          {locale === 'en' ? 'Download' : '下载'}
                         </Button>
                       </a>
                     </CardContent>
@@ -287,7 +287,7 @@ export function SupportPageContent({ locale }: SupportPageContentProps) {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-12 text-center text-primary">
-            {locale === 'en' ? 'Frequently Asked Questions' : '甯歌闂'}
+            {locale === 'en' ? 'Frequently Asked Questions' : '常见问题'}
           </h2>
           <div className="max-w-3xl mx-auto space-y-4">
             {faqs.map((faq, index) => {

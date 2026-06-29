@@ -10,14 +10,14 @@ type Props = {
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
   const isZh = locale === 'zh';
   return {
-    title: isZh ? '鍏充簬鎴戜滑 - CC Scale | 涓撲笟琛″櫒鍒堕€犲晢' : 'About Us - CC Scale | Professional Weighing Solutions Manufacturer',
+    title: isZh ? '关于我们 - CC Scale | 专业衡器制造商' : 'About Us - CC Scale | Professional Weighing Solutions Manufacturer',
     description: isZh
-      ? '浜嗚ВCC Scale 20浣欏勾鍦ㄨ　鍣ㄨВ鍐虫柟妗堟柟闈㈢殑鍗撹秺缁忛獙銆侷SO璁よ瘉宸ュ巶锛屾湇鍔?00澶氫釜鍥藉銆?
+      ? '了解CC Scale 20多年在衡器解决方案方面的卓越经验。ISO认证工厂，服务100多个国家。'
       : 'Learn about CC Scale\'s 20+ years of excellence in weighing solutions. ISO certified factory with 100+ countries served.',
     openGraph: {
-      title: isZh ? '鍏充簬鎴戜滑 - CC Scale | 涓撲笟琛″櫒鍒堕€犲晢' : 'About Us - CC Scale | Professional Weighing Solutions Manufacturer',
+      title: isZh ? '关于我们 - CC Scale | 专业衡器制造商' : 'About Us - CC Scale | Professional Weighing Solutions Manufacturer',
       description: isZh
-        ? '浜嗚ВCC Scale 20浣欏勾鍦ㄨ　鍣ㄨВ鍐虫柟妗堟柟闈㈢殑鍗撹秺缁忛獙銆侷SO璁よ瘉宸ュ巶锛屾湇鍔?00澶氫釜鍥藉銆?
+        ? '了解CC Scale 20多年在衡器解决方案方面的卓越经验。ISO认证工厂，服务100多个国家。'
         : 'Learn about CC Scale\'s 20+ years of excellence in weighing solutions. ISO certified factory with 100+ countries served.',
       locale: isZh ? 'zh_CN' : 'en_US',
       type: 'website',
@@ -28,8 +28,8 @@ export async function generateMetadata({ params: { locale } }: { params: { local
 export default function AboutPage({ params: { locale } }: Props) {
   const baseUrl = 'https://www.zzscale.com';
   const breadcrumbItems = [
-    { name: locale === 'en' ? 'Home' : '棣栭〉', url: `${baseUrl}/${locale}` },
-    { name: locale === 'en' ? 'About Us' : '鍏徃绠€浠?, url: `${baseUrl}/${locale}/about` },
+    { name: locale === 'en' ? 'Home' : '首页', url: `${baseUrl}/${locale}` },
+    { name: locale === 'en' ? 'About Us' : '公司简介', url: `${baseUrl}/${locale}/about` },
   ];
 
   return (

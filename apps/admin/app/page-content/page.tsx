@@ -35,26 +35,26 @@ const PAGES: PageConfig[] = [
   {
     key: 'about',
     labelEn: 'About Us',
-    labelZh: '鍏充簬鎴戜滑',
+    labelZh: '关于我们',
     icon: Users,
     description: 'Company story, milestones, and values',
-    descriptionZh: '鍏徃鏁呬簨銆佸彂灞曞巻绋嬪拰浠峰€艰',
+    descriptionZh: '公司故事、发展历程和价值观',
   },
   {
     key: 'guarantee',
     labelEn: 'Guarantees',
-    labelZh: '淇濋殰涓績',
+    labelZh: '保障中心',
     icon: Settings,
     description: 'Quality assurance and delivery guarantees',
-    descriptionZh: '璐ㄩ噺淇濊瘉鍜屼氦浠樹繚闅?,
+    descriptionZh: '质量保证和交付保障',
   },
   {
     key: 'contact',
     labelEn: 'Contact Us',
-    labelZh: '鑱旂郴鎴戜滑',
+    labelZh: '联系我们',
     icon: Globe,
     description: 'Contact information and office hours',
-    descriptionZh: '鑱旂郴淇℃伅鍜屽伐浣滄椂闂?,
+    descriptionZh: '联系信息和办公时间',
   },
 ];
 
@@ -98,7 +98,7 @@ export default function PageContentPage() {
     fetchPageContent(activePage);
   }, [activePage]);
 
-  useEffect(() => { document.title = 'CC Scale 绠＄悊鍚庡彴 - 椤甸潰鍐呭绠＄悊'; }, []);
+  useEffect(() => { document.title = 'CC Scale 管理后台 - 页面内容管理'; }, []);
 
   const fetchPageContent = async (pageKey: string) => {
     setLoading(true);
@@ -214,8 +214,8 @@ export default function PageContentPage() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A1628]">椤甸潰鍐呭绠＄悊</h1>
-            <p className="text-gray-600">绠＄悊缃戠珯鍚勯〉闈㈢殑鏂囨湰鍐呭</p>
+            <h1 className="text-3xl font-bold text-[#0A1628]">页面内容管理</h1>
+            <p className="text-gray-600">管理网站各页面的文本内容</p>
           </div>
           <Button
             className="bg-accent hover:bg-accent/90"
@@ -223,7 +223,7 @@ export default function PageContentPage() {
             disabled={saving}
           >
             <Save className="mr-2 h-4 w-4" />
-            {saving ? '淇濆瓨涓?..' : '淇濆瓨鍐呭'}
+            {saving ? '保存中...' : '保存内容'}
           </Button>
         </div>
 
@@ -283,7 +283,7 @@ export default function PageContentPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                缂栬緫椤甸潰鍐呭 - {PAGES.find(p => p.key === activePage)?.labelZh}
+                编辑页面内容 - {PAGES.find(p => p.key === activePage)?.labelZh}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -291,7 +291,7 @@ export default function PageContentPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    椤甸潰鏍囬 (English)
+                    页面标题 (English)
                   </label>
                   <Input
                     value={formData.titleEn}
@@ -301,19 +301,19 @@ export default function PageContentPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    椤甸潰鏍囬 (涓枃)
+                    页面标题 (中文)
                   </label>
                   <Input
                     value={formData.titleZh}
                     onChange={(e) => handleChange('titleZh', e.target.value)}
-                    placeholder="鍏充簬鎴戜滑"
+                    placeholder="关于我们"
                   />
                 </div>
               </div>
 
               {/* Meta/SEO Fields */}
               <div className="border-t pt-6">
-                <h3 className="font-medium text-gray-900 mb-4">SEO / 鍏冧俊鎭?/h3>
+                <h3 className="font-medium text-gray-900 mb-4">SEO / 元信息</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -328,13 +328,13 @@ export default function PageContentPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Meta Description (涓枃)
+                      Meta Description (中文)
                     </label>
                     <Textarea
                       value={formData.metaZh}
                       onChange={(e) => handleChange('metaZh', e.target.value)}
                       rows={2}
-                      placeholder="SEO鍏冩弿杩?.."
+                      placeholder="SEO元描述..."
                     />
                   </div>
                 </div>
@@ -342,33 +342,34 @@ export default function PageContentPage() {
 
               {/* Content Fields */}
               <div className="border-t pt-6">
-                <h3 className="font-medium text-gray-900 mb-4">椤甸潰鍐呭</h3>
+                <h3 className="font-medium text-gray-900 mb-4">页面内容</h3>
                 <p className="text-sm text-gray-500 bg-blue-50 p-3 rounded-lg mb-4">
-                  鍏充簬椤甸潰锛歝ontentEn 鐢ㄤ簬瀛樺偍缁熻鏁版嵁 (JSON鏍煎紡)锛宑ontentZh 鐢ㄤ簬瀛樺偍閲岀▼纰戞暟鎹?(JSON鏍煎紡)
+                  关于页面：contentEn 用于存储统计数据 (JSON格式)，contentZh 用于存储里程碑数据 (JSON格式)
                   <br />
-                  鑱旂郴椤甸潰锛歝ontentEn 瀛樺偍鑱旂郴淇℃伅 (JSON鏍煎紡)锛屽寘鍚?address銆乪mail銆乸hone銆乭ours 绛夊瓧娈?                </p>
+                  联系页面：contentEn 存储联系信息 (JSON格式)，包含 address、email、phone、hours 等字段
+                </p>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      鍐呭 (English)
+                      内容 (English)
                     </label>
                     <Textarea
                       value={formData.contentEn}
                       onChange={(e) => handleChange('contentEn', e.target.value)}
                       rows={8}
-                      placeholder='{"address": {"en": "123 Industrial Park...", "zh": "宸ヤ笟鍖?23鍙?.."}, "email": {"en": "sales@zzscale.com", "zh": "閿€鍞偖绠?.."}}'
+                      placeholder='{"address": {"en": "123 Industrial Park...", "zh": "工业园区123号..."}, "email": {"en": "sales@zzscale.com", "zh": "销售邮箱..."}}'
                       className="font-mono text-sm"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      鍐呭 (涓枃)
+                      内容 (中文)
                     </label>
                     <Textarea
                       value={formData.contentZh}
                       onChange={(e) => handleChange('contentZh', e.target.value)}
                       rows={8}
-                      placeholder='[{"year": "2004", "titleEn": "Founded", "titleZh": "鍏徃鎴愮珛", ...}]'
+                      placeholder='[{"year": "2004", "titleEn": "Founded", "titleZh": "公司成立", ...}]'
                       className="font-mono text-sm"
                     />
                   </div>
@@ -378,13 +379,14 @@ export default function PageContentPage() {
               {/* Story Editor - About page only */}
               {activePage === 'about' && (
                 <div className="border-t pt-6">
-                  <h3 className="font-medium text-gray-900 mb-4">鎴戜滑鐨勬晠浜?/ Our Story</h3>
+                  <h3 className="font-medium text-gray-900 mb-4">我们的故事 / Our Story</h3>
                   <p className="text-sm text-gray-500 bg-blue-50 p-3 rounded-lg mb-4">
-                    姣忔涔嬮棿鐢ㄤ竴涓┖琛屽垎闅斻€傛瘡娈靛皢鍒嗗埆鏄剧ず鍦ㄩ〉闈笂銆?                  </p>
+                    每段之间用一个空行分隔。每段将分别显示在页面上。
+                  </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        鏁呬簨鍐呭 (English)
+                        故事内容 (English)
                       </label>
                       <Textarea
                         value={storyEn}
@@ -395,112 +397,100 @@ export default function PageContentPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        鏁呬簨鍐呭 (涓枃)
+                        故事内容 (中文)
                       </label>
                       <Textarea
                         value={storyZh}
                         onChange={(e) => setStoryZh(e.target.value)}
                         rows={6}
-                        placeholder="绗竴娈?#10;&#10;绗簩娈?
+                        placeholder="第一段&#10;&#10;第二段"
                       />
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* Media Editor - About page only */}
-              {activePage === 'about' && (
-                <div className="border-t pt-6">
-                  <h3 className="font-medium text-gray-900 mb-4">鍥剧墖鍜岃棰?/ Images & Video</h3>
-
-                  {/* Story Image */}
-                  <div className="mb-6">
+                  <h3 className="font-medium text-gray-900 mb-4 mt-8">媒体 / Media</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                     <ImageUploadField
-                      label="鏁呬簨閰嶅浘 (Story Image)"
+                      label="故事图片"
                       value={media.storyImage}
                       onChange={(v) => updateMedia('storyImage', v)}
                       uploadType="factory-image"
-                      hint="鐐瑰嚮涓婁紶鏁呬簨閰嶅浘"
+                      hint="点击上传故事图片"
                     />
-                  </div>
-
-                  {/* Factory Video Section */}
-                  <h4 className="font-medium text-gray-800 mb-3">宸ュ巶瑙嗛 / Factory Video</h4>
-                  <div className="mb-4">
                     <ImageUploadField
-                      label="瑙嗛灏侀潰 (Video Cover)"
+                      label="视频封面"
                       value={media.videoCover}
                       onChange={(v) => updateMedia('videoCover', v)}
                       uploadType="factory-image"
-                      hint="鐐瑰嚮涓婁紶瑙嗛灏侀潰鍥?
+                      hint="点击上传视频封面图"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">瑙嗛閾炬帴 URL</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">视频链接 URL</label>
                       <Input value={media.videoUrl} onChange={(e) => updateMedia('videoUrl', e.target.value)} placeholder="https://youtube.com/..." />
-                      <p className="text-xs text-gray-400 mt-1">鏀寔 YouTube / Vimeo 閾炬帴锛屾垨鑷墭绠¤棰?URL</p>
+                      <p className="text-xs text-gray-400 mt-1">支持 YouTube / Vimeo 链接，或自托管视频 URL</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">瑙嗛鏍囬 (EN)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">视频标题 (EN)</label>
                       <Input value={media.videoTitleEn} onChange={(e) => updateMedia('videoTitleEn', e.target.value)} placeholder="CC Scale Factory Tour" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">瑙嗛鏍囬 (ZH)</label>
-                      <Input value={media.videoTitleZh} onChange={(e) => updateMedia('videoTitleZh', e.target.value)} placeholder="CC Scale 宸ュ巶鍙傝" />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">视频标题 (ZH)</label>
+                      <Input value={media.videoTitleZh} onChange={(e) => updateMedia('videoTitleZh', e.target.value)} placeholder="CC Scale 工厂参观" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">鏃堕暱 (EN)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">时长 (EN)</label>
                       <Input value={media.videoDurationEn} onChange={(e) => updateMedia('videoDurationEn', e.target.value)} placeholder="4:30 min" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">鏃堕暱 (ZH)</label>
-                      <Input value={media.videoDurationZh} onChange={(e) => updateMedia('videoDurationZh', e.target.value)} placeholder="4鍒?0绉? />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">时长 (ZH)</label>
+                      <Input value={media.videoDurationZh} onChange={(e) => updateMedia('videoDurationZh', e.target.value)} placeholder="4分30秒" />
                     </div>
                   </div>
 
                   {/* Video Section Text */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">鍖哄潡鏍囬 (EN)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">区域标题 (EN)</label>
                       <Input value={media.sectionTitleEn} onChange={(e) => updateMedia('sectionTitleEn', e.target.value)} placeholder="Take a Tour of Our Factory" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">鍖哄潡鏍囬 (ZH)</label>
-                      <Input value={media.sectionTitleZh} onChange={(e) => updateMedia('sectionTitleZh', e.target.value)} placeholder="鍙傝鎴戜滑鐨勫伐鍘? />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">区域标题 (ZH)</label>
+                      <Input value={media.sectionTitleZh} onChange={(e) => updateMedia('sectionTitleZh', e.target.value)} placeholder="参观我们的工厂" />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">鍖哄潡鍓爣棰?(EN)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">区域副标题 (EN)</label>
                       <Textarea value={media.sectionSubtitleEn} onChange={(e) => updateMedia('sectionSubtitleEn', e.target.value)} rows={2} placeholder="See our state-of-the-art production facilities..." />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">鍖哄潡鍓爣棰?(ZH)</label>
-                      <Textarea value={media.sectionSubtitleZh} onChange={(e) => updateMedia('sectionSubtitleZh', e.target.value)} rows={2} placeholder="瑙傜湅鎴戜滑鍏堣繘鐨勭敓浜ц鏂?.." />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">区域副标题 (ZH)</label>
+                      <Textarea value={media.sectionSubtitleZh} onChange={(e) => updateMedia('sectionSubtitleZh', e.target.value)} rows={2} placeholder="查看我们先进的生产设施..." />
                     </div>
                   </div>
 
                   {/* Thumbnails */}
-                  <h4 className="font-medium text-gray-800 mb-3 mt-6">缂╃暐鍥?/ Thumbnails</h4>
+                  <h4 className="font-medium text-gray-800 mb-3 mt-6">缩略图 / Thumbnails</h4>
                   {media.thumbnails.map((thumb, i) => (
                     <div key={i} className="mb-6 p-4 border border-gray-100 rounded-lg">
-                      <p className="text-sm font-medium text-gray-700 mb-3">缂╃暐鍥?#{i + 1}</p>
+                      <p className="text-sm font-medium text-gray-700 mb-3">缩略图 #{i + 1}</p>
                       <div className="space-y-3">
                         <ImageUploadField
-                          label="鍥剧墖"
+                          label="图片"
                           value={thumb.src}
                           onChange={(v) => updateThumbnail(i, 'src', v)}
                           uploadType="factory-image"
-                          hint="鐐瑰嚮涓婁紶缂╃暐鍥?
+                          hint="点击上传缩略图"
                           previewHeight="h-20"
                         />
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Alt 鏂囨湰 (EN)</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Alt 文本 (EN)</label>
                             <Input value={thumb.altEn} onChange={(e) => updateThumbnail(i, 'altEn', e.target.value)} placeholder="English alt text" />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Alt 鏂囨湰 (ZH)</label>
-                            <Input value={thumb.altZh} onChange={(e) => updateThumbnail(i, 'altZh', e.target.value)} placeholder="涓枃 alt 鏂囨湰" />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Alt 文本 (ZH)</label>
+                            <Input value={thumb.altZh} onChange={(e) => updateThumbnail(i, 'altZh', e.target.value)} placeholder="中文 alt 文本" />
                           </div>
                         </div>
                       </div>
@@ -512,7 +502,7 @@ export default function PageContentPage() {
               {/* Last Updated Info */}
               {pageData?.updatedAt && (
                 <div className="text-sm text-gray-500 border-t pt-4">
-                  鏈€鍚庢洿鏂? {new Date(pageData.updatedAt).toLocaleString('zh-CN')}
+                  最后更新: {new Date(pageData.updatedAt).toLocaleString('zh-CN')}
                 </div>
               )}
             </CardContent>

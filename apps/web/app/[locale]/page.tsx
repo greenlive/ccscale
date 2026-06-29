@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const isZh = locale === 'zh';
   const title = isZh
-    ? '涓撲笟琛″櫒鍒堕€犲晢涓庡嚭鍙ｅ晢 - CC Scale | OEM/ODM 琛″櫒瀹氬埗'
+    ? '专业衡器制造商与出口商 - CC Scale | OEM/ODM 衡器定制'
     : 'Professional Weighing Scale Manufacturer & Exporter | CC Scale';
   const description = isZh
-    ? 'CC Scale 姘稿悍涓撲笟琛″櫒鍒堕€犲晢,20+ 骞磋涓氱粡楠?鍑哄彛 100+ 鍥藉銆傛彁渚涗綋閲嶇Г銆佸悐绉ゃ€佸帹鎴跨Г銆佸┐鍎跨Г绛?OEM/ODM 瀹氬埗鏈嶅姟銆?
+    ? 'CC Scale 永康专业衡器制造商，20+ 年行业经验，出口 100+ 国家。提供体重秤、吊秤、推车秤、婴儿秤等 OEM/ODM 定制服务。'
     : 'CC Scale is a professional weighing scale manufacturer with 20+ years of experience, exporting to 100+ countries. OEM/ODM services for body scales, hanging scales, kitchen scales, baby scales, and more.';
   return {
     title,

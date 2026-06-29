@@ -84,10 +84,10 @@ export function OrganizationSchema({
       '@type': 'Offer',
       itemOffered: {
         '@type': 'Product',
-        name: locale === 'en' ? 'Custom Weighing Scales' : '瀹氬埗琛″櫒',
+        name: locale === 'en' ? 'Custom Weighing Scales' : '定制衡器',
         description: locale === 'en'
           ? 'OEM/ODM manufacturing services for weighing scales including body scales, hanging scales, kitchen scales, and more.'
-          : '鎻愪緵浣撻噸绉ゃ€佸悐绉ゃ€佸帹鎴跨Г绛夎　鍣ㄧ殑OEM/ODM鍒堕€犳湇鍔°€?,
+          : '提供体重秤、吊秤、推车秤等衡器的OEM/ODM制造服务。',
       },
     },
   };
@@ -277,14 +277,14 @@ interface AboutPageSchemaProps {
 export function AboutPageSchema({ locale = 'en' }: AboutPageSchemaProps) {
   const settings = useSiteSettings();
   const brandName = settings.companyNameEn || 'CC Scale';
-  const brandNameZh = settings.companyNameZh || 'CC琛″櫒';
+  const brandNameZh = settings.companyNameZh || 'CC衡器';
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
-    name: locale === 'en' ? `About ${brandName}` : '鍏充簬鎴戜滑',
+    name: locale === 'en' ? `About ${brandName}` : '关于我们',
     description: locale === 'en'
       ? `Learn about ${brandName}, your trusted partner for professional weighing solutions with over 20 years of manufacturing experience.`
-      : `浜嗚В${brandNameZh}锛屾偍鍊煎緱淇¤禆鐨勪笓涓氳　鍣ㄨВ鍐虫柟妗堝悎浣滀紮浼达紝鎷ユ湁20澶氬勾鐨勫埗閫犵粡楠屻€俙,
+      : `了解${brandNameZh}，您值得信赖的专业衡器解决方案合作伙伴，拥有20多年的制造经验。`,
     mainEntity: {
       '@type': 'Organization',
       '@id': 'https://www.zzscale.com#organization',
@@ -310,10 +310,10 @@ export function ContactPageSchema({ locale = 'en' }: ContactPageSchemaProps) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
-    name: locale === 'en' ? `Contact ${brandName}` : '鑱旂郴鎴戜滑',
+    name: locale === 'en' ? `Contact ${brandName}` : '联系我们',
     description: locale === 'en'
       ? `Get in touch with ${brandName} for inquiries about our weighing scales and OEM/ODM services.`
-      : `鑱旂郴${settings.companyNameZh || 'CC Scale'}锛屽挩璇㈡垜浠殑琛″櫒浜у搧鍜孫EM/ODM鏈嶅姟銆俙,
+      : `联系${settings.companyNameZh || 'CC Scale'}，咨询我们的衡器产品和OEM/ODM服务。`,
   };
 
   return (
@@ -363,20 +363,20 @@ interface AISummarySchemaProps {
 export function AISummarySchema({ locale = 'en' }: AISummarySchemaProps) {
   const settings = useSiteSettings();
   const brandName = settings.companyNameEn || 'CC Scale';
-  const brandNameZh = settings.companyNameZh || 'CC琛″櫒';
+  const brandNameZh = settings.companyNameZh || 'CC衡器';
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: locale === 'en' ? `AI Summary - ${brandName}` : `AI鎽樿 - ${brandNameZh}`,
+    name: locale === 'en' ? `AI Summary - ${brandName}` : `AI摘要 - ${brandNameZh}`,
     description: locale === 'en'
       ? `Structured summary of ${brandName} for AI assistants and large language models.`
-      : `涓篈I鍔╂墜鍜屽ぇ璇█妯″瀷鎻愪緵鐨?{brandNameZh}缁撴瀯鍖栨憳瑕併€俙,
+      : `为AI助手和大语言模型提供的${brandNameZh}结构化摘要。`,
     about: {
       '@type': 'Organization',
       name: brandName,
       description: locale === 'en'
         ? `${brandName} is a leading manufacturer of weighing scales based in Yongkang, Zhejiang, China. We specialize in body scales, hanging scales, kitchen scales, baby scales, crane scales, dial scales, and industrial weighing equipment. We offer OEM/ODM manufacturing services with MOQ flexibility, custom branding, and private labeling options.`
-        : `${brandNameZh}鏄綅浜庝腑鍥芥禉姹熸案搴风殑棰嗗厛琛″櫒鍒堕€犲晢銆傛垜浠笓涓氱敓浜т綋閲嶇Г銆佸悐绉ゃ€佸帹鎴跨Г銆佸┐鍎跨Г銆佸悐閽╃Г銆佸害鐩樼Г鍜屽伐涓氱О閲嶈澶囥€傛垜浠彁渚汷EM/ODM鍒堕€犳湇鍔★紝鍏锋湁鐏垫椿鐨勮捣璁㈤噺銆佸畾鍒跺搧鐗屽拰绉佹湁鏍囩閫夐」銆俙,
+        : `${brandNameZh}是位于中国浙江永康的领先衡器制造商。我们专业生产体重秤、吊秤、推车秤、婴儿秤、吊钩秤、表盘秤和工业称重设备。我们提供OEM/ODM制造服务，起订量灵活，可定制品牌和私有标签。`,
       foundingDate: '2004',
       numberOfEmployees: {
         '@type': 'QuantitativeValue',
@@ -385,38 +385,38 @@ export function AISummarySchema({ locale = 'en' }: AISummarySchemaProps) {
       },
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
-        name: locale === 'en' ? 'Weighing Scale Product Catalog' : '琛″櫒浜у搧鐩綍',
+        name: locale === 'en' ? 'Weighing Scale Product Catalog' : '衡器产品目录',
         itemListElement: [
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Product',
-              name: locale === 'en' ? 'Body Scales' : '浣撻噸绉?,
-              description: locale === 'en' ? 'Digital and analog body weight scales for home and professional use.' : '瀹剁敤鍜屼笓涓氱敤鏁板瓧鍜屾ā鎷熶綋閲嶇Г銆?,
+              name: locale === 'en' ? 'Body Scales' : '体重秤',
+              description: locale === 'en' ? 'Digital and analog body weight scales for home and professional use.' : '家用和专业用数字和模拟体重秤。',
             },
           },
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Product',
-              name: locale === 'en' ? 'Hanging Scales' : '鍚婄Г',
-              description: locale === 'en' ? 'Industrial hanging scales and crane scales for heavy duty weighing.' : '鐢ㄤ簬閲嶅瀷绉伴噸鐨勫伐涓氬悐绉ゅ拰鍚婇挬绉ゃ€?,
+              name: locale === 'en' ? 'Hanging Scales' : '吊秤',
+              description: locale === 'en' ? 'Industrial hanging scales and crane scales for heavy duty weighing.' : '用于重型称重的工业吊秤和吊钩秤。',
             },
           },
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Product',
-              name: locale === 'en' ? 'Kitchen Scales' : '鍘ㄦ埧绉?,
-              description: locale === 'en' ? 'Precision digital kitchen scales for cooking and food preparation.' : '鐢ㄤ簬鐑归オ鍜岄鐗╁埗澶囩殑绮惧瘑鏁板瓧鍘ㄦ埧绉ゃ€?,
+              name: locale === 'en' ? 'Kitchen Scales' : '厨房秤',
+              description: locale === 'en' ? 'Precision digital kitchen scales for cooking and food preparation.' : '用于烹饪和食物准备的精密数字厨房秤。',
             },
           },
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Product',
-              name: locale === 'en' ? 'Baby Scales' : '濠村効绉?,
-              description: locale === 'en' ? 'Accurate baby weighing scales for medical and home use.' : '鐢ㄤ簬鍖荤枟鍜屽搴娇鐢ㄧ殑绮剧‘濠村効绉ゃ€?,
+              name: locale === 'en' ? 'Baby Scales' : '婴儿秤',
+              description: locale === 'en' ? 'Accurate baby weighing scales for medical and home use.' : '用于医疗和家庭使用的精确婴儿秤。',
             },
           },
         ],
@@ -488,33 +488,33 @@ export function FAQPageSchema({ faqs, locale = 'en' }: FAQPageSchemaProps) {
 const defaultFAQs: FAQItem[] = [
   {
     question: 'What is your minimum order quantity (MOQ)?',
-    questionZh: '浣犱滑鐨勬渶灏忚捣璁㈤噺鏄灏戯紵',
+    questionZh: '你们的最小起订量是多少？',
     answer: 'Our MOQ varies by product type. Generally, MOQ ranges from 50-200 pieces per model. For OEM/ODM orders, MOQ may be higher depending on customization requirements.',
-    answerZh: '鎴戜滑鐨勮捣璁㈤噺鍥犱骇鍝佺被鍨嬭€屽紓銆備竴鑸瘡娆?0-200浠惰捣璁€傚浜嶰EM/ODM璁㈠崟锛屾牴鎹畾鍒惰姹傦紝璧疯閲忓彲鑳芥洿楂樸€?,
+    answerZh: '我们的起订量因产品类型而异。一般每款50-200件起订。对于OEM/ODM订单，根据定制要求，起订量可能更高。',
   },
   {
     question: 'Do you offer OEM/ODM services?',
-    questionZh: '浣犱滑鎻愪緵OEM/ODM鏈嶅姟鍚楋紵',
+    questionZh: '你们提供OEM/ODM服务吗？',
     answer: 'Yes, we offer comprehensive OEM/ODM services including custom logo printing, private label packaging, and product design modifications. We have extensive experience serving global B2B buyers.',
-    answerZh: '鏄殑锛屾垜浠彁渚涘叏闈㈢殑OEM/ODM鏈嶅姟锛屽寘鎷畾鍒禠ogo鍗板埛銆佺鏈夋爣绛惧寘瑁呭拰浜у搧璁捐淇敼銆傛垜浠湁涓板瘜鐨勬湇鍔″叏鐞傿2B涔板鐨勭粡楠屻€?,
+    answerZh: '是的，我们提供全面的OEM/ODM服务，包括定制Logo印刷、私有标签包装和产品设计修改。我们有丰富的服务全球B2B买家的经验。',
   },
   {
     question: 'What are your payment terms?',
-    questionZh: '浠樻鏂瑰紡鏄粈涔堬紵',
+    questionZh: '付款方式是什么？',
     answer: 'For first orders, we typically require 30% deposit and 70% balance before shipment. For established partners, we offer flexible payment terms including T/T, L/C, and PayPal.',
-    answerZh: '棣栧崟瀹㈡埛锛岄€氬父闇€瑕?0%瀹氶噾鍜?0%鍙戣揣鍓嶅熬娆俱€傚浜庨暱鏈熷悎浣滀紮浼达紝鎴戜滑鎻愪緵鐏垫椿鐨勪粯娆炬潯娆撅紝鍖呮嫭T/T銆丩/C鍜孭ayPal銆?,
+    answerZh: '首单客户，通常需要30%定金和70%发货前尾款。对于长期合作伙伴，我们提供灵活的付款条款，包括T/T、L/C和PayPal。',
   },
   {
     question: 'What certifications do your products have?',
-    questionZh: '浣犱滑鐨勪骇鍝佹湁鍝簺璁よ瘉锛?,
+    questionZh: '你们的产品有哪些认证？',
     answer: 'Our products are certified with ISO9001, CE, FCC, and ROHS. Medical scales have additional FDA registration. We can provide all relevant certifications for your market requirements.',
-    answerZh: '鎴戜滑鐨勪骇鍝佸凡鑾峰緱ISO9001銆丆E銆丗CC鍜孯OHS璁よ瘉銆傚尰鐤楃Г鏈夐澶栫殑FDA娉ㄥ唽銆傛垜浠彲浠ユ彁渚涙偍甯傚満瑕佹眰鐨勬墍鏈夌浉鍏宠璇併€?,
+    answerZh: '我们的产品已获得ISO9001、CE、FCC和ROHS认证。医疗秤有额外的FDA注册。我们可以提供您市场要求的所有相关认证。',
   },
   {
     question: 'What is your production lead time?',
-    questionZh: '鐢熶骇浜ゆ湡鏄闀挎椂闂达紵',
+    questionZh: '生产交期是多长时间？',
     answer: 'Standard orders typically ship within 15-25 days after deposit confirmation. OEM orders may take 25-35 days depending on customization requirements. Express production is available with additional fees.',
-    answerZh: '鏍囧噯璁㈠崟閫氬父鍦ㄥ畾閲戠‘璁ゅ悗15-25澶╁唴鍙戣揣銆侽EM璁㈠崟鏍规嵁瀹氬埗瑕佹眰鍙兘闇€瑕?5-35澶┿€傛垜浠彁渚涘姞鎬ョ敓浜ф湇鍔★紙闇€棰濆璐圭敤锛夈€?,
+    answerZh: '标准订单通常在定金确认后15-25天内发货。OEM订单根据定制要求可能需要25-35天。我们提供加急生产服务（需额外费用）。',
   },
 ];
 
