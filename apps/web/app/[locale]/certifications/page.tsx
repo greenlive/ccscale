@@ -1,10 +1,16 @@
-import { getTranslations } from 'next-intl/server'
+﻿import { getTranslations } from 'next-intl/server'
 import { useTranslations, useLocale } from 'next-intl'
 import { CertificateCard } from '@/components/CertificateCard'
 import { Shield, Award, CheckCircle } from 'lucide-react'
 import type { Metadata } from 'next'
 import type { Certificate } from '@/types/certificate'
 
+/*
+ * TODO: Replace with real data once a Certificate Prisma model + a
+ * `GET /api/certificates` endpoint exist. Until then we keep the
+ * placeholder list and surface a notice to visitors so we do not present
+ * fabricated credentials as real ones (critical for B2B trust).
+ */
 const mockCertificates: Certificate[] = [
   {
     id: 1,
@@ -84,6 +90,15 @@ function CertificationsContent() {
         </div>
       </section>
 
+      {/* Placeholder notice — replace with real data once Certificate model + endpoint exist */}
+      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 container mx-auto mt-6 rounded">
+        <p className="text-sm text-yellow-800">
+          {isZh
+            ? '⚠️ 示例数据：以下认证为占位内容，待后端 Certificate 模块上线后展示真实资质证书。'
+            : '⚠️ Placeholder data: The certificates below are sample content. Real credentials will be shown once the backend Certificate module ships.'}
+        </p>
+      </div>
+
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
@@ -130,7 +145,7 @@ function CertificationsContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {mockCertificates
-              .filter(c => c.isActive)
+              .filter((c) => c.isActive)
               .sort((a, b) => a.order - b.order)
               .map((cert) => (
                 <CertificateCard key={cert.id} certificate={cert} />

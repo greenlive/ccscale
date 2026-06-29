@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server'
+﻿import { getTranslations } from 'next-intl/server'
 import { useTranslations, useLocale } from 'next-intl'
 import { ClientShowcase } from '@/components/ClientShowcase'
 import { Card, CardContent } from '@cc-scale/ui'
@@ -7,6 +7,13 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import type { ClientCase, ShipmentPhoto } from '@/types/case'
 
+/*
+ * TODO: Replace with real data from `GET /api/cases` once the API + Prisma
+ * model are extended to support bilingual fields (nameEn/nameZh/quoteEn/...)
+ * and the shipment photos endpoint ships. Current Prisma CustomerCase
+ * exposes only companyName/quote/region (no en/zh split), so we keep this
+ * placeholder content rather than fabricate data we cannot verify.
+ */
 const mockClientCases: ClientCase[] = [
   {
     id: 1,
@@ -89,6 +96,15 @@ function CasesContent() {
         </div>
       </section>
 
+      {/* Placeholder notice — replace with real data once API supports bilingual fields */}
+      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 container mx-auto mt-6 rounded">
+        <p className="text-sm text-yellow-800">
+          {isZh
+            ? '⚠️ 示例数据：以下客户案例为占位内容，待后端接口支持双语字段后将自动展示真实数据。'
+            : '⚠️ Placeholder data: The client cases below are sample content. Real data will be shown once the backend API supports bilingual fields.'}
+        </p>
+      </div>
+
       <ClientShowcase cases={mockClientCases} />
 
       <section className="py-16">
@@ -98,9 +114,7 @@ function CasesContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-3xl font-bold text-primary mb-2">
-                500+
-              </h3>
+              <h3 className="text-3xl font-bold text-primary mb-2">500+</h3>
               <p className="text-gray-600">
                 {isZh ? '全球客户' : 'Global Clients'}
               </p>
@@ -109,9 +123,7 @@ function CasesContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Globe className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-3xl font-bold text-primary mb-2">
-                80+
-              </h3>
+              <h3 className="text-3xl font-bold text-primary mb-2">80+</h3>
               <p className="text-gray-600">
                 {isZh ? '国家和地区' : 'Countries & Regions'}
               </p>
@@ -120,9 +132,7 @@ function CasesContent() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Calendar className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-3xl font-bold text-primary mb-2">
-                15+
-              </h3>
+              <h3 className="text-3xl font-bold text-primary mb-2">15+</h3>
               <p className="text-gray-600">
                 {isZh ? '年行业经验' : 'Years Experience'}
               </p>
@@ -134,7 +144,7 @@ function CasesContent() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {mockShipmentPhotos
-              .filter(p => p.isActive)
+              .filter((p) => p.isActive)
               .map((photo) => {
                 const title = isZh ? photo.titleZh : photo.titleEn
                 return (

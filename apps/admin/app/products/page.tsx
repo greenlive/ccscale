@@ -48,12 +48,11 @@ export default function ProductsPage() {
         setProducts(productsData);
       } else {
         console.error('Failed to fetch products:', response.error);
-        // Fallback to mock data
-        setProducts(mockProducts);
+        setProducts([]);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
-      setProducts(mockProducts);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -92,53 +91,6 @@ export default function ProductsPage() {
     product.sku.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Mock data as fallback
-  const mockProducts: Product[] = [
-    {
-      id: 1,
-      sku: 'BS-200',
-      nameEn: 'Digital Body Scale BS-200',
-      nameZh: '数字人体秤 BS-200',
-      categoryName: '人体秤',
-      priceMin: 15,
-      priceMax: 25,
-      isActive: true,
-      isFeatured: true,
-    },
-    {
-      id: 2,
-      sku: 'HS-500',
-      nameEn: 'Industrial Hanging Scale HS-500',
-      nameZh: '工业吊秤 HS-500',
-      categoryName: '吊秤',
-      priceMin: 45,
-      priceMax: 85,
-      isActive: true,
-      isFeatured: true,
-    },
-    {
-      id: 3,
-      sku: 'KS-300',
-      nameEn: 'Precision Kitchen Scale KS-300',
-      nameZh: '精密厨房秤 KS-300',
-      categoryName: '厨房秤',
-      priceMin: 12,
-      priceMax: 20,
-      isActive: true,
-      isFeatured: false,
-    },
-    {
-      id: 4,
-      sku: 'BS-100',
-      nameEn: 'Smart Body Fat Scale',
-      nameZh: '智能体脂秤',
-      categoryName: '人体秤',
-      priceMin: 25,
-      priceMax: 45,
-      isActive: false,
-      isFeatured: false,
-    },
-  ];
 
   return (
     <AdminLayout>
