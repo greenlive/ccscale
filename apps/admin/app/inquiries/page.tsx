@@ -1,5 +1,5 @@
-'use client';
-
+﻿'use client';
+import { getStoredToken } from '@/lib/auth';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
@@ -12,7 +12,6 @@ import { Button, Input } from '@cc-scale/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
 import { useAuth } from '@/providers/AuthProvider';
 import { getApiUrl } from '@/lib/api';
-
 const SOURCE_CONFIG: Record<string, { icon: any; color: string; bg: string }> = {
   'Google': { icon: Search, color: 'text-blue-600', bg: 'bg-blue-50' },
   'YouTube': { icon: Video, color: 'text-red-600', bg: 'bg-red-50' },
@@ -24,7 +23,6 @@ const SOURCE_CONFIG: Record<string, { icon: any; color: string; bg: string }> = 
   'Referral': { icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
   'Website': { icon: Globe, color: 'text-blue-600', bg: 'bg-blue-50' },
 };
-
 export default function InquiriesPage() {
   const { user } = useAuth();
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -32,16 +30,14 @@ export default function InquiriesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSource, setFilterSource] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
-
   useEffect(() => {
     fetchInquiries();
   }, []);
-
   const fetchInquiries = async () => {
     try {
       const response = await fetch(getApiUrl('/inquiries'), {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${getStoredToken()}`,
         },
       });
       if (response.ok) {
@@ -54,7 +50,6 @@ export default function InquiriesPage() {
       setLoading(false);
     }
   };
-
   const filteredInquiries = useMemo(() => {
     return inquiries.filter((inquiry) => {
       const matchesSearch = searchTerm === '' || 
@@ -68,7 +63,6 @@ export default function InquiriesPage() {
       return matchesSearch && matchesSource && matchesStatus;
     });
   }, [inquiries, searchTerm, filterSource, filterStatus]);
-
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -79,7 +73,6 @@ export default function InquiriesPage() {
             Refresh
           </Button>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="pb-2">
@@ -120,7 +113,6 @@ export default function InquiriesPage() {
             </CardContent>
           </Card>
         </div>
-
         <Card>
           <CardHeader>
             <div className="flex gap-4">

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 
@@ -363,7 +363,7 @@ export class ProductsService {
 
         const productData: any = {
           sku: row.sku,
-          name: row.name_en,
+          nameEn: row.name_en,
           nameZh: row.name_zh,
           slug: row.slug,
           categoryId: category.id,

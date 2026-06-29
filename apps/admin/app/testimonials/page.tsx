@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+import { getStoredToken } from '@/lib/auth';
 
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search, Star, ToggleLeft, ToggleRight, MessageSquareQuote, Globe, Image } from 'lucide-react';
@@ -79,7 +80,7 @@ export default function TestimonialsPage() {
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify(formData),
       });
 
@@ -118,6 +119,7 @@ export default function TestimonialsPage() {
       try {
         const response = await fetch(`${API_URL}/api/testimonials/${id}`, {
           method: 'DELETE',
+        headers: { Authorization: `Bearer ${getStoredToken()}` },
         });
         if (response.ok) {
           fetchTestimonials();
@@ -132,7 +134,7 @@ export default function TestimonialsPage() {
     try {
       const response = await fetch(`${API_URL}/api/testimonials/${testimonial.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify({ isActive: !testimonial.isActive }),
       });
       if (response.ok) {

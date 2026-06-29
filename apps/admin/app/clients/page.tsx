@@ -1,5 +1,7 @@
 'use client';
 
+import { getStoredToken } from '@/lib/auth';
+
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search, ToggleLeft, ToggleRight, Globe, Building2 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
@@ -67,7 +69,7 @@ export default function ClientsPage() {
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify(formData),
       });
 
@@ -101,7 +103,8 @@ export default function ClientsPage() {
       try {
         const response = await fetch(`${API_URL}/api/clients/${id}`, {
           method: 'DELETE',
-        });
+        headers: { Authorization: `Bearer ${getStoredToken()}` },
+      });
         if (response.ok) {
           fetchClients();
         }
@@ -115,7 +118,7 @@ export default function ClientsPage() {
     try {
       const response = await fetch(`${API_URL}/api/clients/${client.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify({ isActive: !client.isActive }),
       });
       if (response.ok) {

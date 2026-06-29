@@ -1,5 +1,5 @@
-'use client';
-
+﻿'use client';
+import { getStoredToken } from '@/lib/auth';
 import { useEffect, useState } from 'react';
 import {
   BarChart, Bar, LineChart, Line,
@@ -10,23 +10,20 @@ import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@cc-scale/ui';
 import { Button } from '@cc-scale/ui';
 import { getApiUrl } from '@/lib/api';
-
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     fetchAnalytics();
   }, []);
-
   const fetchAnalytics = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(getApiUrl('/analytics/dashboard'), {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${getStoredToken()}`,
         },
       });
       if (response.ok) {
@@ -42,7 +39,6 @@ export default function AnalyticsPage() {
       setLoading(false);
     }
   };
-
   // Mock data for demonstration
   const mockData = {
     summary: {
@@ -75,9 +71,7 @@ export default function AnalyticsPage() {
       { source: 'Other', count: 680 }
     ]
   };
-
   const displayData = data || mockData;
-
   if (loading) {
     return (
       <AdminLayout>
@@ -87,7 +81,6 @@ export default function AnalyticsPage() {
       </AdminLayout>
     );
   }
-
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -98,13 +91,11 @@ export default function AnalyticsPage() {
             Refresh
           </Button>
         </div>
-
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
           </div>
         )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -150,7 +141,6 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -170,7 +160,6 @@ export default function AnalyticsPage() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Daily Inquiries</CardTitle>
@@ -188,7 +177,6 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -215,7 +203,6 @@ export default function AnalyticsPage() {
               </div>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Traffic Sources</CardTitle>
