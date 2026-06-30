@@ -10,8 +10,17 @@ const nextConfig = {
   
   images: {
     remotePatterns: [
-      { protocol: 'http', hostname: '**' },
-      { protocol: 'https', hostname: '**' },
+      // Allow-list of hostnames whose images Next.js may fetch and
+      // optimise. Configure with NEXT_PUBLIC_IMAGE_REMOTE_HOSTS
+      // (comma-separated) in deployment. The defaults below match the
+      // zzscale.com production layout (api.zzscale.com serves the
+      // /uploads static directory; cdn.zzscale.com is reserved for
+      // future CDN assets). Edit when adding a new origin.
+      { protocol: 'https', hostname: 'api.zzscale.com' },
+      { protocol: 'https', hostname: 'cdn.zzscale.com' },
+      { protocol: 'https', hostname: 'www.zzscale.com' },
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'http', hostname: '127.0.0.1' },
     ],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days

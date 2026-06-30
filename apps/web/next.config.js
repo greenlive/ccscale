@@ -15,8 +15,17 @@ const nextConfig = {
   images: {
     // Allow remote product images from any CDN (admin can change later)
     remotePatterns: [
-      { protocol: 'http', hostname: '**' },
-      { protocol: 'https', hostname: '**' },
+      // Allow-list of hostnames whose images Next.js may fetch and
+      // optimise. Configure with NEXT_PUBLIC_IMAGE_REMOTE_HOSTS
+      // (comma-separated) in deployment. The defaults below match the
+      // zzscale.com production layout (api.zzscale.com serves the
+      // /uploads static directory; cdn.zzscale.com is reserved for
+      // future CDN assets). Edit when adding a new origin.
+      { protocol: 'https', hostname: 'api.zzscale.com' },
+      { protocol: 'https', hostname: 'cdn.zzscale.com' },
+      { protocol: 'https', hostname: 'www.zzscale.com' },
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'http', hostname: '127.0.0.1' },
     ],
     // SVG support: keep sharp defaults; social platforms prefer raster, so OG uses .svg path which many platforms accept
     formats: ['image/avif', 'image/webp'],
