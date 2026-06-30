@@ -110,6 +110,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 imports per minute per user
   @ApiOperation({ summary: 'Batch import products from CSV' })
   @ApiResponse({ status: 201, description: 'Import result' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })

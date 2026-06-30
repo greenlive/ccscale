@@ -27,7 +27,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Throttle } from '@nestjs/throttler';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { TurnstileService } from '../common/turnstile.service';
 
 @ApiTags('inquiries')
@@ -43,6 +43,7 @@ export class InquiriesController {
   @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all inquiries (admin only)' })
+  @SkipThrottle()
   @ApiQuery({ name: 'status', required: false, enum: INQUIRY_STATUSES })
   @ApiResponse({ status: 200, description: 'Return all inquiries' })
   findAll(
@@ -61,6 +62,7 @@ export class InquiriesController {
   @Roles('ADMIN', 'EDITOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get inquiry statistics' })
+  @SkipThrottle()
   @ApiResponse({ status: 200, description: 'Return inquiry stats' })
   getStats() {
     return this.inquiriesService.getStats();
@@ -71,6 +73,7 @@ export class InquiriesController {
   @Roles('ADMIN', 'EDITOR', 'VIEWER')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get inquiry by id' })
+  @SkipThrottle()
   @ApiResponse({ status: 200, description: 'Return the inquiry' })
   @ApiResponse({ status: 404, description: 'Inquiry not found' })
   findOne(@Param('id') id: string) {
@@ -86,6 +89,7 @@ export class InquiriesController {
   @Roles('ADMIN', 'EDITOR', 'VIEWER')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get activity logs for an inquiry' })
+  @SkipThrottle()
   @ApiResponse({ status: 200, description: 'Return activity logs' })
   getActivityLogs(@Param('id') id: string) {
     return this.inquiriesService.getActivityLogs(parseInt(id, 10));
@@ -114,19 +118,20 @@ export class InquiriesController {
   @ApiResponse({ status: 200, description: 'Inquiry updated' })
   @ApiResponse({ status: 404, description: 'Inquiry not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateInquiryDto: UpdateInquiryDto,
     @Request() req,
   ) {
     const parsed = parseInt(id, 10);
-    this.inquiriesService.createActivityLog({
+    const result = await this.inquiriesService.update(parsed, updateInquiryDto);
+    await this.inquiriesService.createActivityLog({
       inquiryId: parsed,
-      action: 'STATUS_CHANGE',
+      action: 'UPDATED',
       detail: `Updated by ${req.user.email}`,
       performedBy: req.user.email,
     });
-    return this.inquiriesService.update(parsed, updateInquiryDto);
+    return result;
   }
 
   @Post(':id/activities')

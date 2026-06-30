@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import { TurnstileService } from './common/turnstile.service';
 
@@ -30,6 +31,13 @@ async function bootstrap() {
     },
     crossOriginEmbedderPolicy: false,
   }));
+
+  // Reject oversized JSON/URL-encoded bodies early. Default Nest limit is
+  // 100kb; admins uploading product specs / descriptions need more, but
+  // anything over 1MB is almost certainly abuse. Multipart upload routes
+  // use multer and are not affected by this limit.
+  app.use(json({ limit: '1mb' }));
+  app.use(urlencoded({ extended: true, limit: '1mb' }));
 
   // CORS configuration
   const corsOrigins = process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'];
