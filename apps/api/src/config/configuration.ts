@@ -48,7 +48,7 @@ const configuration = () => ({
     url: getEnv("REDIS_URL", isProd ? undefined : "redis://localhost:6379"),
   },
   cors: {
-    origin: getEnv("CORS_ORIGIN", isProd ? "https://www.zzscale.com" : "http://localhost:3000"),
+    origin: getEnv("CORS_ORIGIN", isProd ? "https://www.zzscale.com,https://admin.zzscale.com" : "http://localhost:3000,http://localhost:3001"),
   },
   jwt: {
     secret: jwtSecret,
