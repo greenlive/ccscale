@@ -103,7 +103,7 @@ export class EmailService {
       })
       .join('');
 
-    const safeAdminUrl = escapeUrl(process.env.ADMIN_URL || 'http://localhost:3001');
+    const safeAdminUrl = escapeUrl(process.env.ADMIN_URL || (process.env.NODE_ENV === 'production' ? 'https://admin.zzscale.com' : 'http://localhost:3001'));
 
     const subject = `[CC Scale] New Inquiry from ${inquiry.fullName}${inquiry.company ? ` (${inquiry.company})` : ''}`;
     const html = `
