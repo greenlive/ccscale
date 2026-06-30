@@ -8,7 +8,9 @@ export class CasesService {
 
   async findAll(params: { isActive?: boolean; page: number; pageSize: number }) {
     const { isActive, page, pageSize } = params;
-    const skip = (page - 1) * pageSize;
+    const safeSize = Math.min(100, Math.max(1, Math.floor(pageSize) || 20));
+    const safePage = Math.max(1, Math.floor(page) || 1);
+    const skip = (safePage - 1) * safeSize;
 
     const where: any = {};
     if (isActive !== undefined) where.isActive = isActive;
@@ -23,16 +25,12 @@ export class CasesService {
         },
         orderBy: { order: 'asc' },
         skip,
-        take: pageSize,
+        take: safeSize,
       }),
       this.prisma.customerCase.count({ where }),
     ]);
 
-    return {
-      data,
-      total,
-      page,
-      pageSize,
+    return { data, total, page: safePage, pageSize: safeSize,
       totalPages: Math.ceil(total / pageSize),
     };
   }

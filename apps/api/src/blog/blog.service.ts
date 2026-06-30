@@ -13,7 +13,9 @@ export class BlogService {
     pageSize: number;
   }) {
     const { category, isActive, page, pageSize } = params;
-    const skip = (page - 1) * pageSize;
+    const safeSize = Math.min(100, Math.max(1, Math.floor(pageSize) || 20));
+    const safePage = Math.max(1, Math.floor(page) || 1);
+    const skip = (safePage - 1) * safeSize;
 
     const where: any = {};
     if (category) where.category = category;
@@ -24,7 +26,7 @@ export class BlogService {
         where,
         orderBy: [{ isFeatured: 'desc' }, { publishedAt: 'desc' }, { createdAt: 'desc' }],
         skip,
-        take: pageSize,
+        take: safeSize,
       }),
       this.prisma.blogPost.count({ where }),
     ]);
