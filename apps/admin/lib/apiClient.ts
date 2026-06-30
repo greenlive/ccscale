@@ -3,7 +3,7 @@
  * Automatically attaches Bearer tokens and handles 401 responses with retry logic
  */
 
-import { ensureValidToken, clearStoredAuth, getStoredRefreshToken, getStoredUser, refreshAccessToken, setStoredAuth } from './auth';
+import { ensureValidToken, clearStoredAuth } from './auth';
 
 // Use relative URLs so requests go through Next.js rewrites, avoiding CORS issues
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
@@ -43,6 +43,11 @@ async function apiRequest<T>(
   options: RequestInit = {},
   retryCount = 0
 ): Promise<ApiResponse<T>> {
+  // Endpoints we must not retry on 401 (would loop or conflict with
+  // the cookie-based refresh we do just below).
+  const isLogin = endpoint.includes('/auth/login');
+  const isRefresh = endpoint.includes('/auth/refresh');
+
   // Ensure we have a valid token
   const token = await ensureValidToken();
 
@@ -72,21 +77,19 @@ async function apiRequest<T>(
     const response = await fetch(`${API_URL}/api${endpoint}`, {
       ...options,
       headers,
+      credentials: 'include',
     });
 
     // Handle 401 Unauthorized
-    if (response.status === 401 && retryCount < MAX_RETRIES) {
-      // Force a token refresh (don't rely on ensureValidToken which may return the same bad token)
-      const storedRefreshToken = getStoredRefreshToken();
-      if (storedRefreshToken) {
-        const result = await refreshAccessToken(storedRefreshToken);
-        if (result) {
-          const user = getStoredUser();
-          if (user) {
-            setStoredAuth(result.accessToken, user, storedRefreshToken);
-            return apiRequest<T>(endpoint, options, retryCount + 1);
-          }
-        }
+    if (response.status === 401 && retryCount < MAX_RETRIES && !isLogin && !isRefresh) {
+      // The backend reads the cc_refresh httpOnly cookie; we just POST
+      // with credentials: 'include' and let the browser attach it.
+      const refreshed = await fetch(`${API_URL}/api/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (refreshed.ok) {
+        return apiRequest<T>(endpoint, options, retryCount + 1);
       }
       // Refresh failed, redirect to login
       if (typeof window !== 'undefined') {
