@@ -83,6 +83,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:3000/en || curl -f http://localhost:3000/health || exit 1
 
 # Use dumb-init to prevent zombie processes
-ENTRYPOINT [""/usr/bin/dumb-init"", ""--""]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
-CMD [""node"", ""apps/web/server.js""]
+CMD ["node", "apps/web/server.js"]

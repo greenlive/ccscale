@@ -9,7 +9,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string, redirectTo?: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAdmin: boolean;
   refreshToken: () => Promise<void>;
 }
@@ -70,7 +70,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push(safeRedirect);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // Call backend to clear httpOnly cookies (cc_access, cc_refresh)
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+      await fetch(`${API_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      }).catch(() => {});
+    } catch {
+      // Ignore logout API errors
+    }
     clearStoredAuth();
     setToken(null);
     setUser(null);
@@ -83,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(newToken);
     } else {
       // Token refresh failed, logout
-      logout();
+      logout().catch(() => {});
     }
   };
 
