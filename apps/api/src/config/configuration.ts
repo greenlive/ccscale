@@ -38,7 +38,11 @@ const configuration = () => ({
   port: getEnvNumber("PORT", 8000),
   nodeEnv: process.env.NODE_ENV || "development",
   database: {
-    url: getEnv("DATABASE_URL", isProd ? undefined : "postgresql://zzscale:zzscale123@localhost:5432/zzscale"),
+    // No dev fallback. Set DATABASE_URL in apps/api/.env or your shell
+    // (the docker-compose.yml service exposes postgres on 5432 with the
+    // creds configured there). Hard-coding credentials here would leak
+    // them into the source tree.
+    url: getEnv("DATABASE_URL", undefined),
   },
   redis: {
     url: getEnv("REDIS_URL", isProd ? undefined : "redis://localhost:6379"),
