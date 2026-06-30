@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Query, Req, Headers, Ip } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AnalyticsService } from './analytics.service';
@@ -29,6 +30,7 @@ export class AnalyticsController {
   }
 
   @Post('session')
+  @Throttle({ short: { limit: 30, ttl: 60000 } }) // 30 sessions per minute per IP
   @ApiOperation({ summary: 'Track a user session with auto source detection' })
   @ApiResponse({ status: 201, description: 'Session tracked' })
   async trackSession(
@@ -82,6 +84,7 @@ export class AnalyticsController {
   }
 
   @Post('event')
+  @Throttle({ short: { limit: 60, ttl: 60000 } }) // 60 events per minute per IP
   @ApiOperation({ summary: 'Track a user event' })
   @ApiResponse({ status: 201, description: 'Event tracked' })
   trackEvent(
