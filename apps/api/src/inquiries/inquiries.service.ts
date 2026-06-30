@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInquiryDto, UpdateInquiryDto, CreateActivityLogDto } from './dto/inquiry.dto';
 import { EmailService } from '../notifications/email.service';
 
 @Injectable()
 export class InquiriesService {
+  private readonly logger = new Logger(InquiriesService.name);
+
   constructor(
     private readonly emailService: EmailService,
     private prisma: PrismaService,
@@ -113,7 +116,10 @@ export class InquiriesService {
       performedBy: 'System',
     });
 
-    // Send confirmation email to customer
+    // Send confirmation email to the customer. The inquiry is
+    // already persisted; if the email transport fails we surface the
+    // failure as an ActivityLog entry so admins can see the gap from
+    // the inquiry detail page rather than only in server logs.
     try {
       await this.emailService.sendInquiryConfirmation({
         fullName: inquiry.fullName,
@@ -125,8 +131,20 @@ export class InquiriesService {
         })),
         message: inquiry.message,
       });
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Inquiry confirmation email failed for #${inquiry.id}: ${msg}`);
+      await this.createActivityLog({
+        inquiryId: inquiry.id,
+        action: 'EMAIL_FAILED',
+        detail: `Customer confirmation email failed: ${msg.slice(0, 200)}`,
+        performedBy: 'System',
+      }).catch(() => undefined);
+    }
 
-      // Send notification to admin
+    // Send notification email to the admin team. Same failure handling
+    // as above: don't fail the inquiry, but record the gap.
+    try {
       await this.emailService.sendNewInquiryNotificationToAdmin({
         fullName: inquiry.fullName,
         email: inquiry.email,
@@ -141,8 +159,14 @@ export class InquiriesService {
         })),
       });
     } catch (error) {
-      console.error('Failed to send inquiry emails:', error);
-      // Don't throw - the inquiry was created successfully
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Admin notification email failed for #${inquiry.id}: ${msg}`);
+      await this.createActivityLog({
+        inquiryId: inquiry.id,
+        action: 'EMAIL_FAILED',
+        detail: `Admin notification email failed: ${msg.slice(0, 200)}`,
+        performedBy: 'System',
+      }).catch(() => undefined);
     }
 
     return inquiry;
