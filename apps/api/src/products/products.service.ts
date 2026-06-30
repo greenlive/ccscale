@@ -467,6 +467,17 @@ export class ProductsService {
     return rows;
   }
 
+  /** Sanitize a CSV cell value to prevent spreadsheet formula injection. */
+  private sanitizeCell(value: string): string {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) return trimmed;
+    const firstChar = trimmed[0];
+    if ("=+-@/`![\"".includes(firstChar)) {
+      return "'" + trimmed;
+    }
+    return trimmed;
+  }
+
   private parseCSVLine(line: string): string[] {
     const result: string[] = [];
     let current = '';
@@ -477,7 +488,7 @@ export class ProductsService {
       if (char === '"') {
         inQuotes = !inQuotes;
       } else if (char === ',' && !inQuotes) {
-        result.push(current.trim());
+        result.push(this.sanitizeCell(current));
         current = '';
       } else {
         current += char;
