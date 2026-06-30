@@ -8,21 +8,24 @@ export class UploadService {
   private readonly baseUrl = process.env.UPLOAD_BASE_URL || '/uploads';
 
   async deleteFile(filename: string): Promise<boolean> {
-    try {
-      // Search in all subdirectories
-      const dirs = ['product-image', 'product-video', 'testimonial', 'client-logo', 'factory-image', 'general'];
+    const dirs = ['product-image', 'product-video', 'testimonial', 'client-logo', 'factory-image', 'general'];
 
-      for (const dir of dirs) {
-        const filePath = join(this.uploadDir, dir, filename);
+    for (const dir of dirs) {
+      const filePath = join(this.uploadDir, dir, filename);
+      try {
         await fs.unlink(filePath);
         return true;
+      } catch {
+        continue;
       }
+    }
 
-      // Also try root uploads directory
-      const rootPath = join(this.uploadDir, filename);
+    // Also try root uploads directory
+    const rootPath = join(this.uploadDir, filename);
+    try {
       await fs.unlink(rootPath);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -35,17 +38,17 @@ export class UploadService {
   }
 
   async fileExists(filename: string): Promise<boolean> {
-    try {
-      const dirs = ['product-image', 'product-video', 'testimonial', 'client-logo', 'factory-image', 'general'];
+    const dirs = ['product-image', 'product-video', 'testimonial', 'client-logo', 'factory-image', 'general'];
 
-      for (const dir of dirs) {
-        const filePath = join(this.uploadDir, dir, filename);
+    for (const dir of dirs) {
+      const filePath = join(this.uploadDir, dir, filename);
+      try {
         await fs.access(filePath);
         return true;
+      } catch {
+        continue;
       }
-      return false;
-    } catch {
-      return false;
     }
+    return false;
   }
 }
