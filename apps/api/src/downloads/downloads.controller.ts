@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { DownloadsService } from './downloads.service';
@@ -31,8 +32,8 @@ export class DownloadsController {
   @ApiOperation({ summary: 'Get download by id' })
   @ApiResponse({ status: 200, description: 'Return the download' })
   @ApiResponse({ status: 404, description: 'Download not found' })
-  findOne(@Param('id') id: string) {
-    return this.downloadsService.findOne(parseInt(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.downloadsService.findOne(id);
   }
 
   @Post()
@@ -54,8 +55,8 @@ export class DownloadsController {
   @ApiResponse({ status: 200, description: 'Download updated' })
   @ApiResponse({ status: 404, description: 'Download not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  update(@Param('id') id: string, @Body() updateDownloadDto: UpdateDownloadDto) {
-    return this.downloadsService.update(parseInt(id), updateDownloadDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateDownloadDto: UpdateDownloadDto) {
+    return this.downloadsService.update(id, updateDownloadDto);
   }
 
   @Delete(':id')
@@ -66,8 +67,8 @@ export class DownloadsController {
   @ApiResponse({ status: 200, description: 'Download deleted' })
   @ApiResponse({ status: 404, description: 'Download not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  remove(@Param('id') id: string) {
-    return this.downloadsService.remove(parseInt(id));
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.downloadsService.remove(id);
   }
 
   @Post(':id/increment')
@@ -77,7 +78,7 @@ export class DownloadsController {
   @ApiOperation({ summary: 'Increment download count' })
   @ApiResponse({ status: 200, description: 'Download count incremented' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  incrementCount(@Param('id') id: string) {
-    return this.downloadsService.incrementDownloadCount(parseInt(id));
+  incrementCount(@Param('id', ParseIntPipe) id: number) {
+    return this.downloadsService.incrementDownloadCount(id);
   }
 }

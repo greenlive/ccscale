@@ -14,6 +14,7 @@ import {
   UseGuards,
   Request,
   BadRequestException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { InquiriesService } from './inquiries.service';
@@ -76,12 +77,8 @@ export class InquiriesController {
   @SkipThrottle()
   @ApiResponse({ status: 200, description: 'Return the inquiry' })
   @ApiResponse({ status: 404, description: 'Inquiry not found' })
-  findOne(@Param('id') id: string) {
-    const parsed = parseInt(id, 10);
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      throw new BadRequestException('Invalid id');
-    }
-    return this.inquiriesService.findOne(parsed);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.inquiriesService.findOne(id);
   }
 
   @Get(':id/activities')
@@ -91,8 +88,8 @@ export class InquiriesController {
   @ApiOperation({ summary: 'Get activity logs for an inquiry' })
   @SkipThrottle()
   @ApiResponse({ status: 200, description: 'Return activity logs' })
-  getActivityLogs(@Param('id') id: string) {
-    return this.inquiriesService.getActivityLogs(parseInt(id, 10));
+  getActivityLogs(@Param('id', ParseIntPipe) id: number) {
+    return this.inquiriesService.getActivityLogs(id);
   }
 
   @Post()
@@ -119,11 +116,11 @@ export class InquiriesController {
   @ApiResponse({ status: 404, description: 'Inquiry not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateInquiryDto: UpdateInquiryDto,
     @Request() req,
   ) {
-    const parsed = parseInt(id, 10);
+    const parsed = id;
     const result = await this.inquiriesService.update(parsed, updateInquiryDto);
     await this.inquiriesService.createActivityLog({
       inquiryId: parsed,
@@ -141,11 +138,11 @@ export class InquiriesController {
   @ApiOperation({ summary: 'Add activity log to an inquiry' })
   @ApiResponse({ status: 201, description: 'Activity log created' })
   addActivityLog(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: CreateActivityLogDto,
     @Request() req,
   ) {
-    dto.inquiryId = parseInt(id, 10);
+    dto.inquiryId = id;
     dto.performedBy = req.user.email;
     return this.inquiriesService.createActivityLog(dto);
   }
@@ -157,8 +154,8 @@ export class InquiriesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an inquiry (admin only)' })
   @ApiResponse({ status: 204, description: 'Inquiry deleted' })
-  async delete(@Param('id') id: string) {
-    await this.inquiriesService.delete(parseInt(id, 10));
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    await this.inquiriesService.delete(id);
   }
 
   @Post(':id/contact-attempt')
@@ -168,12 +165,12 @@ export class InquiriesController {
   @ApiOperation({ summary: 'Record a contact attempt for an inquiry' })
   @ApiResponse({ status: 201, description: 'Contact attempt recorded' })
   addContactAttempt(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: { method: string; success: boolean },
     @Request() req,
   ) {
     return this.inquiriesService.addContactAttempt(
-      parseInt(id, 10),
+      id,
       body.method,
       body.success,
       req.user.email,

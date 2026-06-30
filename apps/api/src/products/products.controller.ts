@@ -12,6 +12,7 @@ import {
   UseGuards,
   Req,
   BadRequestException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -83,12 +84,12 @@ export class ProductsController {
   @ApiOperation({ summary: 'Get related products' })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Return related products' })
-  findRelated(@Param('id') id: string, @Query('limit') limit?: string) {
+  findRelated(@Param('id', ParseIntPipe) id: number, @Query('limit') limit?: string) {
     const n = limit ? parseInt(limit, 10) : 4;
     if (!Number.isFinite(n) || n < 1 || n > 20) {
       throw new BadRequestException('limit must be 1-20');
     }
-    return this.productsService.findRelated(parseInt(id, 10), n);
+    return this.productsService.findRelated(id, n);
   }
 
   @Get('search')
@@ -124,10 +125,8 @@ export class ProductsController {
   @ApiOperation({ summary: 'Get product by id' })
   @ApiResponse({ status: 200, description: 'Return the product' })
   @ApiResponse({ status: 404, description: 'Product not found' })
-  findOne(@Param('id') id: string) {
-    const parsed = parseInt(id, 10);
-    if (!Number.isFinite(parsed) || parsed <= 0) throw new BadRequestException('Invalid id');
-    return this.productsService.findOne(parsed);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.findOne(id);
   }
 
   @Post()
@@ -149,8 +148,8 @@ export class ProductsController {
   @ApiResponse({ status: 200, description: 'Product updated' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(parseInt(id, 10), updateProductDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto) {
+    return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
@@ -162,7 +161,7 @@ export class ProductsController {
   @ApiResponse({ status: 204, description: 'Product deleted' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(parseInt(id, 10));
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.remove(id);
   }
 }

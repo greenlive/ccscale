@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductsService } from '../products/products.service';
@@ -27,8 +28,8 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get category by id' })
   @ApiResponse({ status: 200, description: 'Return the category' })
   @ApiResponse({ status: 404, description: 'Category not found' })
-  findOne(@Param('id') id: string) {
-    return this.productsService.findCategoryById(parseInt(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.findCategoryById(id);
   }
 
   @Post()
@@ -50,8 +51,8 @@ export class CategoriesController {
   @ApiResponse({ status: 200, description: 'Category updated' })
   @ApiResponse({ status: 404, description: 'Category not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.productsService.updateCategory(parseInt(id), updateCategoryDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateCategoryDto: UpdateCategoryDto) {
+    return this.productsService.updateCategory(id, updateCategoryDto);
   }
 
   @Delete(':id')
@@ -62,7 +63,7 @@ export class CategoriesController {
   @ApiResponse({ status: 200, description: 'Category deleted' })
   @ApiResponse({ status: 404, description: 'Category not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  remove(@Param('id') id: string) {
-    return this.productsService.deleteCategory(parseInt(id));
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.deleteCategory(id);
   }
 }
