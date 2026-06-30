@@ -1,4 +1,4 @@
-import {
+﻿import {
   IsString,
   IsOptional,
   IsEmail,
@@ -10,6 +10,7 @@ import {
   Max,
   ArrayMaxSize,
   ValidateNested,
+  IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -173,7 +174,7 @@ export class CreateInquiryDto {
   @ArrayMaxSize(50)
   @ValidateNested({ each: true })
   @Type(() => CreateInquiryItemDto)
-  @IsOptional()
+  @IsNotEmpty({ each: true })
   items?: CreateInquiryItemDto[];
 }
 

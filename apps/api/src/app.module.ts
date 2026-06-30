@@ -22,6 +22,7 @@ import { BlogModule } from './blog/blog.module';
 import { CasesModule } from './cases/cases.module';
 import { PageContentModule } from './page-content/page-content.module';
 import { HealthModule } from './health/health.module';
+import { SessionCleanupModule } from './utils/session-cleanup.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { HealthModule } from './health/health.module';
     CasesModule,
     PageContentModule,
     HealthModule,
+    SessionCleanupModule,
   ],
   providers: [
     {

@@ -9,7 +9,7 @@ export class EmailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.example.com',
+      host: process.env.SMTP_HOST || (() => { throw new Error('SMTP_HOST is required'); })(),
       port: parseInt(process.env.SMTP_PORT || '587', 10),
       secure: process.env.SMTP_SECURE === 'true',
       auth: {
