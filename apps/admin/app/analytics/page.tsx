@@ -25,7 +25,7 @@ export default function AnalyticsPage() {
         headers: {
           'Authorization': `Bearer ${getStoredToken()}`,
         },
-      });
+       credentials: 'include'});
       if (response.ok) {
         const result = await response.json();
         setData(result);

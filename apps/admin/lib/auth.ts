@@ -26,7 +26,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<{ access
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ refreshToken }),
-    });
+     credentials: 'include'});
 
     if (response.ok) {
       return await response.json();
@@ -44,7 +44,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ email, password }),
-  });
+   credentials: 'include'});
 
   if (!response.ok) {
     const error = await response.json();
@@ -59,7 +59,7 @@ export async function getCurrentUser(token: string): Promise<AdminUser> {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+   credentials: 'include'});
 
   if (!response.ok) {
     throw new Error('Unauthorized');
@@ -73,7 +73,7 @@ export async function getAllUsers(token: string): Promise<AdminUser[]> {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+   credentials: 'include'});
 
   if (!response.ok) {
     throw new Error('Failed to fetch users');
@@ -90,7 +90,7 @@ export async function updateUserRole(token: string, userId: number, role: string
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ role }),
-  });
+   credentials: 'include'});
 
   if (!response.ok) {
     throw new Error('Failed to update user role');
@@ -103,7 +103,7 @@ export async function deleteUser(token: string, userId: number): Promise<void> {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+   credentials: 'include'});
 
   if (!response.ok) {
     throw new Error('Failed to delete user');
@@ -124,7 +124,7 @@ export async function registerUser(
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ email, password, name, role }),
-  });
+   credentials: 'include'});
 
   if (!response.ok) {
     throw new Error('Failed to register user');

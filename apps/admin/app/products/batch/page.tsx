@@ -41,7 +41,7 @@ export default function BatchProductsPage() {
       const response = await fetch('/api/products/batch/import', {
         method: 'POST',
         body: formData,
-      });
+       credentials: 'include'});
 
       const data = await response.json();
       setResult(data);

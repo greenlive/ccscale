@@ -39,7 +39,7 @@ export default function InquiriesPage() {
         headers: {
           'Authorization': `Bearer ${getStoredToken()}`,
         },
-      });
+       credentials: 'include'});
       if (response.ok) {
         const data = await response.json();
         setInquiries(data);

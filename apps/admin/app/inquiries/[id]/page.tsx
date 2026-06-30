@@ -177,7 +177,7 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-      });
+       credentials: 'include'});
       if (!response.ok) throw new Error('询盘不存在或接口异常');
       const data = await response.json();
       setInquiry(data);
@@ -203,7 +203,7 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(body),
-      });
+       credentials: 'include'});
       if (!response.ok) throw new Error('更新状态失败');
       const updated = await response.json();
       setInquiry(updated);
@@ -249,7 +249,7 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ status: 'CLOSED', closedReason: reason }),
-      });
+       credentials: 'include'});
       if (!response.ok) throw new Error('关闭失败');
       const updated = await response.json();
       setInquiry(updated);
@@ -279,12 +279,12 @@ export default function InquiryDetailPage({ params }: { params: { id: string } }
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ method: contactMethod, success: contactSuccess }),
-      });
+       credentials: 'include'});
       if (!response.ok) throw new Error('添加联系记录失败');
       // 刷新询盘数据
       const updated = await fetch(`${API_URL}/api/inquiries/${inquiry.id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
-      }).then(r => r.json());
+       credentials: 'include'}).then(r => r.json());
       setInquiry(updated);
       setContactSuccess(null);
     } catch (err) {

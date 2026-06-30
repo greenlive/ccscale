@@ -49,7 +49,7 @@ export default function CategoriesPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`/api/products/categories`);
+      const response = await fetch(`/api/products/categories`, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -80,7 +80,7 @@ export default function CategoriesPage() {
           Authorization: `Bearer ${token}`,
         },
         body: uploadForm,
-      });
+       credentials: 'include'});
 
       if (response.ok) {
         const data = await response.json();
@@ -132,7 +132,7 @@ export default function CategoriesPage() {
           imageUrl: formData.imageUrl,
           order: formData.order,
         }),
-      });
+       credentials: 'include'});
 
       if (response.ok) {
         setShowAddModal(false);
@@ -173,7 +173,7 @@ export default function CategoriesPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+       credentials: 'include'});
       setSuccessMessage('分类已删除');
       setTimeout(() => setSuccessMessage(''), 3000);
       fetchCategories();

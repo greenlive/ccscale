@@ -47,7 +47,7 @@ export default function ClientsPage() {
 
   const fetchClients = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/clients`);
+      const response = await fetch(`${API_URL}/api/clients`, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setClients(data);
@@ -71,7 +71,7 @@ export default function ClientsPage() {
         method,
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify(formData),
-      });
+       credentials: 'include'});
 
       if (response.ok) {
         fetchClients();
@@ -104,7 +104,7 @@ export default function ClientsPage() {
         const response = await fetch(`${API_URL}/api/clients/${id}`, {
           method: 'DELETE',
         headers: { Authorization: `Bearer ${getStoredToken()}` },
-      });
+       credentials: 'include'});
         if (response.ok) {
           fetchClients();
         }
@@ -120,7 +120,7 @@ export default function ClientsPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify({ isActive: !client.isActive }),
-      });
+       credentials: 'include'});
       if (response.ok) {
         fetchClients();
       }

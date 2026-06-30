@@ -82,7 +82,7 @@ export default function DownloadsPage() {
 
   const fetchDownloads = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/downloads`);
+      const response = await fetch(`${API_URL}/api/downloads`, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setDownloads(data);
@@ -114,7 +114,7 @@ export default function DownloadsPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
-      });
+       credentials: 'include'});
 
       if (response.ok) {
         setShowAddModal(false);
@@ -155,7 +155,7 @@ export default function DownloadsPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+       credentials: 'include'});
       fetchDownloads();
     } catch (err) {
       setError('Failed to delete download');

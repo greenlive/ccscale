@@ -58,7 +58,7 @@ export default function TestimonialsPage() {
 
   const fetchTestimonials = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/testimonials`);
+      const response = await fetch(`${API_URL}/api/testimonials`, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setTestimonials(data);
@@ -82,7 +82,7 @@ export default function TestimonialsPage() {
         method,
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify(formData),
-      });
+       credentials: 'include'});
 
       if (response.ok) {
         fetchTestimonials();
@@ -120,7 +120,7 @@ export default function TestimonialsPage() {
         const response = await fetch(`${API_URL}/api/testimonials/${id}`, {
           method: 'DELETE',
         headers: { Authorization: `Bearer ${getStoredToken()}` },
-        });
+         credentials: 'include'});
         if (response.ok) {
           fetchTestimonials();
         }
@@ -136,7 +136,7 @@ export default function TestimonialsPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getStoredToken()}` },
         body: JSON.stringify({ isActive: !testimonial.isActive }),
-      });
+       credentials: 'include'});
       if (response.ok) {
         fetchTestimonials();
       }
