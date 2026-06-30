@@ -6,6 +6,7 @@ import { Send, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@cc-scale/ui';
 import { Input } from '@cc-scale/ui';
 import { Textarea } from '@cc-scale/ui';
+import { Turnstile } from './Turnstile';
 
 interface ContactFormProps {
   locale: 'en' | 'zh';
@@ -18,6 +19,8 @@ export function ContactForm({ locale }: ContactFormProps) {
   const t = useTranslations('contact');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({ fullName: '', email: '', phone: '', company: '', message: '' });
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
@@ -44,11 +47,12 @@ export function ContactForm({ locale }: ContactFormProps) {
       const response = await fetch(`/api/inquiries`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, source: 'Contact Page' }),
+        body: JSON.stringify({ ...formData, source: 'Contact Page', turnstileToken: turnstileToken || undefined }),
       });
       if (!response.ok) throw new Error('Failed');
       setStatus('success');
       setFormData({ fullName: '', email: '', phone: '', company: '', message: '' });
+      setTurnstileToken('');
     } catch {
       setStatus('error');
     }
@@ -166,6 +170,7 @@ export function ContactForm({ locale }: ContactFormProps) {
           <p id="cf-message-err" className="text-xs text-red-300 mt-1">{errors.message}</p>
         )}
       </div>
+      <Turnstile siteKey={turnstileSiteKey} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken('')} />
       <Button type="submit" disabled={status === 'submitting'} className="w-full bg-white text-primary hover:bg-white/90 font-semibold">
         {status === 'submitting' ? (
           t('sending')
